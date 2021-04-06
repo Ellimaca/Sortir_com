@@ -39,7 +39,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=40)
      */
-    private $name;
+    private $firstName;
 
     /**
      * @ORM\Column(type="string", length=50)
@@ -164,14 +164,14 @@ class User implements UserInterface
         // $this->plainPassword = null;
     }
 
-    public function getName(): ?string
+    public function getFirstName(): ?string
     {
-        return $this->name;
+        return $this->firstName;
     }
 
-    public function setName(string $name): self
+    public function setFirstName(string $firstName): self
     {
-        $this->name = $name;
+        $this->firstName = $firstName;
 
         return $this;
     }
