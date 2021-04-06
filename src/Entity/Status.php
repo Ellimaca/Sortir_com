@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\StateRepository;
+use App\Repository\StatusRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=StateRepository::class)
+ * @ORM\Entity(repositoryClass=StatusRepository::class)
  */
 class Status
 {
