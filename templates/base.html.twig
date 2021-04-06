@@ -6,32 +6,33 @@
               rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
               crossorigin="anonymous">
         <link rel="stylesheet" href="{{ asset('style.css') }}">
+        <link rel="icon" href="{{ asset('img/logoEni.png') }}">
 
 
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{% block title %}Bienvenue!{% endblock %}</title>
     </head>
     <body>
     <div class="container">
-            <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 mr-1 border-bottom">
+            <header id="navigation" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-2 mr-1 border-bottom">
                 <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
-                    <svg class="bi me-2" width="40" height="32"><img src="{{ asset('img/logo.jpg') }}" width="70" height="70"></svg>
+                    <img src="{{ asset('img/logoEni.png') }}" width="70" height="70">
                 </a>
 
-                <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-                    <li><a href="#" class="nav-link px-2 link-secondary">Home</a></li>
-                    <li><a href="#" class="nav-link px-2 link-dark">Features</a></li>
-                    <li><a href="#" class="nav-link px-2 link-dark">Pricing</a></li>
-                    <li><a href="#" class="nav-link px-2 link-dark">FAQs</a></li>
-                    <li><a href="#" class="nav-link px-2 link-dark">About</a></li>
+                <ul class="nav col-12 col-md-auto mb-2 mt-2 justify-content-center mb-md-0">
+                    <li><a href="#" class="nav-link px-2 link-dark">Villes</a></li>
+                    <li><a href="#" class="nav-link px-2 link-dark">Campus</a></li>
+                    <li><a href="#" class="nav-link px-2 link-dark">Accueil</a></li>
+                    <li><a href="#" class="nav-link px-2 link-dark">Mon profil</a></li>
+                    <li><a href="#" class="nav-link px-2 link-dark">Se déconnecter</a></li>
                 </ul>
 
-                <div class="col-md-3 justify-content-end">
-                        <button type="button" class="btn btn-outline-primary me-2">Login</button>
-                        <button type="button" class="btn btn-primary">Sign-up</button>
+                <div class="justify-content-end">
+                        <button type="button" id="btnConnexion" class="btn btn-outline me-2">Connexion</button>
+                        <button type="button" class="btn btn-success">Inscription</button>
                 </div>
             </header>
+
             {% block body %}{% endblock %}
     </div>
-
     </body>
 </html>

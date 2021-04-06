@@ -1,0 +1,13 @@
+#navigation {
+    background-color: white !important;
+}
+
+.btn {
+    background-color: #144a7f;
+}
+
+#btnConnexion {
+    color: #144a7f;
+    background-color: #FFFFFF;
+    outline: #144a7f;
+}
