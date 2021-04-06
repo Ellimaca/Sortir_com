@@ -20,6 +20,10 @@ class User implements UserInterface
      */
     private $id;
 
+    /**
+     * @ORM\Column(type="string", length=180, unique=true)
+     */
+    private $email;
 
     /**
      * @ORM\Column(type="json")
@@ -33,24 +37,14 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\Column(type="string", length=40)
      */
-    private $firstName;
+    private $name;
 
     /**
      * @ORM\Column(type="string", length=50)
      */
     private $lastName;
-
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
-    private $username;
-
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    private $email;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -60,33 +54,50 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="boolean")
      */
-    private $admin;
+    private $isAdmin;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $actif;
-
-
-    /**
-     * @ORM\ManyToMany(targetEntity=Event::class, mappedBy="participants")
-     */
-    private $events;
+    private $isActive;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Campus::class, inversedBy="users")
+     * @ORM\ManyToOne(targetEntity=Campus::class)
      * @ORM\JoinColumn(nullable=false)
      */
     private $campus;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Event::class)
+     */
+    private $events;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Event::class, mappedBy="organiser")
+     */
+    private $organisedEvents;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
+        $this->organisedEvents = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
     }
 
     /**
@@ -96,7 +107,7 @@ class User implements UserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->username;
+        return (string) $this->email;
     }
 
     /**
@@ -153,14 +164,14 @@ class User implements UserInterface
         // $this->plainPassword = null;
     }
 
-    public function getFirstName(): ?string
+    public function getName(): ?string
     {
-        return $this->firstName;
+        return $this->name;
     }
 
-    public function setFirstName(string $firstName): self
+    public function setName(string $name): self
     {
-        $this->firstName = $firstName;
+        $this->name = $name;
 
         return $this;
     }
@@ -177,25 +188,6 @@ class User implements UserInterface
         return $this;
     }
 
-    public function setUsername(?string $username): self
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(?string $email): self
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
     public function getPhoneNumber(): ?int
     {
         return $this->phoneNumber;
@@ -208,26 +200,38 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getAdmin(): ?bool
+    public function getIsAdmin(): ?bool
     {
-        return $this->admin;
+        return $this->isAdmin;
     }
 
-    public function setAdmin(bool $admin): self
+    public function setIsAdmin(bool $isAdmin): self
     {
-        $this->admin = $admin;
+        $this->isAdmin = $isAdmin;
 
         return $this;
     }
 
-    public function getActif(): ?bool
+    public function getIsActive(): ?bool
     {
-        return $this->actif;
+        return $this->isActive;
     }
 
-    public function setActif(bool $actif): self
+    public function setIsActive(bool $isActive): self
     {
-        $this->actif = $actif;
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getCampus(): ?Campus
+    {
+        return $this->campus;
+    }
+
+    public function setCampus(?Campus $campus): self
+    {
+        $this->campus = $campus;
 
         return $this;
     }
@@ -244,7 +248,6 @@ class User implements UserInterface
     {
         if (!$this->events->contains($event)) {
             $this->events[] = $event;
-            $event->addParticipant($this);
         }
 
         return $this;
@@ -252,21 +255,37 @@ class User implements UserInterface
 
     public function removeEvent(Event $event): self
     {
-        if ($this->events->removeElement($event)) {
-            $event->removeParticipant($this);
+        $this->events->removeElement($event);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Event[]
+     */
+    public function getOrganisedEvents(): Collection
+    {
+        return $this->organisedEvents;
+    }
+
+    public function addOrganisedEvent(Event $organisedEvent): self
+    {
+        if (!$this->organisedEvents->contains($organisedEvent)) {
+            $this->organisedEvents[] = $organisedEvent;
+            $organisedEvent->setUser($this);
         }
 
         return $this;
     }
 
-    public function getCampus(): ?Campus
+    public function removeOrganisedEvent(Event $organisedEvent): self
     {
-        return $this->campus;
-    }
-
-    public function setCampus(?Campus $campus): self
-    {
-        $this->campus = $campus;
+        if ($this->organisedEvents->removeElement($organisedEvent)) {
+            // set the owning side to null (unless already changed)
+            if ($organisedEvent->getUser() === $this) {
+                $organisedEvent->setUser(null);
+            }
+        }
 
         return $this;
     }
