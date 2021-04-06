@@ -13,9 +13,10 @@
     </head>
     <body>
     <div class="container">
-            <header id="navigation" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-2 mr-1 border-bottom">
+            <header id="navigation" class="d-flex flex-wrap align-items-center justify-content-center
+            justify-content-md-between py-2 mb-3 mr-1 border-bottom">
                 <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
-                    <img src="{{ asset('img/logoEni.png') }}" width="70" height="70">
+                    <img src="{{ asset('img/logoEni.png') }}" width="40" height="40">
                 </a>
 
                 <ul class="nav col-12 col-md-auto mb-2 mt-2 justify-content-center mb-md-0">
@@ -27,12 +28,16 @@
                 </ul>
 
                 <div class="justify-content-end">
-                        <button type="button" id="btnConnexion" class="btn btn-outline me-2">Connexion</button>
+                        <button type="button" id="btnConnexion" class="btn me-2">Connexion</button>
                         <button type="button" class="btn btn-success">Inscription</button>
                 </div>
             </header>
 
             {% block body %}{% endblock %}
     </div>
+        <footer class="text-center p-3">
+            Petit footer à modifier | Un petit lien par-ci | Un petit lien par là
+        </footer>
+
     </body>
 </html>
