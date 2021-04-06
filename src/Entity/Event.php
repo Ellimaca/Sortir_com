@@ -78,6 +78,7 @@ class Event
      */
     private $organiser;
 
+
     public function __construct()
     {
         $this->participants = new ArrayCollection();
@@ -231,4 +232,5 @@ class Event
 
         return $this;
     }
+
 }
