@@ -94,6 +94,7 @@ class AppFixtures extends Fixture
             $user = new User();
             $user->setFirstName($faker->firstName);
             $user->setEmail($faker->email);
+            $user->setPseudo($faker->userName);
             $user->setLastName($faker->lastName);
             $user->setCampus($faker->randomElement($allCampus));
             $user->setPhoneNumber($faker->phoneNumber);
