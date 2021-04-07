@@ -8,15 +8,27 @@ use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\Status;
 use App\Entity\User;
+use DateInterval;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AppFixtures extends Fixture
+
 {
+    private $encoder;
+
+    public function __construct(UserPasswordEncoderInterface $userPasswordEncoder)
+    {
+        $this->encoder = $userPasswordEncoder;
+    }
+
     public function load(ObjectManager $manager)
     {
         // On utilise Faker pour générer des données aléatoires en français
         $faker = \Faker\Factory::create("fr_FR");
+
+
 
         // Génération du nom des différents états possibles pour une sortie pour l'entité Status
         $statusName = ["Créée", "Ouverte", "Clôturée", "Activité en cours", "Passée", "Annulée"];
@@ -83,8 +95,11 @@ class AppFixtures extends Fixture
             $user->setEmail($faker->email);
             $user->setLastName($faker->lastName);
             $user->setCampus($faker->randomElement($allCampus));
-            $user->setPhoneNumber($faker->numberBetween(33600000, 33700000));
-            $user->setPassword($faker->password);
+            $user->setPhoneNumber($faker->phoneNumber);
+
+            $password = $this->encoder->encodePassword($user, "test");
+            $user->setPassword($password);
+
             $user->setRoles(["ROLE_USER"]);
             $user->setIsActive(true);
             $user->setIsAdmin(false);
@@ -103,9 +118,20 @@ class AppFixtures extends Fixture
         for ($i = 0; $i < 10; $i++) {
             $event = new Event();
             $event->setName($faker->sentence);
-            $event->setDateTimeStart($faker->dateTimeBetween(" - 1 month"));
-            $event->setDateTimeEnd($faker->dateTimeBetween($event->getDateTimeStart(), "+ 2 days"));
-            $event->setRegistrationDeadline($faker->dateTimeBetween($event->getDateTimeStart(), "+7 days"));
+
+            $event->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
+
+            $interval1 = new DateInterval("PT6H");
+            $dateTimeEnd = $event->getDateTimeStart()->add($interval1);
+            $event->setDateTimeEnd($faker->dateTimeBetween($event->getDateTimeStart(), $dateTimeEnd));
+
+            $duration = date_diff($event->getDateTimeStart(), $event->getDateTimeEnd());
+            $durationMinutes = $duration->d*1440 + $duration->h*60 + $duration->i;
+            $event->setDuration($durationMinutes);
+
+            $interval = new DateInterval("P1D");
+            $event->setRegistrationDeadline(date_sub($event->getDateTimeStart(), $interval));
+
             $event->setDescription($faker->paragraphs($faker->numberBetween(0, 3), true));
             $event->setCampus($faker->randomElement($allCampus));
             $event->setMaxNumberParticipants($faker->numberBetween(2, 6));
@@ -113,15 +139,15 @@ class AppFixtures extends Fixture
             $event->setPlace($faker->randomElement($allPlaces));
             $event->setOrganiser($faker->randomElement($allUsers));
 
-        //   for ($i = 0; $i < $event->getMaxNumberParticipants(); $i++) {
-        //      $event->addParticipant($faker->randomElement($allUsers));
-        //  }
+             for ($i = 0; $i < $event->getMaxNumberParticipants(); $i++) {
+           $event->addParticipant($faker->randomElement($allUsers));
+             }
 
            $manager->persist($event);
         }
         $manager->flush();
 
-        // TODO event_user
+
 
     }
 }
