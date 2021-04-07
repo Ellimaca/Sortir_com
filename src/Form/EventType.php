@@ -3,10 +3,12 @@
 namespace App\Form;
 
 use App\Entity\Campus;
+use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Place;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -22,35 +24,40 @@ class EventType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'Nom de la sortie'
             ])
-            ->add('dateTimeStart', DateType::class, [
-                'label' => 'Date et heure de début'
+            ->add('dateTimeStart', DateTimeType::class, ['label' => 'Date et heure de la sortie',
+                'widget' => 'single_text'
             ])
-            ->add('dateTimeEnd', DateType::class, [
-                'label' => 'Date et heure de fin'
-            ])
-            ->add('RegistrationDeadline',DateType::class, [
-                'label' => 'Date limite d'/'inscription'
+
+           // ->add('dateTimeEnd', DateTimeType::class, ['widget' => 'single_text',
+            //    'label' => 'Date et heure de fin'
+            //])
+            ->add('RegistrationDeadline',DateTimeType::class, [  'widget' => 'single_text',
+                'label' => 'Date limite inscription'
             ])
             ->add('maxNumberParticipants', IntegerType::class, [
-                'Nombre de places'
+                'label' => 'Nombre de places'
             ])
             ->add('duration', IntegerType::class, [
-                'Durée'
+                'label' => 'Durée'
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description et infos'
-            ])
-            ->add('place', EntityType::class, [
-                'label' => 'Lieu',
-                'class' => Place::class,
-                'choice_label' => 'name'
             ])
             ->add('campus', EntityType::class, [
                 'label' => "Campus",
                 'class' => Campus::class,
                 'choice_label' => 'name'
             ])
-
+            ->add('city', EntityType::class, [
+                'label' => 'Ville',
+                'class' => City::class,
+                'choice_label' => 'name',  'mapped' => false
+                ])
+            ->add('place', EntityType::class, [
+                'label' => 'Lieu',
+                'class' => Place::class,
+                'choice_label' => 'name'
+            ])
         ;
     }
 
