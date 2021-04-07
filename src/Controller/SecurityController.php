@@ -7,6 +7,7 @@ use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -40,10 +41,11 @@ class SecurityController extends AbstractController
 
 
     /**
-     * @Route("/modifierProfil", name="security_modifierProfil")
+     * @Route("/profil", name="security_profil")
      */
-    public function modifierProfil(EntityManagerInterface $manager,
-                                    UserRepository $userRepository)
+    public function profil(EntityManagerInterface $manager,
+                           UserRepository $userRepository,
+                           Request $request)
     {
 
         //Je récupère les infos de l'utilisateur connecté
@@ -52,7 +54,29 @@ class SecurityController extends AbstractController
         //je crée le form et j'associe mon formulaire et mon profil ensemble
         $form = $this->createForm(UserType::class, $profilUser);
 
-        return $this->render('security/modifierProfil.html.twig', [
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()) {
+            $passwordConfirmation = $form['passwordConfirmation']->getData();
+            $password = $form['password']->getData();
+
+            if($passwordConfirmation == $password) {
+                $manager->persist($profilUser);
+                $manager->flush();
+
+                $this->addFlash('success', 'Profil modifié ! ');
+
+                return $this->redirectToRoute('main');
+
+            } else {
+                $this->addFlash("warning", "Le mot de passe ne correspond pas à la confirmation");
+                return $this->redirectToRoute('security_profil');
+            }
+
+        }
+
+
+        return $this->render('security/profil.html.twig', [
            'modifForm' => $form->createView()
         ]);
 

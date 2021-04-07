@@ -2,11 +2,16 @@
 
 {% block body %}
 
+
     <div class="container">
+        <h2>Mon profil</h2>
         {{ form_start(modifForm) }}
         {{ form_widget(modifForm) }}
-        <button class="btn-success btn mt-2">Modifier</button>
+
+        <button class="btn-success btn mt-2">Enregistrer</button>
         {{ form_end(modifForm) }}
+        <a href="{{ path('main') }}"><button class="btn-success btn mt-2">Annuler</button></a>
+
     </div>
 
 {% endblock %}

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -32,21 +33,44 @@ class User implements UserInterface
 
     /**
      * @var string The hashed password
+     * @Assert\Length(
+     *     min=4,
+     *     max=30,
+     *     minMessage="Le mot de passe doit être d'au moins 4 caractères",
+     *     maxMessage="Le mot de passe ne doit pas excéder 30 caractères"
+     * )
      * @ORM\Column(type="string")
      */
     private $password;
 
     /**
+     * @Assert\NotBlank(message="Veuillez renseigner votre prénom")
+     * @Assert\Length(
+     *     min=2,
+     *     max=50,
+     *     minMessage="Le prénom doit être d'au moins 2 caractères",
+     *     maxMessage="Le prénom ne doit pas excéder 50 caractères"
+     * )
      * @ORM\Column(type="string", length=40)
      */
     private $firstName;
 
     /**
+     * @Assert\NotBlank(message="Veuillez renseigner votre nom")
+     * @Assert\Length(
+     *     min=2,
+     *     max=50,
+     *     minMessage="Le nom doit être d'au moins 2 caractères",
+     *     maxMessage="Le nom ne doit pas excéder 50 caractères"
+     * )
      * @ORM\Column(type="string", length=50)
      */
     private $lastName;
 
     /**
+     * @Assert\NotBlank(message="Veuillez renseigner votre numéro de téléphone")
+     * @Assert\Regex(pattern="^(?:(?:(?:\+|00)33[ ]?(?:\(0\)[ ]?)?)|0){1}[1-9]{1}([ .-]?)(?:\d{2}\1?){3}\d{2}$^",
+     * message="Veuillez entrer un format de téléphone valide")
      * @ORM\Column(type="string", nullable=true)
      */
     private $phoneNumber;
@@ -78,6 +102,13 @@ class User implements UserInterface
     private $organisedEvents;
 
     /**
+     * @Assert\NotBlank(message="Veuillez renseigner votre pseudo")
+     * @Assert\Length(
+     *     min=4,
+     *     max=30,
+     *     minMessage="Le pseudo doit contenir au moins 4 caractères",
+     *     maxMessage="Le pseudo ne peut pas excéder 30 caractères"
+     * )
      * @ORM\Column(type="string", length=20, nullable=true)
      */
     private $pseudo;

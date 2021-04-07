@@ -8,7 +8,15 @@
         <link rel="stylesheet" href="{{ asset('style.css') }}">
         <link rel="icon" href="{{ asset('img/logoEni.png') }}">
 
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
 
+                <div class="text-center p-4 alert-{{ label }}">
+                    <h4>{{ message }}</h4>
+                </div>
+
+            {% endfor %}
+        {% endfor %}
         <title>{% block title %}Bienvenue!{% endblock %}</title>
     </head>
     <body>
@@ -22,9 +30,11 @@
                 <ul class="nav col-12 col-md-auto mb-2 mt-2 justify-content-center mb-md-0">
                     <li><a href="" class="nav-link px-2 link-dark">Villes</a></li>
                     <li><a href="" class="nav-link px-2 link-dark">Campus</a></li>
-                    <li><a href="" class="nav-link px-2 link-dark">Accueil</a></li>
-                    <li><a href="" class="nav-link px-2 link-dark">Mon profil</a></li>
-                    <li><a href="{{ path('app_logout') }}" class="nav-link px-2 link-dark">Déconnexion</a></li>
+                    {% if app.user %}
+                        <li><a href="" class="nav-link px-2 link-dark">Accueil</a></li>
+                        <li><a href="{{ path('security_profil') }}" class="nav-link px-2 link-dark">Mon profil</a></li>
+                        <li><a href="{{ path('app_logout') }}" class="nav-link px-2 link-dark">Se déconnecter</a></li>
+                    {% endif %}
                 </ul>
             </header>
 
