@@ -77,6 +77,11 @@ class User implements UserInterface
      */
     private $organisedEvents;
 
+    /**
+     * @ORM\Column(type="string", length=20, nullable=true)
+     */
+    private $pseudo;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
@@ -286,6 +291,18 @@ class User implements UserInterface
                 $organisedEvent->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPseudo(): ?string
+    {
+        return $this->pseudo;
+    }
+
+    public function setPseudo(string $pseudo): self
+    {
+        $this->pseudo = $pseudo;
 
         return $this;
     }
