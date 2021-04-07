@@ -15,10 +15,10 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager)
     {
-        // On utilise Faker avec des données aléatoires en français
+        // On utilise Faker pour générer des données aléatoires en français
         $faker = \Faker\Factory::create("fr_FR");
 
-        // Le nom des différents états possibles pour une sortie
+        // Génération du nom des différents états possibles pour une sortie pour l'entité Status
         $statusName = ["Créée", "Ouverte", "Clôturée", "Activité en cours", "Passée", "Annulée"];
         foreach ($statusName as $name) {
             $status = new Status();
@@ -43,7 +43,6 @@ class AppFixtures extends Fixture
         }
         $manager->flush();
 
-
         $cityRepository = $manager->getRepository(City::class);
         $allCity = $cityRepository->findAll();
 
@@ -51,7 +50,7 @@ class AppFixtures extends Fixture
         // Génèration de données aléatoires pour l'entité Place
         for ($i = 0; $i < 50; $i++) {
             $place = new Place();
-            $place->setName($faker->sentence);
+            $place->setName($faker->sentence(3, true));
             $place->setStreet($faker->streetAddress);
             $place->setLatitude($faker->latitude);
             $place->setLongitude($faker->longitude);
@@ -75,8 +74,10 @@ class AppFixtures extends Fixture
         $campusRepository = $manager->getRepository(Campus::class);
         $allCampus = $campusRepository->findAll();
 
-        // Génèration de données aléatoires pour l'entité user
-        for ($i = 0; $i < 100; $i++) {
+        //TODO Phone number ne fonctionne pas en integer
+
+        // Génèration de données aléatoires pour l'entité User
+        for ($i = 0; $i < 50; $i++) {
             $user = new User();
             $user->setFirstName($faker->firstName);
             $user->setEmail($faker->email);
@@ -96,22 +97,27 @@ class AppFixtures extends Fixture
         $allUsers = $userRepository->findAll();
 
 
-        // TODO vérification date
+        // TODO vérification date et la durée
 
         // Génèration de données aléatoires pour l'entité Event
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             $event = new Event();
             $event->setName($faker->sentence);
             $event->setDateTimeStart($faker->dateTimeBetween(" - 1 month"));
             $event->setDateTimeEnd($faker->dateTimeBetween($event->getDateTimeStart(), "+ 2 days"));
-            $event->setRegistrationDeadline($faker->dateTimeBetween($event->getDateTimeStart(), "+ 7 days"));
+            $event->setRegistrationDeadline($faker->dateTimeBetween($event->getDateTimeStart(), "+7 days"));
             $event->setDescription($faker->paragraphs($faker->numberBetween(0, 3), true));
             $event->setCampus($faker->randomElement($allCampus));
-            $event->setMaxNumberParticipants($faker->numberBetween(2, 100));
+            $event->setMaxNumberParticipants($faker->numberBetween(2, 6));
             $event->setStatus($faker->randomElement($allStatus));
             $event->setPlace($faker->randomElement($allPlaces));
             $event->setOrganiser($faker->randomElement($allUsers));
-            $manager->persist($event);
+
+        //   for ($i = 0; $i < $event->getMaxNumberParticipants(); $i++) {
+        //      $event->addParticipant($faker->randomElement($allUsers));
+        //  }
+
+           $manager->persist($event);
         }
         $manager->flush();
 
