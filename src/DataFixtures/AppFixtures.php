@@ -76,9 +76,10 @@ class AppFixtures extends Fixture
 
 
         // Génèration de données aléatoires pour l'entité Campus
-        for ($i = 0; $i < 5; $i++) {
+        $campusName = ["Quimper", "Saint-Herblain", "Rennes", "Niort", "Le Mans", "La Roche-Sur-Yon", "Laval" ];
+        foreach ($campusName as $name) {
             $campus = new Campus();
-            $campus->setName($faker->city);
+            $campus->setName($name);
             $manager->persist($campus);
         }
         $manager->flush();
@@ -89,17 +90,15 @@ class AppFixtures extends Fixture
         //TODO Phone number ne fonctionne pas en integer
 
         // Génèration de données aléatoires pour l'entité User
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 80; $i++) {
             $user = new User();
             $user->setFirstName($faker->firstName);
             $user->setEmail($faker->email);
             $user->setLastName($faker->lastName);
             $user->setCampus($faker->randomElement($allCampus));
             $user->setPhoneNumber($faker->phoneNumber);
-
             $password = $this->encoder->encodePassword($user, "test");
             $user->setPassword($password);
-
             $user->setRoles(["ROLE_USER"]);
             $user->setIsActive(true);
             $user->setIsAdmin(false);
@@ -111,13 +110,12 @@ class AppFixtures extends Fixture
         $userRepository = $manager->getRepository(User::class);
         $allUsers = $userRepository->findAll();
 
-
         // TODO vérification date et la durée
 
         // Génèration de données aléatoires pour l'entité Event
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 50; $i++) {
             $event = new Event();
-            $event->setName($faker->sentence);
+            $event->setName($faker->sentence(4));
 
             $event->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
 
@@ -139,15 +137,22 @@ class AppFixtures extends Fixture
             $event->setPlace($faker->randomElement($allPlaces));
             $event->setOrganiser($faker->randomElement($allUsers));
 
-             for ($i = 0; $i < $event->getMaxNumberParticipants(); $i++) {
-           $event->addParticipant($faker->randomElement($allUsers));
-             }
 
-           $manager->persist($event);
+
+            $manager->persist($event);
+            $manager->flush();
         }
+
+        $eventRepository = $manager->getRepository(Event::class);
+        $allEvents = $eventRepository->findAll();
+
+        foreach ($allEvents as $event) {
+            for ($i = 0; $i < $event->getMaxNumberParticipants(); $i++) {
+                $event->addParticipant($faker->randomElement($allUsers));
+             }
+        }
+
+        $manager->persist($event);
         $manager->flush();
-
-
-
     }
 }
