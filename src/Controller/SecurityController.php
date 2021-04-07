@@ -2,6 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Form\UserType;
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,4 +37,26 @@ class SecurityController extends AbstractController
     {
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
+
+
+    /**
+     * @Route("/modifierProfil", name="security_modifierProfil")
+     */
+    public function modifierProfil(EntityManagerInterface $manager,
+                                    UserRepository $userRepository)
+    {
+
+        //Je récupère les infos de l'utilisateur connecté
+        $profilUser = $this->getUser();
+
+        //je crée le form et j'associe mon formulaire et mon profil ensemble
+        $form = $this->createForm(UserType::class, $profilUser);
+
+        return $this->render('security/modifierProfil.html.twig', [
+           'modifForm' => $form->createView()
+        ]);
+
+
+    }
+
 }
