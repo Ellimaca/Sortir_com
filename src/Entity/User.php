@@ -6,11 +6,13 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @UniqueEntity("pseudo", message="Le pseudo est déjà utilisé")
  */
 class User implements UserInterface
 {
@@ -39,6 +41,8 @@ class User implements UserInterface
      *     minMessage="Le mot de passe doit être d'au moins 4 caractères",
      *     maxMessage="Le mot de passe ne doit pas excéder 30 caractères"
      * )
+     * @Assert\Regex(pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$^",
+     *     message="Le mot de passe doit contenir au moins 8 caractères dont au moins une lettre et un chiffre ")
      * @ORM\Column(type="string")
      */
     private $password;
@@ -51,6 +55,8 @@ class User implements UserInterface
      *     minMessage="Le prénom doit être d'au moins 2 caractères",
      *     maxMessage="Le prénom ne doit pas excéder 50 caractères"
      * )
+     * @Assert\Regex(pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$^",
+     * message="Le format du prénom n'est pas valide")
      * @ORM\Column(type="string", length=40)
      */
     private $firstName;
@@ -63,6 +69,8 @@ class User implements UserInterface
      *     minMessage="Le nom doit être d'au moins 2 caractères",
      *     maxMessage="Le nom ne doit pas excéder 50 caractères"
      * )
+     * @Assert\Regex(pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$^",
+     * message="Le format du nom n'est pas valide")
      * @ORM\Column(type="string", length=50)
      */
     private $lastName;
@@ -87,7 +95,7 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToOne(targetEntity=Campus::class)
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     private $campus;
 
@@ -109,6 +117,8 @@ class User implements UserInterface
      *     minMessage="Le pseudo doit contenir au moins 4 caractères",
      *     maxMessage="Le pseudo ne peut pas excéder 30 caractères"
      * )
+     * @Assert\Regex(pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$^",
+     * message="Le format du pseudo n'est pas valide")
      * @ORM\Column(type="string", length=20, nullable=true)
      */
     private $pseudo;
