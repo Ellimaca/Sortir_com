@@ -6,6 +6,7 @@ use App\Repository\EventRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=EventRepository::class)
@@ -20,11 +21,21 @@ class Event
     private $id;
 
     /**
+     * @Assert\NotBlank(message="Veuillez donner un nom à votre sortie")
+     * @Assert\Length(
+     *     min=2,
+     *     max=50,
+     *     minMessage="Le nom de l'évènement doit être d'au moins 2 caractères",
+     *     maxMessage="Le nom de l'évènement pas excéder 100 caractères")
+     * @Assert\Regex(pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$^",
+     * message="Le format du nom de votre sortie n'est pas valide")
      * @ORM\Column(type="string", length=100)
      */
     private $name;
 
     /**
+     * @Assert\DateTime(message="Veuillez renseigner la date et l'heure de votre sortie")
+     * @Assert\NotBlank(message="Veuillez renseigner la date et l'heure de votre sortie")
      * @ORM\Column(type="datetime")
      */
     private $dateTimeStart;
@@ -35,16 +46,19 @@ class Event
     private $dateTimeEnd;
 
     /**
+     * @Assert\NotBlank(message="Veuillez renseigner une date limite d'inscription")
      * @ORM\Column(type="datetime")
      */
     private $registrationDeadline;
 
     /**
+     * @Assert\NotBlank(message="Veuillez renseigner un nombre maximum de participants")
      * @ORM\Column(type="integer")
      */
     private $maxNumberParticipants;
 
     /**
+     * @Assert\NotBlank(message="Veuillez renseigner une description à votre sortie")
      * @ORM\Column(type="text", nullable=true)
      */
     private $description;
@@ -79,6 +93,7 @@ class Event
     private $organiser;
 
     /**
+     * @Assert\NotBlank(message="Veuillez renseigner une durée pour votre sortie")
      * @ORM\Column(type="integer")
      */
     private $duration;
