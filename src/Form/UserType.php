@@ -6,6 +6,7 @@ use App\Entity\Campus;
 use App\Entity\User;
 use Doctrine\DBAL\Types\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\ChoiceList\ChoiceList;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -41,7 +42,9 @@ class UserType extends AbstractType
             ->add('campus', EntityType::class, [
                 'label' => "Campus",
                 'class' => Campus::class,
-                'choice_label' => 'name'
+                'choice_label' => 'name',
+                'choice_value'  => ChoiceList::value($this, 'name')
+
             ])
 
 
