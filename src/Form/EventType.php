@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Campus;
 use App\Entity\City;
 use App\Entity\Event;
+use App\Entity\Place;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -47,10 +48,11 @@ class EventType extends AbstractType
             ->add('description', TextareaType::class, [
                 'label' => 'Description et infos'
             ])
+
+            // TODO mettre le campus de l'utilisateur figé
             ->add('campus', EntityType::class, [
                 'label' => "Campus",
                 'class' => Campus::class,
-                'disabled' => true,
                 'choice_label' => 'name',
                 'choice_value' => ChoiceList::value($this, 'name'),
             ])
@@ -61,6 +63,11 @@ class EventType extends AbstractType
                 'choice_label' => 'name',  'mapped' => false
             ])
 
+            ->add('place', EntityType::class, [
+                'label' => 'Lieu',
+                'class' => Place::class,
+                'choice_label' => 'name', 'mapped' => false
+            ])
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer'])
 
 

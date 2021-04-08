@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Form\EventType;
 use App\Form\PlaceType;
 use App\Repository\EventRepository;
+use App\Repository\StatusRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use http\Env\Request;
@@ -50,7 +51,7 @@ class EventController extends AbstractController
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      */
-    public function create (\Symfony\Component\HttpFoundation\Request $request, EntityManagerInterface $entityManager) {
+    public function create (\Symfony\Component\HttpFoundation\Request $request, EntityManagerInterface $entityManager, StatusRepository $statusRepository) {
 
         $event = new Event();
 
@@ -62,31 +63,39 @@ class EventController extends AbstractController
         $eventForm = $this->createForm(EventType::class, $event);
 
         $eventForm->handleRequest($request);
-
+        $placeCity = $eventForm['city']->getData();
         if($eventForm->isSubmitted() && $eventForm->isValid()) {
 
+            $eventPlace =$eventForm->get('place')->getData();
+            $event->setPlace($eventPlace);
+            $status = $statusRepository->findOneBy(["id" => 2]);
+            $event->setStatus($status);
             $entityManager->persist($event);
             $entityManager->flush();
 
+            $this->addFlash('success', 'Votre évènement a bien été ajouté !');
             return $this->redirectToRoute('main');
         }
 
+
         $place = new Place();
+
         $placeForm = $this->createForm(PlaceType::class, $place);
+
         $placeForm->handleRequest($request);
 
         if($placeForm->isSubmitted() && $placeForm->isValid()) {
-
-            // TODO instancier la ville du formulaire à ce lieu
-            $placeCity = $eventForm->get('city')->getData();
+            $placeCity = $placeForm->get('city')->getData();
             $place->setCity($placeCity);
-            $event->setPlace($place);
 
             $entityManager->persist($place);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Votre évènement a bien été ajouté !');
+            $this->addFlash('success', 'Votre lieu a bien été ajouté !');
+
         }
+
+        $event->setPlace($place);
 
         return $this->render("event/create.html.twig", [
             'eventForm' => $eventForm->createView(), 'placeForm' => $placeForm->createView()
