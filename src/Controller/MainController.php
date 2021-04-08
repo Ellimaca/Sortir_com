@@ -23,23 +23,17 @@ class MainController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
+        $searchEventCriterias = new SearchEventCriterias();
         $searchEventCriterias->setUser($user);
-        $searchEventCriterias = new SearchEventCriterias($user);
 
         $searchForm = $this->createForm(SearchEventsType::class,$searchEventCriterias);
 
-        //Recherche par defaut
-        if(!$searchForm->isSubmitted()){
-            $searchEventCriterias->setCampus($user->getCampus());
-        }
-
-        //var_dump($user);
-
         $searchForm->handleRequest($request);
 
+        var_dump('Test');
         $eventsList = $eventRepository->findBySearchFormCriteria($searchEventCriterias);
 
-        return $this->render('main/index.html.twig', [
+      return $this->render('main/index.html.twig', [
             'searchForm' => $searchForm->createView(),
             'eventsList' => $eventsList
         ]);

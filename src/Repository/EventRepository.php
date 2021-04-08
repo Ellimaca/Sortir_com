@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Event;
-use App\Entity\Status;
 use App\Utils\SearchEventCriterias;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Types\Type;
@@ -28,6 +27,9 @@ class EventRepository extends ServiceEntityRepository
 
     public function findBySearchFormCriteria(SearchEventCriterias $criterias){
         $queryBuilder = $this->createQueryBuilder('events');
+
+        $queryBuilder->join('events.participants','u');
+        //$queryBuilder->andWhere('events.id = u.');
 
         //test sur le critère du campus
         if(!is_null($criterias->getCampus())){
@@ -70,6 +72,7 @@ class EventRepository extends ServiceEntityRepository
                 ->setParameter('status',$status,Type::INTEGER);
         }
 
+        /*
         //test sur le critère d'evenement où l'utilisateur est inscrit
         if($criterias->getIsAttendedByMe() == true){
             $queryBuilder
@@ -83,6 +86,9 @@ class EventRepository extends ServiceEntityRepository
                 ->andWhere(':user ! in ( events.participants )')
                 ->setParameter('user',$criterias->getUser());
         }
+        $query= $queryBuilder->getQuery();
+        */
+
         $query= $queryBuilder->getQuery();
         //dd($query);
         return $query->getResult();

@@ -10,7 +10,7 @@ use App\Entity\User;
 
 class SearchEventCriterias
 {
-    private ?Campus $campus;
+    private $campus;
     private $searchBar;
     private $dateStart;
     private $dateEnd;
@@ -18,7 +18,7 @@ class SearchEventCriterias
     private ?bool $isAttendedByMe= false;
     private ?bool $isNotAttendedByMe= false;
     private ?bool $isFinished= false;
-    private ?User $user;
+    private $user;
 
     public function __construct()
     {
