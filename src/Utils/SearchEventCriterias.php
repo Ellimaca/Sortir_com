@@ -11,7 +11,7 @@ use App\Entity\User;
 class SearchEventCriterias
 {
     private ?Campus $campus;
-    private string $searchBar;
+    private $searchBar;
     private $dateStart;
     private $dateEnd;
     private ?bool $isOrganisedByMe = false;
@@ -22,7 +22,6 @@ class SearchEventCriterias
 
     public function __construct()
     {
-        $dateStart = null;
     }
 
     /**

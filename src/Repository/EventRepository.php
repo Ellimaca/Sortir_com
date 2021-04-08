@@ -23,20 +23,25 @@ class EventRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry,StatusRepository $statusRepository)
     {
         parent::__construct($registry, Event::class);
-
         $this->status_published = $statusRepository->findOneBy(["name"=>"Créée"]);
     }
 
     public function findBySearchFormCriteria(SearchEventCriterias $criterias){
         $queryBuilder = $this->createQueryBuilder('events');
 
-
         //test sur le critère du campus
         if(!is_null($criterias->getCampus())){
-            $campus = $criterias->getCampus()->getId();
+            $campusId = $criterias->getCampus()->getId();
             $queryBuilder
                 ->andWhere('events.campus = :campusEvent')
-                ->setParameter('campusEvent',$campus,Type::INTEGER);
+                ->setParameter('campusEvent',$campusId);
+        }
+
+        //test sur le critère de la searchBar
+        if(!is_null($criterias->getSearchBar())){
+            $queryBuilder
+                ->andWhere('events.name LIKE :searchText')
+                ->setParameter('searchText','%'.$criterias->getSearchBar().'%');
         }
 
         //test sur le critère de date de début
@@ -49,7 +54,7 @@ class EventRepository extends ServiceEntityRepository
         //test sur le critère de date de fin
         if(!is_null($criterias->getDateEnd())){
             $queryBuilder
-                ->andWhere('events.dateTimeStart <= :dateEnd')
+                ->andWhere('events.RegistrationDeadline <= :dateEnd')
                 ->setParameter('dateEnd',$criterias->getDateEnd());
         }
 
@@ -57,7 +62,7 @@ class EventRepository extends ServiceEntityRepository
         if($criterias->getIsOrganisedByMe() == true){
             $queryBuilder
                 ->andWhere('events.organiser = :user')
-                ->setParameter('user',$criterias->getUser());
+                ->setParameter('user',$criterias->getUser()->getId());
         }else{
             $status =$this->status_published->getId();
             $queryBuilder
@@ -79,6 +84,7 @@ class EventRepository extends ServiceEntityRepository
                 ->setParameter('user',$criterias->getUser());
         }
         $query= $queryBuilder->getQuery();
+        //dd($query);
         return $query->getResult();
     }
 
@@ -86,8 +92,6 @@ class EventRepository extends ServiceEntityRepository
     public function findUsersForEvent (Event $event):array{
 
         $qb = $this->createQueryBuilder('e');
-
-
 
     }/*
     // /**

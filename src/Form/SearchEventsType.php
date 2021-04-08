@@ -18,27 +18,35 @@ class SearchEventsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('campus',EntityType::class,['class'=>Campus::class,'choice_label'=>'name','required'=>false])
-            ->add('searchBar',TextType::class,['required'=>false])
-            ->add('dateStart',DateType::class,['required'=>false])
-            ->add('dateEnd',DateTimeType::class,['required'=>false])
-            ->add('isOrganisedByMe',CheckboxType::class,[
-                'label'=>"Sorties dont je suis l'organisateur/trice",
-                'required'=>false
+            ->add('campus', EntityType::class, [
+                'class' => Campus::class,
+                'choice_label' => 'name'
             ])
-            ->add('isAttendedByMe',CheckboxType::class,[
-                'label'=>"Sorties auxquelles je suis inscrit/e",
-                'required'=>false
+            ->add('searchBar', TextType::class, [
+                'required' => false
             ])
-            ->add('isNotAttendedByMe',CheckboxType::class,[
-                'label'=>"Sorties auxquelles je ne suis pas inscrit/e",
-                'required'=>false
+            ->add('dateStart', DateType::class, [
+                'required' => false
             ])
-            ->add('isFinished',CheckboxType::class,[
-                'label'=>"Sorties passées",
-                'required'=>false
+            ->add('dateEnd', DateTimeType::class, [
+                'required' => false
             ])
-        ;
+            ->add('isOrganisedByMe', CheckboxType::class, [
+                'label' => "Sorties dont je suis l'organisateur/trice",
+                'required' => false
+            ])
+            ->add('isAttendedByMe', CheckboxType::class, [
+                'label' => "Sorties auxquelles je suis inscrit/e",
+                'required' => false
+            ])
+            ->add('isNotAttendedByMe', CheckboxType::class, [
+                'label' => "Sorties auxquelles je ne suis pas inscrit/e",
+                'required' => false
+            ])
+            ->add('isFinished', CheckboxType::class, [
+                'label' => "Sorties passées",
+                'required' => false
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
