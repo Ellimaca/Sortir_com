@@ -68,59 +68,6 @@
 
             </div>
         {{ form_end(searchForm) }}
-        {#  <form>
-            <div class="row align-items-start">
-                <article class="col">
-                    <div>
-                        <label for="campusList">Campus</label>
-
-                        <select id="campusList" name="campusList" class="form-select"
-                                aria-label="Default select example">
-                            <option selected>Sélection du campus</option>
-                        {#  {% for campus in campusList %}
-                                <option value={{ campus }}>{{ campus.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div>
-                        <label for="searchBar">Le nom de la sortie contient : </label>
-                        <input id="searchBar" name="searchBar" type="search">
-                    </div>
-                    <div>
-                        <div>
-                            <label for="dateStart">Entre le </label>
-                            <input id="dateStart" name="dateStart" type="date">
-                        </div>
-                        <div>
-                            <label for="dateEnd"> et </label>
-                            <input id="dateEnd" name="dateEnd" type="date">
-                        </div>
-                    </div>
-
-                </article>
-                <article class="col">
-                    <div>
-                        <label for="isOrganisedByMe">Sorties dont je suis l'organisateur/trice</label>
-                        <input id="isOrganisedByMe" name="isOrganisedByMe" type="checkbox">
-                    </div>
-                    <div>
-                        <label for="$isAttendedByMe">Sorties auxquelles je suis inscrit/e </label>
-                        <input id="$isAttendedByMe" name="$isAttendedByMe" type="checkbox">
-                    </div>
-                    <div>
-                        <label for="$isNotAttendedByMe">Sorties auxquelles je ne suis pas inscrit/e</label>
-                        <input id="$isNotAttendedByMe" name="$isNotAttendedByMe" type="checkbox">
-                    </div>
-                    <div>
-                        <label for="isFinished">Sorties passées</label>
-                        <input id="isFinished" name="isFinished" type="checkbox">
-                    </div>
-                </article>
-                <article class="col">
-                    <input type="submit" value="Rechercher">
-                </article>
-            </div>
-        </form>#}
     </section>
     <section id="EventsList" class="container">
         <div id="EventsListHeaders" name="EventsListHeaders" class="row align-items-start  m-0 p-0 border">
