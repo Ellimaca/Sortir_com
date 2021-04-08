@@ -37,7 +37,7 @@ class Event
     /**
      * @ORM\Column(type="datetime")
      */
-    private $RegistrationDeadline;
+    private $registrationDeadline;
 
     /**
      * @ORM\Column(type="integer")

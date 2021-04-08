@@ -3,8 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Event;
+use App\Entity\Place;
+use App\Entity\User;
 use App\Form\EventType;
+use App\Form\PlaceType;
 use App\Repository\EventRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use http\Env\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -50,7 +54,9 @@ class EventController extends AbstractController
 
         $event = new Event();
 
-        $user =$this->getUser();
+        /** @var User $user */
+        $user = $this->getUser();
+
         $event->setOrganiser($user);
 
         $eventForm = $this->createForm(EventType::class, $event);
@@ -62,13 +68,28 @@ class EventController extends AbstractController
             $entityManager->persist($event);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Votre évènement a bien été ajouté');
-
             return $this->redirectToRoute('main');
         }
 
+        $place = new Place();
+        $placeForm = $this->createForm(PlaceType::class, $place);
+        $placeForm->handleRequest($request);
+
+        if($placeForm->isSubmitted() && $placeForm->isValid()) {
+
+            // TODO instancier la ville du formulaire à ce lieu
+            $placeCity = $eventForm->get('city')->getData();
+            $place->setCity($placeCity);
+            $event->setPlace($place);
+
+            $entityManager->persist($place);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Votre évènement a bien été ajouté !');
+        }
+
         return $this->render("event/create.html.twig", [
-            'eventForm' => $eventForm->createView()
+            'eventForm' => $eventForm->createView(), 'placeForm' => $placeForm->createView()
         ]);
     }
 }

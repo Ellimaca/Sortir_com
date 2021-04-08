@@ -1,10 +1,32 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
+{% block title %}Créer un évènement
 
 {% endblock %}
 
 {% block body %}
-    {{ form(eventForm) }}
+
+<p>Créer une sortie</p>
+
+    {{ form_start(eventForm) }}
+    {{ form_row((eventForm.name)) }}
+    {{ form_row((eventForm.dateTimeStart)) }}
+    {{ form_row((eventForm.RegistrationDeadline)) }}
+    {{ form_row((eventForm.maxNumberParticipants)) }}
+    {{ form_row((eventForm.duration)) }}
+    {{ form_row((eventForm.description)) }}
+    {{ form_row((eventForm.campus)) }}
+    {{ form_row((eventForm.city)) }}
+
+
+    {{ form_start(placeForm) }}
+    {{ form_row((placeForm.name)) }}
+    {{ form_row((placeForm.street)) }}
+    {{ form_row((placeForm.latitude)) }}
+    {{ form_row((placeForm.longitude)) }}
+    {{ form_end(eventForm) }}
+
+
+
 {% endblock %}
 

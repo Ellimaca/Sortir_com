@@ -5,12 +5,14 @@ namespace App\Form;
 use App\Entity\Campus;
 use App\Entity\City;
 use App\Entity\Event;
-use App\Entity\Place;
+use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\ChoiceList\ChoiceList;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
+
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,7 +22,9 @@ class EventType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+
         $builder
+
             ->add('name', TextType::class, [
                 'label' => 'Nom de la sortie'
             ])
@@ -31,7 +35,7 @@ class EventType extends AbstractType
            // ->add('dateTimeEnd', DateTimeType::class, ['widget' => 'single_text',
             //    'label' => 'Date et heure de fin'
             //])
-            ->add('RegistrationDeadline',DateTimeType::class, [  'widget' => 'single_text',
+            ->add('registrationDeadline',DateTimeType::class, [  'widget' => 'single_text',
                 'label' => 'Date limite inscription'
             ])
             ->add('maxNumberParticipants', IntegerType::class, [
@@ -46,8 +50,25 @@ class EventType extends AbstractType
             ->add('campus', EntityType::class, [
                 'label' => "Campus",
                 'class' => Campus::class,
-                'choice_label' => 'name'
+                'disabled' => true,
+                'choice_label' => 'name',
+                'choice_value' => ChoiceList::value($this, 'name'),
             ])
+
+            ->add('city', EntityType::class, [
+                'label' => 'Ville',
+                'class' => City::class,
+                'choice_label' => 'name',  'mapped' => false
+            ])
+
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer'])
+
+
+
+
+
+            /**  Pourra nous servir à la creation de lieu par l'utilisateur
+
             ->add('city', EntityType::class, [
                 'label' => 'Ville',
                 'class' => City::class,
@@ -58,6 +79,7 @@ class EventType extends AbstractType
                 'class' => Place::class,
                 'choice_label' => 'name'
             ])
+             */
         ;
     }
 
@@ -65,6 +87,9 @@ class EventType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Event::class,
+            'attr' => [
+                'novalidate' => 'novalidate'
+                ]
         ]);
     }
 }
