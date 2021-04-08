@@ -132,12 +132,12 @@ class Event
 
     public function getRegistrationDeadline(): ?\DateTimeInterface
     {
-        return $this->RegistrationDeadline;
+        return $this->registrationDeadline;
     }
 
     public function setRegistrationDeadline(\DateTimeInterface $RegistrationDeadline): self
     {
-        $this->RegistrationDeadline = $RegistrationDeadline;
+        $this->registrationDeadline = $RegistrationDeadline;
 
         return $this;
     }
