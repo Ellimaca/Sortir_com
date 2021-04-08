@@ -12,6 +12,12 @@
     color: #144a7f;
 }
 
+input {
+    margin-bottom: 12px;
+}
+label {
+    font-weight: bold;
+}
 #btnConnexion {
     background-color: white;
     color: #144a7f;
@@ -22,10 +28,9 @@
     color: #FFFFFF;
 }
 footer{
-    position:absolute;
-    bottom:0;
     width:100%;
     padding-top:50px;
+    margin-top: 25px;
     height:50px;
     background: #144a7f;
     color: #f2f6fe;

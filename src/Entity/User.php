@@ -35,6 +35,7 @@ class User implements UserInterface
 
     /**
      * @var string The hashed password
+     * @Assert\NotBlank(message="Veuillez renseigner votre mot de passe")
      * @Assert\Length(
      *     min=4,
      *     max=30,
@@ -122,6 +123,11 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=20, nullable=true)
      */
     private $pseudo;
+
+    /**
+     * @ORM\OneToOne(targetEntity=ProfilePicture::class, inversedBy="user", cascade={"persist", "remove"})
+     */
+    private $profilePicture;
 
     public function __construct()
     {
@@ -344,6 +350,18 @@ class User implements UserInterface
     public function setPseudo(string $pseudo): self
     {
         $this->pseudo = $pseudo;
+
+        return $this;
+    }
+
+    public function getProfilePicture(): ?ProfilePicture
+    {
+        return $this->profilePicture;
+    }
+
+    public function setProfilePicture(?ProfilePicture $profilePicture): self
+    {
+        $this->profilePicture = $profilePicture;
 
         return $this;
     }

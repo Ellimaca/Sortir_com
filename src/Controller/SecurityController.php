@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\ProfilePicture;
 use App\Entity\User;
+use App\Form\ProfilePictureType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\String\ByteString;
 
 class SecurityController extends AbstractController
 {
@@ -47,7 +50,7 @@ class SecurityController extends AbstractController
                            UserRepository $userRepository,
                            Request $request)
     {
-
+        /** @var User $user */
         //Je récupère les infos de l'utilisateur connecté
         $profilUser = $this->getUser();
 
@@ -56,31 +59,70 @@ class SecurityController extends AbstractController
 
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()) {
+        //je vérifie que si le formulaire est soumit il est bien valide
+        if ($form->isSubmitted() && $form->isValid()) {
             $passwordConfirmation = $form['passwordConfirmation']->getData();
             $password = $form['password']->getData();
 
-            if($passwordConfirmation == $password) {
+            if ($passwordConfirmation == $password) {
                 $manager->persist($profilUser);
                 $manager->flush();
 
                 $this->addFlash('success', 'Profil modifié ! ');
 
-                return $this->redirectToRoute('main');
+                //Si les mots de passe correspondent, je redirige vers son profil
+                return $this->redirectToRoute('security_profil');
 
+                //Sinon j'ajoute un message un message d'erreur
             } else {
                 $this->addFlash("warning", "Le mot de passe ne correspond pas à la confirmation");
+                //et je redirige vers mon profil avec le message d'erreur
                 return $this->redirectToRoute('security_profil');
             }
 
         }
 
+        //Je crée ensuite mon formulaire photo
+        $profilePicture = new ProfilePicture();
 
+        $pictureForm = $this->createForm(ProfilePictureType::class, $profilePicture);
+
+        $pictureForm->handleRequest($request);
+
+        if ($pictureForm->isSubmitted() && $pictureForm->isValid()) {
+            /** UploadedFile $telechargementPhoto */
+            $downloadPicture = $pictureForm->get('file')->getData();
+            $newPictureName = ByteString::fromRandom(30) . '.' . $downloadPicture->guessExtension();
+
+            try {
+                $downloadPicture->move(__DIR__ . '/../../public/profile/img', $newPictureName);
+            } catch (\Exception $e) {
+                dd($e->getMessage());
+            }
+
+            //Je récupère le user connecté
+            $user = $this->getUser();
+
+            //J'ajoute à mon user la photo de profil
+            $profilePicture->setUser($user);
+            $profilePicture->setFileName($newPictureName);
+
+            $manager->persist($profilePicture);
+            $manager->flush();
+
+            $this->addFlash('success', 'Photo de profil bien ajouté !');
+        }
+
+        //et je renvoie vers son profil
         return $this->render('security/profil.html.twig', [
-           'modifForm' => $form->createView()
+            'modifForm' => $form->createView(),
+            'pictureForm' => $pictureForm->createView()
         ]);
-
-
     }
 
+
 }
+
+
+
+

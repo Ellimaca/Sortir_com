@@ -71,7 +71,7 @@ class AppAuthentificatorAuthenticator extends AbstractFormLoginAuthenticator imp
 
         if (!$user) {
             // fail authentication with a custom error
-            throw new CustomUserMessageAuthenticationException('Email could not be found.');
+            throw new CustomUserMessageAuthenticationException('Impossible de trouver votre email.');
         }
 
         return $user;

@@ -4,14 +4,35 @@
 
 
     <div class="container">
-        <h2>Mon profil</h2>
-        {{ form_start(modifForm) }}
-        {{ form_widget(modifForm) }}
+        <h2 class="text-center mb-5">Mon profil</h2>
+        <div class="row">
+            <div class="col">
+                {% if app.user.profilePicture %}
+                    <img src="./profile/img/{{ app.user.profilePicture.fileName }}">
+                {% endif %}
+            </div>
+        <div class="col">
+                {{ form_start(modifForm) }}
+                {{ form_widget(modifForm) }}
+                <div class="row">
+                    <div class="align-items-center">
+                    <button class="btn-success btn mt-2">Enregistrer</button>
+                {{ form_end(modifForm) }}
+                    <a href="{{ path('main') }}">
+                        <button class="btn-success btn mt-2">Annuler</button>
+                    </a>
+                    </div>
+            <div class="col">
+                    {{ form_start(pictureForm) }}
+                    {{ form_widget(pictureForm) }}
+                        <button class="btn-success btn mt-2">Télécharger vers le serveur</button>
+                    {{ form_end(pictureForm) }}
+            </div>
 
-        <button class="btn-success btn mt-2">Enregistrer</button>
-        {{ form_end(modifForm) }}
-        <a href="{{ path('main') }}"><button class="btn-success btn mt-2">Annuler</button></a>
 
+
+
+        </div>
     </div>
 
 {% endblock %}
