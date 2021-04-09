@@ -28,6 +28,7 @@
                         <input type="search"
                                id="{{ field_name(searchForm.searchBar) }}"
                                name="{{ field_name(searchForm.searchBar) }}"
+                               value="{{ field_value(searchForm.searchBar) }}"
                         >
                     </div>
                     <div class = "group">
@@ -36,6 +37,7 @@
                             <input type="date"
                                    id="{{ field_name(searchForm.dateStart) }}"
                                    name="{{ field_name(searchForm.dateStart) }}"
+                                   value="{{ field_value(searchForm.dateStart) }}"
                             >
                         </span>
                         <span class = "group">
@@ -43,6 +45,7 @@
                             <input type="date"
                                    id="{{ field_name(searchForm.dateEnd) }}"
                                    name="{{ field_name(searchForm.dateEnd) }}"
+                                   value="{{ field_value(searchForm.dateEnd) }}"
                             >
                         </span>
                     </div>
@@ -106,10 +109,10 @@
                             <p>{{ event.name }}</p>
                         </article>
                         <article class="col text-center text-wrap m-0 p-0 border-start">
-                            <p>{{ event.dateTimeStart | date("m/d/Y h:i") }}</p>
+                            <p>{{ event.dateTimeStart | date("d/m/Y h:i") }}</p>
                         </article>
                         <article class="col text-center text-wrap m-0 p-0 border-start">
-                            <p>{{ event.dateTimeEnd | date("m/d/Y") }}</p>
+                            <p>{{ event.dateTimeEnd | date("d/m/Y") }}</p>
                         </article>
                         <article class="col text-center text-wrap m-0 p-0 border-start">
                             <p>inscrits/places</p>

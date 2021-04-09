@@ -29,6 +29,7 @@ class EventRepository extends ServiceEntityRepository
         $queryBuilder = $this->createQueryBuilder('events');
 
         $queryBuilder->join('events.participants','u');
+        $queryBuilder->orderBy('events.dateTimeStart','DESC');
         //$queryBuilder->andWhere('events.id = u.');
 
         //test sur le critère du campus
@@ -72,22 +73,26 @@ class EventRepository extends ServiceEntityRepository
                 ->setParameter('status',$status,Type::INTEGER);
         }
 
-        /*
+
         //test sur le critère d'evenement où l'utilisateur est inscrit
         if($criterias->getIsAttendedByMe() == true){
             $queryBuilder
-                ->andWhere(':user in ( events.participants )')
-                ->setParameter('user',$criterias->getUser());
+                ->andWhere('u.id = :user')
+                ->setParameter('user',$criterias->getUser()->getId());
         }
 
         //test sur le critère d'evenement où l'utilisateur n'est pas inscrit
         if($criterias->getIsNotAttendedByMe() == true){
             $queryBuilder
-                ->andWhere(':user ! in ( events.participants )')
+                ->andWhere('u.id != :user')
                 ->setParameter('user',$criterias->getUser());
         }
-        $query= $queryBuilder->getQuery();
-        */
+
+        //test sur le critère d'evenement où l'utilisateur n'est pas inscrit
+        if($criterias->getIsFinished() == true){
+            $queryBuilder
+                ->andWhere('events.dateTimeEnd <= CURRENT_TIME()');
+        }
 
         $query= $queryBuilder->getQuery();
         //dd($query);
