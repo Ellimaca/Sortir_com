@@ -101,4 +101,66 @@ class EventController extends AbstractController
             'eventForm' => $eventForm->createView(), 'placeForm' => $placeForm->createView()
         ]);
     }
+
+    /**
+     * @Route("/evenement{id}/inscription", name="event_registration")
+     */
+    public function registration($id,
+                                 EventRepository $eventRepository,
+                                 EntityManagerInterface $manager): Response
+    {
+        //Je récupère mon utilisateur connecté
+        /** @var User $user */
+        $user = $this->getUser();
+
+        //Je récupère l'évenement choisi par mon utilisateur
+        $eventChoosen = $eventRepository->find($id);
+
+        //Vérifier que le statut de l'event soit "Ouverte"
+        if($eventChoosen->getStatus() != 'Ouverte') {
+
+            $this->addFlash('warning', "Cette sortie n'est plus ouverte à l'inscription");
+            $this->redirectToRoute('main');
+        }
+
+        //Vérifier que la RegistrationDeadLine ne soit pas dépassée
+        if($eventChoosen->getRegistrationDeadline() <= new \DateTime('now')) {
+            $this->addFlash('warning', "L'inscription à cette sortie est terminée");
+            $this->redirectToRoute('main');
+        }
+
+        //Vérifier si il reste des places libres
+        if($eventChoosen->getParticipants() == $eventChoosen->getMaxNumberParticipants()) {
+            $this->addFlash('warning', "Le nombre maximum de participants a été atteint !");
+            $this->redirectToRoute('main');
+        }
+
+        //Si toutes les conditions sont remplies pour que l'inscription puisse être faite, on inscrit notre user à la sortie
+
+        $user->addEvent($eventChoosen);
+
+        $manager->persist($user);
+        $manager->flush();
+
+        $this->addFlash('success', "Vous êtes bien inscrit à la sortie!");
+        $this->redirectToRoute('main');
+
+        return $this->render("event/view.html.twig", [
+        ]);
+    }
+
+    /**
+     * @Route("/evenement{id}/désistement", name="event_abandonned")
+     */
+    public function abandon ($id, EventRepository $eventRepository,
+                          EntityManagerInterface $manager): Response
+    {
+
+
+
+        return $this->render("", [
+        ]);
+    }
+
+
 }
