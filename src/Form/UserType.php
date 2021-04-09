@@ -11,6 +11,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -33,13 +34,15 @@ class UserType extends AbstractType
                 'label' => 'Téléphone'
             ])
             ->add('email', EmailType::class)
-            ->add('password', PasswordType::class, [
-                'label' => 'Mot de passe',
+
+            ->add('password', RepeatedType::class, [
+                'type' => PasswordType::class,
+                'first_options' => ['label' => 'Mot de passe'],
+                'second_options' => ['label' => 'Confirmation'],
+                'required' => 'false',
+                'mapped' => 'false'
             ])
-            ->add('passwordConfirmation', PasswordType::class, [
-                'label' => 'Confirmation',
-                'mapped' => false
-            ])
+
             ->add('campus', EntityType::class, [
                 'label' => "Campus",
                 'class' => Campus::class,

@@ -16,7 +16,7 @@
                 <p>Date limite d'inscription : {{ foundEvent.registrationDeadline|date('d-m-Y') }}</p>
                 <p>Nombres de places : {{ foundEvent.maxNumberParticipants }} </p>
                 <p>Durée : {{ foundEvent.duration }} minutes </p>
-                <a href="{{ path('event_registration', {id:app.user.id}) }}">
+                <a href="{{ path('event_registration', {id:foundEvent.id}) }}">
                     <button class="btn-success btn mt-2">S'inscrire</button>
                 </a>
             </div>

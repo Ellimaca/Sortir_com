@@ -7,12 +7,16 @@ use App\Entity\User;
 use App\Form\ProfilePictureType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
+use App\Security\AppAuthentificatorAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Http\Authenticator\Passport\UserPassportInterface;
 use Symfony\Component\String\ByteString;
 
 class SecurityController extends AbstractController
@@ -48,11 +52,13 @@ class SecurityController extends AbstractController
      */
     public function profil(EntityManagerInterface $manager,
                            UserRepository $userRepository,
-                           Request $request)
+                           Request $request,
+                           UserPasswordEncoderInterface $passwordEncoder)
     {
+
         /** @var User $user */
         //Je récupère les infos de l'utilisateur connecté
-        $profilUser = $this->getUser();
+        $profilUser = $userRepository->find($this->getUser());
 
         //je crée le form et j'associe mon formulaire et mon profil ensemble
         $form = $this->createForm(UserType::class, $profilUser);
@@ -61,24 +67,27 @@ class SecurityController extends AbstractController
 
         //je vérifie que si le formulaire est soumit il est bien valide
         if ($form->isSubmitted() && $form->isValid()) {
-            $passwordConfirmation = $form['passwordConfirmation']->getData();
-            $password = $form['password']->getData();
+                if($profilUser->getPassword() == null) {
+                    $profilUser->setPassword($this->getUser()->getPassword());
+                }
+            //$passwordConfirmation = $form['passwordConfirmation']->getData();
+            //$password = $form['password']->getData();
 
-            if ($passwordConfirmation == $password) {
+           // if ($passwordConfirmation == $password) {
                 $manager->persist($profilUser);
                 $manager->flush();
 
                 $this->addFlash('success', 'Profil modifié ! ');
 
                 //Si les mots de passe correspondent, je redirige vers son profil
-                return $this->redirectToRoute('security_profil');
 
+                //return $this->redirectToRoute('security_profil');
                 //Sinon j'ajoute un message un message d'erreur
-            } else {
+           // } else {
                 $this->addFlash("warning", "Le mot de passe ne correspond pas à la confirmation");
                 //et je redirige vers mon profil avec le message d'erreur
-                return $this->redirectToRoute('security_profil');
-            }
+               // return $this->redirectToRoute('security_profil');
+           // }
 
         }
 

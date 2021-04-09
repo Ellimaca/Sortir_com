@@ -115,39 +115,39 @@ class EventController extends AbstractController
 
         //Je récupère l'évenement choisi par mon utilisateur
         $eventChoosen = $eventRepository->find($id);
+        //et le nombre d'inscrits à la sortie
+        $foundParticipants = $eventChoosen->getParticipants();
 
         //Vérifier que le statut de l'event soit "Ouverte"
-        if($eventChoosen->getStatus() != 'Ouverte') {
+        if($eventChoosen->getStatus()->getName() != 'Ouverte') {
 
             $this->addFlash('warning', "Cette sortie n'est plus ouverte à l'inscription");
             $this->redirectToRoute('main');
-        }
 
-        //Vérifier que la RegistrationDeadLine ne soit pas dépassée
-        if($eventChoosen->getRegistrationDeadline() <= new \DateTime('now')) {
+            //Vérifier que la RegistrationDeadLine ne soit pas dépassée
+        } elseif ($eventChoosen->getRegistrationDeadline() <= new \DateTime('now')) {
             $this->addFlash('warning', "L'inscription à cette sortie est terminée");
             $this->redirectToRoute('main');
-        }
 
-        //Vérifier si il reste des places libres
-        if($eventChoosen->getParticipants()->count() == $eventChoosen->getMaxNumberParticipants()) {
+            //Vérifier si il reste des places libres
+        } elseif ($eventChoosen->getParticipants()->count() == $eventChoosen->getMaxNumberParticipants()) {
             $this->addFlash('warning', "Le nombre maximum de participants a été atteint !");
+            $this->redirectToRoute('main');
+
+            //Si toutes les conditions sont remplies pour que l'inscription puisse être faite,
+            // on inscrit notre user à la sortie
+        } else {
+
+            $manager->persist($eventChoosen);
+            $manager->flush();
+
+            $this->addFlash('success', "Vous êtes bien inscrit à la sortie!");
             $this->redirectToRoute('main');
         }
 
-        //Si toutes les conditions sont remplies pour que l'inscription puisse être faite,
-        // on inscrit notre user à la sortie
-
-        $user->addEvent($eventChoosen);
-
-        $manager->persist($user);
-        $manager->flush();
-
-        $this->addFlash('success', "Vous êtes bien inscrit à la sortie!");
-        $this->redirectToRoute('main');
-
         return $this->render("event/view.html.twig", [
-            "foundEvent" => $eventChoosen
+            "foundEvent" => $eventChoosen,
+            "foundParticipants" => $foundParticipants
         ]);
     }
 
