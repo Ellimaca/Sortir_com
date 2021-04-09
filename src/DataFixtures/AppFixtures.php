@@ -130,10 +130,11 @@ class AppFixtures extends Fixture
 
             $interval = new DateInterval("P1D");
             $event->setRegistrationDeadline(date_sub($event->getDateTimeStart(), $interval));
-
             $event->setDescription($faker->paragraphs($faker->numberBetween(0, 3), true));
             $event->setCampus($faker->randomElement($allCampus));
             $event->setMaxNumberParticipants($faker->numberBetween(2, 6));
+            $fakeDuration = [60, 90, 120, 180, 240, 300];
+            $event->setDuration($faker->randomElement($fakeDuration));
             $event->setStatus($faker->randomElement($allStatus));
             $event->setPlace($faker->randomElement($allPlaces));
             $event->setOrganiser($faker->randomElement($allUsers));
