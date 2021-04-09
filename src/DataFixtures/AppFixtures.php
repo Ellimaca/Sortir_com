@@ -40,7 +40,7 @@ class AppFixtures extends Fixture
         $manager->flush();
 
         $statusRepository = $manager->getRepository(Status::class);
-        $statusCree = $statusRepository->findOneBy(1);
+        $statusCreee = $statusRepository->findOneBy(['name'=>'Créée']);
 
         // Tableau qui regroupe les numéros des départements du grand ouest
         $westernRegions = [14, 22, 29, 35, 44, 49, 50, 56, 61, 72, 85];
@@ -135,7 +135,7 @@ class AppFixtures extends Fixture
             $event->setMaxNumberParticipants($faker->numberBetween(2, 6));
             $fakeDuration = [60, 90, 120, 180, 240, 300];
             $event->setDuration($faker->randomElement($fakeDuration));
-            $event->setStatus($faker->randomElement($statusCree));
+            $event->setStatus($statusCreee);
             $event->setPlace($faker->randomElement($allPlaces));
             $event->setOrganiser($faker->randomElement($allUsers));
 
