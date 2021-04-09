@@ -24,6 +24,7 @@ class User implements UserInterface
     private $id;
 
     /**
+     * @Assert\Email()
      * @ORM\Column(type="string", length=180, unique=true)
      */
     private $email;
@@ -111,7 +112,7 @@ class User implements UserInterface
     private $organisedEvents;
 
     /**
-     * @Assert\NotBlank(message="Veuillez renseigner votre pseudo")
+     * @Assert\NotBlank(message="Veuillez choisir un pseudo")
      * @Assert\Length(
      *     min=4,
      *     max=30,

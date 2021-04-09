@@ -130,12 +130,13 @@ class EventController extends AbstractController
         }
 
         //Vérifier si il reste des places libres
-        if($eventChoosen->getParticipants() == $eventChoosen->getMaxNumberParticipants()) {
+        if($eventChoosen->getParticipants()->count() == $eventChoosen->getMaxNumberParticipants()) {
             $this->addFlash('warning', "Le nombre maximum de participants a été atteint !");
             $this->redirectToRoute('main');
         }
 
-        //Si toutes les conditions sont remplies pour que l'inscription puisse être faite, on inscrit notre user à la sortie
+        //Si toutes les conditions sont remplies pour que l'inscription puisse être faite,
+        // on inscrit notre user à la sortie
 
         $user->addEvent($eventChoosen);
 
@@ -146,6 +147,7 @@ class EventController extends AbstractController
         $this->redirectToRoute('main');
 
         return $this->render("event/view.html.twig", [
+            "foundEvent" => $eventChoosen
         ]);
     }
 
