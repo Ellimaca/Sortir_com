@@ -13,7 +13,7 @@ use App\Repository\StatusRepository;
 class FunctionsStatus
 {
     const CREATED = 'Créée';
-    const OPENED = 'Ouverte';
+    //const OPENED = 'Ouverte';
     const CLOSED = 'Clôturée';
     const ONGOING = 'Activité en cours';
     const FINISHED = 'Passée';
