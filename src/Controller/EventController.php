@@ -152,7 +152,7 @@ class EventController extends AbstractController
     }
 
     /**
-     * @Route("/evenement{id}/désistement", name="event_abandonned")
+     * @Route("/evenement{id}/desistement", name="event_abandonned")
      */
     public function abandon ($id, EventRepository $eventRepository,
                           EntityManagerInterface $manager): Response
@@ -164,5 +164,39 @@ class EventController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/evenement{id}/annuler", name="event_cancelled")
+     */
+    public function cancel ($id, EventRepository $eventRepository,
+                             EntityManagerInterface $manager): Response
+    {
 
+
+
+        return $this->render("", [
+        ]);
+    }
+
+    /**
+     * @Route("/evenement{id}/modifier", name="event_modified")
+     */
+    public function modify ($id, EventRepository $eventRepository,
+                             EntityManagerInterface $manager): Response
+    {
+
+
+
+        return $this->render("", [
+        ]);
+    }
+
+    /**
+     * @Route("/evenement{id}/publier", name="event_published")
+     */
+    public function publish ($id, EventRepository $eventRepository,
+                            EntityManagerInterface $manager): Response
+    {
+        return $this->render("", [
+        ]);
+    }
 }
