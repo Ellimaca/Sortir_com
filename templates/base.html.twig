@@ -26,10 +26,7 @@
                 <a href="{{ path('main') }}" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
                     <img src="{{ asset('img/logoEni.png') }}" width="40" height="40">
                 </a>
-
                 <ul class="nav col-12 col-md-auto mb-2 mt-2 justify-content-center mb-md-0">
-                    <li><a href="" class="nav-link px-2 link-dark">Villes</a></li>
-                    <li><a href="" class="nav-link px-2 link-dark">Campus</a></li>
                     {% if app.user %}
                         <li><a href="{{ path('main') }}" class="nav-link px-2 link-dark">Accueil</a></li>
                         <li><a href="{{ path('security_profil') }}" class="nav-link px-2 link-dark">Mon profil</a></li>
@@ -40,9 +37,5 @@
 
             {% block body %}{% endblock %}
     </div>
-        <footer class="text-center p-3">
-            Petit footer à modifier | Un petit lien par-ci | Un petit lien par là
-        </footer>
-
     </body>
 </html>
