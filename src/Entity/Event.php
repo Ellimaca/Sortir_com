@@ -34,7 +34,6 @@ class Event
     private $name;
 
     /**
-     * @Assert\DateTime(message="Veuillez renseigner la date et l'heure de votre sortie")
      * @Assert\NotBlank(message="Veuillez renseigner la date et l'heure de votre sortie")
      * @ORM\Column(type="datetime")
      */

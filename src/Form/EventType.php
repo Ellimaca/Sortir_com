@@ -31,6 +31,7 @@ class EventType extends AbstractType
             ])
             ->add('dateTimeStart', DateTimeType::class, ['label' => 'Date et heure de la sortie',
                 'widget' => 'single_text'
+
             ])
            // ->add('dateTimeEnd', DateTimeType::class, ['widget' => 'single_text',
             //    'label' => 'Date et heure de fin'

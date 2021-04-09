@@ -57,7 +57,7 @@ class EventRepository extends ServiceEntityRepository
         //test sur le critère de date de fin
         if(!is_null($criterias->getDateEnd())){
             $queryBuilder
-                ->andWhere('events.RegistrationDeadline <= :dateEnd')
+                ->andWhere('events.registrationDeadline <= :dateEnd')
                 ->setParameter('dateEnd',$criterias->getDateEnd());
         }
 
