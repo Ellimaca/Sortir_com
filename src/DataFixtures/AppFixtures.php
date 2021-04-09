@@ -128,9 +128,9 @@ class AppFixtures extends Fixture
             $dateTimeEnd = $event->getDateTimeStart()->add($interval1);
             $event->setDateTimeEnd($faker->dateTimeBetween($event->getDateTimeStart(), $dateTimeEnd));
 
-            $duration = date_diff($event->getDateTimeStart(), $event->getDateTimeEnd());
-            $durationMinutes = $duration->d*1440 + $duration->h*60 + $duration->i;
-            $event->setDuration($durationMinutes);
+            //$duration = date_diff($event->getDateTimeStart(), $event->getDateTimeEnd());
+            //$durationMinutes = $duration->d*1440 + $duration->h*60 + $duration->i;
+            //$event->setDuration($durationMinutes);
 
             $interval = new DateInterval("P1D");
             $event->setRegistrationDeadline(date_sub($event->getDateTimeStart(), $interval));
@@ -150,8 +150,10 @@ class AppFixtures extends Fixture
         $eventRepository = $manager->getRepository(Event::class);
         $allEvents = $eventRepository->findAll();
 
+
         foreach ($allEvents as $event) {
-            for ($i = 0; $i < $event->getMaxNumberParticipants(); $i++) {
+            $randomParticipants = $faker->numberBetween(0, $event->getMaxNumberParticipants());
+            for ($i = 0; $i < $randomParticipants; $i++) {
                 $event->addParticipant($faker->randomElement($allUsers));
              }
         }
