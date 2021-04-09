@@ -12,15 +12,10 @@
                 {% endif %}
             </div>
         <div class="col">
-                {{ form_start(modifForm) }}
-                {{ form_widget(modifForm) }}
-                <div class="row">
-                    <div class="align-items-center">
-                    <button class="btn-success btn mt-2">Enregistrer</button>
-                {{ form_end(modifForm) }}
-                    <a href="{{ path('main') }}">
-                        <button class="btn-success btn mt-2">Annuler</button>
-                    </a>
+                {{ form(modifForm) }}
+                        <a href="{{ path('main') }}">
+                            <button class="btn-success btn mt-2">Annuler</button>
+                        </a>
                     </div>
             <div class="col">
                     {{ form_start(pictureForm) }}
@@ -28,8 +23,6 @@
                         <button class="btn-success btn mt-2">Télécharger vers le serveur</button>
                     {{ form_end(pictureForm) }}
                   </div>
-                </div>
-            </div>
         </div>
     </div>
 
