@@ -32,7 +32,6 @@ class EventType extends AbstractType
             ->add('dateTimeStart', DateTimeType::class, ['label' => 'Date et heure de la sortie',
                 'widget' => 'single_text'
             ])
-
            // ->add('dateTimeEnd', DateTimeType::class, ['widget' => 'single_text',
             //    'label' => 'Date et heure de fin'
             //])
@@ -48,7 +47,6 @@ class EventType extends AbstractType
             ->add('description', TextareaType::class, [
                 'label' => 'Description et infos'
             ])
-
             // TODO mettre le campus de l'utilisateur figé
             ->add('campus', EntityType::class, [
                 'label' => "Campus",
@@ -56,7 +54,6 @@ class EventType extends AbstractType
                 'choice_label' => 'name',
                 'choice_value' => ChoiceList::value($this, 'name'),
             ])
-
             ->add('city', EntityType::class, [
                 'label' => 'Ville',
                 'class' => City::class,
@@ -70,23 +67,6 @@ class EventType extends AbstractType
             ])
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer'])
 
-
-
-
-
-            /**  Pourra nous servir à la creation de lieu par l'utilisateur
-
-            ->add('city', EntityType::class, [
-                'label' => 'Ville',
-                'class' => City::class,
-                'choice_label' => 'name',  'mapped' => false
-                ])
-            ->add('place', EntityType::class, [
-                'label' => 'Lieu',
-                'class' => Place::class,
-                'choice_label' => 'name'
-            ])
-             */
         ;
     }
 
