@@ -84,41 +84,41 @@ class EventLine
 
         switch ($this->event->getStatus()->getName()) {
             case CREATED:
-                $this->links[] = ['modifier', 'event_modified'];
-                $this->links[] = ['publier', 'event_published'];
+                $this->links[] = EVENT_MODIFY;
+                $this->links[] = EVENT_PUBLISH;
                 break;
             case OPENED:
-                $this->links[] = ['afficher', 'event_view'];
+                $this->links[] = EVENT_SHOW;
 
                 if ($this->event->getOrganiser() == $user) {
-                    $this->links[] = ['modifier', 'event_modified'];
-                    $this->links[] = ['annuler', 'event_cancelled'];
+                    $this->links[] = EVENT_MODIFY;
+                    $this->links[] = EVENT_CANCEL;
                 } elseif ($this->nbRegistered < $this->event->getMaxNumberParticipants() &&
                     !$this->event->getParticipants()->contains($user)) {
-                    $this->links[] = ["s'inscrire", 'event_registration'];
+                    $this->links[] = EVENT_REGISTER;
                 }
 
                 if ($this->event->getParticipants()->contains($user)) {
-                    $this->links[] = ["se désinscrire", 'event_abandonned'];
+                    $this->links[] = EVENT_ABANDON;
                 }
                 break;
             case CLOSED:
-                $this->links[] = ['afficher', 'event_view'];
+                $this->links[] = EVENT_SHOW;
 
                 if ($this->event->getOrganiser() == $user) {
-                    $this->links[] = ['modifier', 'event_modified'];
-                    $this->links[] = ['annuler', 'event_cancelled'];
+                    $this->links[] = EVENT_MODIFY;
+                    $this->links[] = EVENT_CANCEL;
                 }
 
                 if ($this->event->getParticipants()->contains($user)) {
-                    $this->links[] = ["se désinscrire", 'event_abandonned'];
+                    $this->links[] = EVENT_ABANDON;
                 }
                 break;
             case ONGOING:
             case FINISHED:
             case CANCELLED:
             case ARCHIVED:
-                $this->links[] = ['afficher', 'event_view'];
+                $this->links[] = EVENT_SHOW;
                 break;
         }
 
