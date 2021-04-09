@@ -20,19 +20,10 @@ class FunctionsStatus
     const CANCELLED = 'Annulée';
     const ARCHIVED = 'Archivée';
     private $repository;
-    private static FunctionsStatus $instance;
     
-    private function __construct(StatusRepository $repository)
+    public function __construct(StatusRepository $repository)
     {
         $this->repository = $repository;
-        $instance=null;
-    }
-
-    public static function getInstance(){
-        if(isset($instance)){
-            self::$instance = new FunctionsStatus();
-        }
-        return self::$instance;
     }
 
 
@@ -73,33 +64,33 @@ class FunctionsStatus
         /** @var string $status */
         $status = $event->getStatus()->getName();
 
-        if($status == self::OPENED){
+        if($status == OPENED){
             if($deadline >= new \DateTime('now')){
-                $event->setStatus($this->getStatusByName(self::CLOSED,$statusList));
+                $event->setStatus($this->getStatusByName(CLOSED,$statusList));
             }
         }
 
-        if($status == self::CLOSED) {
+        if($status == CLOSED) {
             if($dateStart >= new \DateTime('now')){
-                $event->setStatus($this->getStatusByName(self::ONGOING, $statusList));
+                $event->setStatus($this->getStatusByName(ONGOING, $statusList));
             }
         }
 
-        if($status == self::ONGOING) {
+        if($status == ONGOING) {
             if($dateEnd >= new \DateTime('now')){
-                $event->setStatus($this->getStatusByName(self::FINISHED, $statusList));
+                $event->setStatus($this->getStatusByName(FINISHED, $statusList));
             }
         }
 
-        if($status == self::FINISHED) {
+        if($status == FINISHED) {
             if(date_diff($dateEnd,new \DateTime('now'))->m >= 1){
-                $event->setStatus($this->getStatusByName(self::ARCHIVED, $statusList));
+                $event->setStatus($this->getStatusByName(ARCHIVED, $statusList));
             }
         }
 
-        if($status == self::CANCELLED) {
+        if($status == CANCELLED) {
             if(date_diff($dateEnd,new \DateTime('now'))->m >= 1){
-                $event->setStatus($this->getStatusByName(self::ARCHIVED, $statusList));
+                $event->setStatus($this->getStatusByName(ARCHIVED, $statusList));
             }
         }
     }

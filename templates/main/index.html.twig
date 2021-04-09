@@ -77,14 +77,14 @@
             <article class="col text-center text-wrap">
                 <p>Nom de la sortie</p>
             </article>
-            <article class="col text-center text-wrap">
-                <p>date de la sortie</p>
+            <article class="col-2 text-center text-wrap">
+                <p>Date de la sortie</p>
             </article>
             <article class="col text-center text-wrap">
                 <p>Clôture</p>
             </article>
             <article class="col text-center text-wrap">
-                <p>inscrits/places</p>
+                <p>Inscrits/Places</p>
             </article>
             <article class="col text-center text-wrap">
                 <p>Etat</p>
@@ -102,32 +102,42 @@
         <ul id="EventsListContent" name="EventsListContent" class="list-group m-0 p-0">
 
             {# remplir avec les events #}
-            {% for event in eventsList %}
+            {% for eventLine in eventLines %}
+
                 <li class="list-group-item m-0 p-0">
                     <div class="row align-items-start m-0 p-0">
-                        <article class="col text-center text-wrap m-0 p-0 border-start">
-                            <p>{{ event.name }}</p>
+                        <article id="eventName" class="col-2 text-center text-wrap m-0 p-0 border-start">
+                            <p>{{ eventLine.event.name }}</p>
                         </article>
-                        <article class="col text-center text-wrap m-0 p-0 border-start">
-                            <p>{{ event.dateTimeStart | date("d/m/Y h:i") }}</p>
+                        <article id="eventDateStart" class="col text-center text-wrap m-0 p-0 border-start">
+                            <p>{{ eventLine.event.dateTimeStart | date("d/m/Y h:i") }}</p>
                         </article>
-                        <article class="col text-center text-wrap m-0 p-0 border-start">
-                            <p>{{ event.dateTimeEnd | date("d/m/Y") }}</p>
+                        <article id="eventDateEnd" class="col text-center text-wrap m-0 p-0 border-start">
+                            <p>{{ eventLine.event.dateTimeEnd | date("d/m/Y") }}</p>
                         </article>
-                        <article class="col text-center text-wrap m-0 p-0 border-start">
-                            <p>inscrits/places</p>
+                        <article id="eventNbRegisteredNbParticipants" class="col text-center text-wrap m-0 p-0 border-start">
+                            <p>{{ eventLine.nbRegistered }}/{{ eventLine.event.maxNumberParticipants }}</p>
                         </article>
-                        <article class="col text-center text-wrap m-0 p-0 border-start">
-                            <p>Etat</p>
+                        <article id="eventStatusName" class="col text-center text-wrap m-0 p-0 border-start">
+                            <p>{{ eventLine.event.status.name }}</p>
                         </article>
-                        <article class="col text-center text-wrap m-0 p-0 border-start">
-                            <p>Inscrit</p>
+                        <article id="eventUserIsRegistered" class="col text-center text-wrap m-0 p-0 border-start">
+                            <p>{{ eventLine.isRegistered }}</p>
                         </article>
-                        <article class="col text-center text-wrap m-0 p-0 border-start">
-                            <p>Organisateur</p>
+                        <article id="eventOrganiserUsername" class="col text-center text-wrap m-0 p-0 border-start">
+                            <p>{{ eventLine.event.organiser.pseudo }}</p>
                         </article>
-                        <article class="col text-center text-wrap m-0 p-0 border-start">
-                            <p>Actions</p>
+                        <article id="eventLinks" class="col text-center text-wrap m-0 p-0 border-start">
+                            <p>
+                                {% set nbLinks = eventLine.links|length - 1 %}
+                                {% for i in 0..nbLinks %}
+                                    {% if ( i > 0 ) %}
+                                        <span> - </span>
+                                    {% endif %}
+                                    <a href="{{ path(eventLine.links[i][1],{'id':eventLine.event.id}) }}"> {{ eventLine.links[i][0] }}</a>
+                                {% endfor %}
+
+                            </p>
                         </article>
                     </div>
                 </li>

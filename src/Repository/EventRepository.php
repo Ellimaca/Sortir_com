@@ -95,7 +95,9 @@ class EventRepository extends ServiceEntityRepository
         }
 
         $query= $queryBuilder->getQuery();
+
         //dd($query);
+
         return $query->getResult();
     }
 

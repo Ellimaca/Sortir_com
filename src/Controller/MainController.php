@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\SearchEventsType;
 use App\Repository\EventRepository;
+use App\Utils\EventLine;
 use App\Utils\FunctionsStatus;
 use App\Utils\SearchEventCriterias;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,7 +23,8 @@ class MainController extends AbstractController
      */
     public function index(Request $request,
                           EventRepository $eventRepository,
-                          SearchEventCriterias $searchEventCriterias): Response
+                          SearchEventCriterias $searchEventCriterias,
+                          FunctionsStatus $functionsStatus): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -38,20 +40,35 @@ class MainController extends AbstractController
 
         $eventsList = $eventRepository->findBySearchFormCriteria($searchEventCriterias);
 
-        /*//Création de la map associant le nombre de participant à l'event
-        $mapNbParticipantsByEvent = new Map();
-
-        foreach ($eventsList as $event){
-            $mapNbParticipantsByEvent->set($event->getId(),count($event->getParticipants()));
-        }*/
-
-        $functionsStatus = FunctionsStatus::getInstance();
+        //Mis à jour des status
         $functionsStatus->UpdateEventsStatus($eventsList);
+
+        //Création du tableau d'objet EventLine
+        $eventLines = [];
+
+        //Hydratation du tableau
+        foreach ($eventsList as $event){
+            $eventLine = new EventLine();
+            $eventLine->setEvent($event);
+            $eventLine->setNbRegistered(count($event->getParticipants()));
+            //$mapNbParticipantsByEvent[$event->getId()] = count($event->getParticipants());
+            if ($event->getParticipants()->contains($user)){
+                //$mapIsRegisteredByEvent[$event->getId()] = 'X';
+                $eventLine->setIsRegistered('X');
+            }else{
+                //$mapIsRegisteredByEvent[$event->getId()] = '';
+                $eventLine->setIsRegistered('');
+            }
+            $eventLine->updateLinks($user);
+
+            $eventLines[] = $eventLine;
+        }
 
       return $this->render('main/index.html.twig', [
             'searchForm' => $searchForm->createView(),
-            'eventsList' => $eventsList,
-            //'mapNbParticipantsByEvent' => $mapNbParticipantsByEvent
+            'eventLines' => $eventLines,
         ]);
     }
+
+
 }
