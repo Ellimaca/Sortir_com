@@ -86,7 +86,7 @@ class Event
     private $participants;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="events")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="organisedEvents")
      * @ORM\JoinColumn(nullable=false)
      */
     private $organiser;

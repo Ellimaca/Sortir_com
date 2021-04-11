@@ -96,13 +96,13 @@ class User implements UserInterface
     private $isActive;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Campus::class)
+     * @ORM\ManyToOne(targetEntity=Campus::class, inversedBy="users")
      * @ORM\JoinColumn(nullable=true)
      */
     private $campus;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Event::class)
+     * @ORM\ManyToMany(targetEntity=Event::class, mappedBy="participants")
      */
     private $events;
 
