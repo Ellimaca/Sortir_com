@@ -23,6 +23,10 @@ class AppFixtures extends Fixture
         $this->encoder = $userPasswordEncoder;
     }
 
+    /**
+     * @param ObjectManager $manager
+     * Permet de charger des données dans la base de données
+     */
     public function load(ObjectManager $manager)
     {
         // On utilise Faker pour générer des données aléatoires en français
@@ -113,24 +117,25 @@ class AppFixtures extends Fixture
         for ($i = 0; $i < 50; $i++) {
             $event = new Event();
             $event->setName($faker->sentence(4));
-
             $event->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
 
-            $interval1 = new DateInterval("PT6H");
-            $dateTimeEnd = $event->getDateTimeStart()->add($interval1);
-            $event->setDateTimeEnd($faker->dateTimeBetween($event->getDateTimeStart(), $dateTimeEnd));
+            $interval = new DateInterval("P1D");
+            $event->setRegistrationDeadline(date_sub($event->getDateTimeStart(), $interval));
+            $fakeDuration = [60, 90, 120, 180, 240, 300];
+            $event->setDuration($faker->randomElement($fakeDuration));
+
+            $dateFin = $event->getDateTimeStart()->add(new DateInterval('PT' . $event->getDuration() . 'M'));
+            $event->setDateTimeEnd($dateFin);
 
             //$duration = date_diff($event->getDateTimeStart(), $event->getDateTimeEnd());
             //$durationMinutes = $duration->d*1440 + $duration->h*60 + $duration->i;
             //$event->setDuration($durationMinutes);
 
-            $interval = new DateInterval("P1D");
-            $event->setRegistrationDeadline(date_sub($event->getDateTimeStart(), $interval));
+
             $event->setDescription($faker->paragraphs($faker->numberBetween(0, 3), true));
             $event->setCampus($faker->randomElement($allCampus));
             $event->setMaxNumberParticipants($faker->numberBetween(2, 6));
-            $fakeDuration = [60, 90, 120, 180, 240, 300];
-            $event->setDuration($faker->randomElement($fakeDuration));
+
             $event->setStatus($faker->randomElement($statusArray));
             $event->setPlace($faker->randomElement($allPlaces));
             $event->setOrganiser($faker->randomElement($allUsers));
@@ -142,7 +147,6 @@ class AppFixtures extends Fixture
         $eventRepository = $manager->getRepository(Event::class);
         $allEvents = $eventRepository->findAll();
 
-
         foreach ($allEvents as $event) {
             $randomParticipants = $faker->numberBetween(0, $event->getMaxNumberParticipants());
             for ($i = 0; $i < $randomParticipants; $i++) {
@@ -153,11 +157,16 @@ class AppFixtures extends Fixture
         $manager->persist($event);
         $manager->flush();
 
-        $this->createStaticUser($manager);
+        // On appèle la fonction pour charger des données statiques en BDD
+        $this->createStaticData($manager);
 
     }
 
-    private function createStaticUser($manager)
+    /**
+     * @param $manager
+     * Permet de charger des données statiques en BDD
+     */
+    private function createStaticData($manager)
     {
 
         $faker = \Faker\Factory::create("fr_FR");
@@ -167,9 +176,7 @@ class AppFixtures extends Fixture
         $user->setPseudo("test");
         $user->setFirstName("test");
         $user->setLastName("test");
-
         $user->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
-
         $user->setEmail("test@test.com");
         $user->setIsActive(1);
         $user->setPhoneNumber("0606060606");
@@ -180,6 +187,26 @@ class AppFixtures extends Fixture
         $user->setIsAdmin(false);
 
         $manager->persist($user);
+
+        $user2 = new User();
+
+        $user2->setPseudo("Batman");
+        $user2->setFirstName("Bruce");
+        $user2->setLastName("Wayne");
+
+        $user2->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
+
+        $user2->setEmail("batman@test.com");
+        $user2->setIsActive(1);
+        $user2->setPhoneNumber("+33 6 44 61 13 44");
+        $password = $this->encoder->encodePassword($user, "test");
+        $user2->setPassword($password);
+        $user2->setRoles(["ROLE_USER"]);
+        $user2->setIsActive(true);
+        $user2->setIsAdmin(false);
+
+        $manager->persist($user2);
+
 
         $city = new City;
         $city->setName('Saint-Herblain');
@@ -196,74 +223,76 @@ class AppFixtures extends Fixture
 
         $manager->persist($place);
 
-        $event = new Event();
-
-        $event->setName('Sortie Kayak à Saint Herblain');
-        $event->setDescription('Sortie Kayak à Saint Herblain, pensez à prendre un pique nique, de la crème solaire et un chapeau!');
-        $event->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
-        $event->setOrganiser($user);
-        $event->setMaxNumberParticipants(6);
-        $event->setDuration(90);
-        $event->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
-        $interval = new DateInterval("P1D");
-        $event->setRegistrationDeadline(date_sub($event->getDateTimeStart(), $interval));
-        $statusCreated = $manager->getRepository(Status::class)->findOneBy(['name'=>'Ouverte']);
-        $event->setStatus($statusCreated);
-        $event->setPlace($place);
-
-        $manager->persist($event);
-
-        $event2 = new Event();
-        $event2->setName('Apprendre Symfony en s\'amusant');
-        $event2->setDescription('Apprendre Symfony dans la bonne humeur avec Taharqa, Camille et Benjamin. Prevoir un goûter et des dolipranes ! ');
-        $event2->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
-        $event2->setOrganiser($user);
-        $event2->setMaxNumberParticipants(6);
-        $event2->setDuration(240);
-        $event2->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
-        $interval = new DateInterval("P1D");
-        $event2->setRegistrationDeadline(date_sub($event->getDateTimeStart(), $interval));
-        $statusCreated = $manager->getRepository(Status::class)->findOneBy(['name'=>'Annulée']);
-        $event2->setStatus($statusCreated);
-        $event2->setPlace($place);
-
-        $manager->persist($event2);
-
-        $event3 = new Event();
-        $event3->setName('Manger des cailloux');
-        $event3->setDescription('Quoi de meilleur que de manger des cailloux? Rejoins-nous pour manger des cailloux');
-        $event3->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
-        $event3->setOrganiser($user);
-        $event3->setMaxNumberParticipants(2);
-        $event3->setDuration(240);
-        $event3->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
-        $interval = new DateInterval("P1D");
-        $event3->setRegistrationDeadline(date_sub($event->getDateTimeStart(), $interval));
-        $statusCreated = $manager->getRepository(Status::class)->findOneBy(['name'=>'Créée']);
-        $event3->setStatus($statusCreated);
-        $event3->setPlace($place);
-
-        $manager->persist($event3);
-
         $userRepository = $manager->getRepository(User::class);
         $allUsers = $userRepository->findAll();
 
-        $event4 = new Event();
-        $event4->setName('Apprendre le ping-pong avec Taharqa');
-        $event4->setDescription('Taharqa, Champion du monde de Ping-pong vous propose de partager ses talents avec vous. Prévoir une raquette et de l\'eau');
-        $event4->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
-        $event4->setOrganiser($faker->randomElement($allUsers));
-        $event4->setOrganiser($user);
-        $event4->setMaxNumberParticipants(4);
-        $event4->setDuration(120);
-        $event4->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
-        $interval = new DateInterval("P1D");
-        $event4->setRegistrationDeadline(date_sub($event->getDateTimeStart(), $interval));
-        $statusCreated = $manager->getRepository(Status::class)->findOneBy(['name'=>'Créée']);
-        $event4->setStatus($statusCreated);
-        $event4->setPlace($place);
+        $staticEvent = new Event();
 
-        $manager->persist($event4);
+        $staticEvent->setName('Sortie Kayak à Saint Herblain');
+        $staticEvent->setDescription('Sortie Kayak à Saint Herblain, pensez à prendre un pique nique, de la crème solaire et un chapeau!');
+        $staticEvent->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
+        $staticEvent->setOrganiser($user);
+        $staticEvent->setMaxNumberParticipants(6);
+        $staticEvent->setDuration(90);
+        $staticEvent->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
+        $interval = new DateInterval("P1D");
+        $staticEvent->setRegistrationDeadline(date_sub($staticEvent->getDateTimeStart(), $interval));
+        $statusCreated = $manager->getRepository(Status::class)->findOneBy(['name'=>'Ouverte']);
+        $staticEvent->setStatus($statusCreated);
+        $staticEvent->setPlace($place);
+
+        $manager->persist($staticEvent);
+
+       $staticEvent2 = new Event();
+        $staticEvent2->setName('Apprendre Symfony en s\'amusant');
+        $staticEvent2->setDescription('Apprendre Symfony dans la bonne humeur avec Taharqa, Camille et Benjamin. Prevoir un goûter et des dolipranes ! ');
+        $staticEvent2->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
+        $staticEvent2->setOrganiser($user);
+        $staticEvent2->setMaxNumberParticipants(6);
+        $staticEvent2->setDuration(240);
+        $staticEvent2->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
+        $interval = new DateInterval("P1D");
+        $staticEvent2->setRegistrationDeadline(date_sub($staticEvent2->getDateTimeStart(), $interval));
+        $statusCreated = $manager->getRepository(Status::class)->findOneBy(['name'=>'Annulée']);
+        $staticEvent2->setStatus($statusCreated);
+        $staticEvent2->setPlace($place);
+
+        $manager->persist($staticEvent2);
+
+        $staticEvent3 = new Event();
+        $staticEvent3->setName('Manger des cailloux');
+        $staticEvent3->setDescription('Quoi de meilleur que de manger des cailloux? Rejoins-nous pour manger des cailloux');
+        $staticEvent3->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
+        $staticEvent3->setOrganiser($user);
+        $staticEvent3->setMaxNumberParticipants(2);
+        $staticEvent3->setDuration(240);
+        $staticEvent3->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
+        $interval = new DateInterval("P1D");
+        $staticEvent3->setRegistrationDeadline(date_sub($staticEvent3->getDateTimeStart(), $interval));
+        $statusCreated = $manager->getRepository(Status::class)->findOneBy(['name'=>'Créée']);
+        $staticEvent3->setStatus($statusCreated);
+        $staticEvent3->setPlace($place);
+
+        $manager->persist($staticEvent3);
+
+        $staticEvent4 = new Event();
+        $staticEvent4->setName('Apprendre le ping-pong avec Taharqa');
+        $staticEvent4->setDescription('Taharqa, Champion du monde de Ping-pong vous propose de partager ses talents avec vous. Prévoir une raquette et de l\'eau');
+        $staticEvent4->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
+        $staticEvent4->setOrganiser($faker->randomElement($allUsers));
+        $staticEvent4->setOrganiser($user);
+        $staticEvent4->setMaxNumberParticipants(4);
+        $staticEvent4->setDuration(120);
+        $staticEvent4->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
+        $interval = new DateInterval("P1D");
+        $staticEvent4->setRegistrationDeadline(date_sub($staticEvent4->getDateTimeStart(), $interval));
+        $dateFin = $staticEvent4->getDateTimeStart()->add(new DateInterval('PT' . $staticEvent4->getDuration() . 'M'));
+        $staticEvent4->setDateTimeEnd($dateFin);
+        $statusCreated = $manager->getRepository(Status::class)->findOneBy(['name'=>'Créée']);
+        $staticEvent4->setStatus($statusCreated);
+        $staticEvent4->setPlace($place);
+
+        $manager->persist($staticEvent4);
 
         $manager->flush();
 
