@@ -13,12 +13,12 @@ use App\Repository\StatusRepository;
 class FunctionsStatus
 {
     const CREATED = 'Créée';
-    //const OPENED = 'Ouverte';
+    const OPENED = 'Ouverte';
     const CLOSED = 'Clôturée';
-    const ONGOING = 'Activité en cours';
+   //const ONGOING = 'Activité en cours';
     const FINISHED = 'Passée';
     const CANCELLED = 'Annulée';
-    const ARCHIVED = 'Archivée';
+    //const ARCHIVED = 'Archivée';
     private $repository;
     
     public function __construct(StatusRepository $repository)

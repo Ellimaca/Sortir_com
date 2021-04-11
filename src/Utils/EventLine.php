@@ -90,7 +90,7 @@ class EventLine
             case OPENED:
                 $this->links[] = EVENT_SHOW;
 
-                if ($this->event->getOrganiser() == $user) {
+                if ($this->event->getOrganiser() === $user) {
                     $this->links[] = EVENT_MODIFY;
                     $this->links[] = EVENT_CANCEL;
                 } elseif ($this->nbRegistered < $this->event->getMaxNumberParticipants() &&
@@ -105,7 +105,7 @@ class EventLine
             case CLOSED:
                 $this->links[] = EVENT_SHOW;
 
-                if ($this->event->getOrganiser() == $user) {
+                if ($this->event->getOrganiser() === $user) {
                     $this->links[] = EVENT_MODIFY;
                     $this->links[] = EVENT_CANCEL;
                 }
