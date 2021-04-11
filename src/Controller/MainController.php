@@ -32,7 +32,7 @@ class MainController extends AbstractController
         $searchEventCriterias = new SearchEventCriterias();
 
         $searchEventCriterias->setUser($user);
-        //$searchEventCriterias->setCampus($user->getCampus());
+        $searchEventCriterias->setCampus($user->getCampus());
 
         $searchForm = $this->createForm(SearchEventsType::class,$searchEventCriterias);
 

@@ -3,24 +3,17 @@
 
 namespace App\Utils;
 
+include('Constantes.php');
 
 use App\Entity\Event;
 use App\Entity\Status;
 use App\Repository\StatusRepository;
-
+use DateTime;
 
 
 class FunctionsStatus
 {
-    const CREATED = 'Créée';
-    const OPENED = 'Ouverte';
-    const CLOSED = 'Clôturée';
-   //const ONGOING = 'Activité en cours';
-    const FINISHED = 'Passée';
-    const CANCELLED = 'Annulée';
-    //const ARCHIVED = 'Archivée';
-    private $repository;
-    
+
     public function __construct(StatusRepository $repository)
     {
         $this->repository = $repository;
@@ -65,31 +58,31 @@ class FunctionsStatus
         $status = $event->getStatus()->getName();
 
         if($status == OPENED){
-            if($deadline >= new \DateTime('now')){
+            if($deadline >= new DateTime('now')){
                 $event->setStatus($this->getStatusByName(CLOSED,$statusList));
             }
         }
 
         if($status == CLOSED) {
-            if($dateStart >= new \DateTime('now')){
+            if($dateStart >= new DateTime('now')){
                 $event->setStatus($this->getStatusByName(ONGOING, $statusList));
             }
         }
 
         if($status == ONGOING) {
-            if($dateEnd >= new \DateTime('now')){
+            if($dateEnd >= new DateTime('now')){
                 $event->setStatus($this->getStatusByName(FINISHED, $statusList));
             }
         }
 
         if($status == FINISHED) {
-            if(date_diff($dateEnd,new \DateTime('now'))->m >= 1){
+            if(date_diff($dateEnd,new DateTime('now'))->m >= 1){
                 $event->setStatus($this->getStatusByName(ARCHIVED, $statusList));
             }
         }
 
         if($status == CANCELLED) {
-            if(date_diff($dateEnd,new \DateTime('now'))->m >= 1){
+            if(date_diff($dateEnd,new DateTime('now'))->m >= 1){
                 $event->setStatus($this->getStatusByName(ARCHIVED, $statusList));
             }
         }
