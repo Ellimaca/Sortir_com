@@ -21,22 +21,22 @@ class User implements UserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @Assert\NotBlank
      * @Assert\Email()
      * @ORM\Column(type="string", length=180, unique=true)
      */
-    private $email;
+    private ?string $email;
 
     /**
      * @ORM\Column(type="json")
      */
-    private $roles = [];
+    private array $roles = [];
 
     /**
-     * @var string The hashed password
+     * @var ?string The hashed password
      * @Assert\Length(
      *     min=4,
      *     max=30,
@@ -47,7 +47,7 @@ class User implements UserInterface
      *     message="Le mot de passe doit contenir au moins 8 caractères dont au moins une lettre et un chiffre ")
      * @ORM\Column(type="string")
      */
-    private $password;
+    private ?string $password;
 
     /**
      * @Assert\NotBlank(message="Veuillez renseigner votre prénom")
@@ -61,7 +61,7 @@ class User implements UserInterface
      * message="Le format du prénom n'est pas valide")
      * @ORM\Column(type="string", length=40)
      */
-    private $firstName;
+    private ?string $firstName;
 
     /**
      * @Assert\NotBlank(message="Veuillez renseigner votre nom")
@@ -75,7 +75,7 @@ class User implements UserInterface
      * message="Le format du nom n'est pas valide")
      * @ORM\Column(type="string", length=50)
      */
-    private $lastName;
+    private ?string $lastName;
 
     /**
      * @Assert\NotBlank(message="Veuillez renseigner votre numéro de téléphone")
@@ -83,33 +83,33 @@ class User implements UserInterface
      * message="Veuillez entrer un format de téléphone valide")
      * @ORM\Column(type="string", nullable=true)
      */
-    private $phoneNumber;
+    private ?string $phoneNumber;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isAdmin;
+    private ?bool $isAdmin;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isActive;
+    private ?bool $isActive;
 
     /**
      * @ORM\ManyToOne(targetEntity=Campus::class, inversedBy="users")
      * @ORM\JoinColumn(nullable=true)
      */
-    private $campus;
+    private ?Campus $campus;
 
     /**
      * @ORM\ManyToMany(targetEntity=Event::class, mappedBy="participants")
      */
-    private $events;
+    private ArrayCollection $events;
 
     /**
      * @ORM\OneToMany(targetEntity=Event::class, mappedBy="organiser")
      */
-    private $organisedEvents;
+    private ArrayCollection $organisedEvents;
 
     /**
      * @Assert\NotBlank(message="Veuillez choisir un pseudo")
@@ -123,12 +123,12 @@ class User implements UserInterface
      * message="Le format du pseudo n'est pas valide")
      * @ORM\Column(type="string", length=20, nullable=true)
      */
-    private $pseudo;
+    private ?string $pseudo;
 
     /**
      * @ORM\OneToOne(targetEntity=ProfilePicture::class, inversedBy="user", cascade={"persist", "remove"})
      */
-    private $profilePicture;
+    private ?ProfilePicture $profilePicture;
 
     public function __construct()
     {
