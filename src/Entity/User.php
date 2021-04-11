@@ -325,7 +325,7 @@ class User implements UserInterface
     {
         if (!$this->organisedEvents->contains($organisedEvent)) {
             $this->organisedEvents[] = $organisedEvent;
-            $organisedEvent->setUser($this);
+            $organisedEvent->setOrganiser($this);
         }
 
         return $this;
@@ -335,8 +335,8 @@ class User implements UserInterface
     {
         if ($this->organisedEvents->removeElement($organisedEvent)) {
             // set the owning side to null (unless already changed)
-            if ($organisedEvent->getUser() === $this) {
-                $organisedEvent->setUser(null);
+            if ($organisedEvent->getOrganiser() === $this) {
+                $organisedEvent->setOrganiser(null);
             }
         }
 
