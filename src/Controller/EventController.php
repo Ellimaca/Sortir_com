@@ -103,47 +103,64 @@ class EventController extends AbstractController
     }
 
     /**
+     * Permet de s'inscrire à un évènement
      * @Route("/evenement{id}/inscription", name="event_registration")
      */
     public function registration($id,
                                  EventRepository $eventRepository,
                                  EntityManagerInterface $manager): Response
     {
-        //Je récupère mon utilisateur connecté
+
         /** @var User $user */
         $user = $this->getUser();
 
-        //Je récupère l'évenement choisi par mon utilisateur
+        //Je récupère l'évenement choisi par mon utilisateur via l'id récupérée dans l'URL
         $eventChoosen = $eventRepository->find($id);
+
+        //Je récupère tous les participants à cet event et vérifie que mon user n'est pas déjà inscrit !
+        $participantsTothisEvent = $eventChoosen->getParticipants();
+
+        //TODO: Ne pas persister si le user est déjà inscrit !!!
+
+        foreach($participantsTothisEvent as $participant) {
+            if ($participant->getId() == $user->getId()) {
+                $this->addFlash('warning', 'Vous êtes déjà inscrit à cette sortie!');
+                $this->redirectToRoute('main');
+            }
+        }
+
         //et le nombre d'inscrits à la sortie
         $foundParticipants = $eventChoosen->getParticipants();
 
         //Vérifier que le statut de l'event soit "Ouverte"
         if($eventChoosen->getStatus()->getName() != 'Ouverte') {
-
             $this->addFlash('warning', "Cette sortie n'est plus ouverte à l'inscription");
             $this->redirectToRoute('main');
 
             //Vérifier que la RegistrationDeadLine ne soit pas dépassée
-        } elseif ($eventChoosen->getRegistrationDeadline() <= new \DateTime('now')) {
+        } if ($eventChoosen->getRegistrationDeadline() <= new \DateTime('now')) {
             $this->addFlash('warning', "L'inscription à cette sortie est terminée");
             $this->redirectToRoute('main');
 
-            //Vérifier si il reste des places libres
-        } elseif ($eventChoosen->getParticipants()->count() == $eventChoosen->getMaxNumberParticipants()) {
+
+        //Vérifier si il reste des places libres
+        } if ($eventChoosen->getParticipants()->count() == $eventChoosen->getMaxNumberParticipants()) {
             $this->addFlash('warning', "Le nombre maximum de participants a été atteint !");
             $this->redirectToRoute('main');
 
-            //Si toutes les conditions sont remplies pour que l'inscription puisse être faite,
-            // on inscrit notre user à la sortie
         } else {
+        //Si toutes les conditions sont remplies pour que l'inscription puisse être faite,
+        // on inscrit notre user à la sortie
 
-            $manager->persist($eventChoosen);
-            $manager->flush();
+        $eventChoosen->addParticipant($user);
 
-            $this->addFlash('success', "Vous êtes bien inscrit à la sortie!");
-            $this->redirectToRoute('main');
-        }
+        $manager->persist($eventChoosen);
+        $manager->flush();
+
+        $this->addFlash('success', "Vous êtes bien inscrit à la sortie!");
+        $this->redirectToRoute('main');
+
+    }
 
         return $this->render("event/view.html.twig", [
             "foundEvent" => $eventChoosen,
