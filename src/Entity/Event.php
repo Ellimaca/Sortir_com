@@ -113,7 +113,7 @@ class Event
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
@@ -125,7 +125,7 @@ class Event
         return $this->dateTimeStart;
     }
 
-    public function setDateTimeStart(\DateTimeInterface $dateTimeStart): self
+    public function setDateTimeStart(?\DateTimeInterface $dateTimeStart): self
     {
         $this->dateTimeStart = $dateTimeStart;
 
@@ -149,7 +149,7 @@ class Event
         return $this->registrationDeadline;
     }
 
-    public function setRegistrationDeadline(\DateTimeInterface $RegistrationDeadline): self
+    public function setRegistrationDeadline(?\DateTimeInterface $RegistrationDeadline): self
     {
         $this->registrationDeadline = $RegistrationDeadline;
 

@@ -119,18 +119,13 @@ class AppFixtures extends Fixture
             $event->setName($faker->sentence(4));
             $event->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
 
-            $interval = new DateInterval("P1D");
-            $event->setRegistrationDeadline(date_sub($event->getDateTimeStart(), $interval));
             $fakeDuration = [60, 90, 120, 180, 240, 300];
             $event->setDuration($faker->randomElement($fakeDuration));
 
-            $dateFin = $event->getDateTimeStart()->add(new DateInterval('PT' . $event->getDuration() . 'M'));
-            $event->setDateTimeEnd($dateFin);
+            $manager->flush();
 
-            //$duration = date_diff($event->getDateTimeStart(), $event->getDateTimeEnd());
-            //$durationMinutes = $duration->d*1440 + $duration->h*60 + $duration->i;
-            //$event->setDuration($durationMinutes);
-
+            $interval = new DateInterval("P1D");
+            $event->setRegistrationDeadline(date_sub($event->getDateTimeStart(), $interval));
 
             $event->setDescription($faker->paragraphs($faker->numberBetween(0, 3), true));
             $event->setCampus($faker->randomElement($allCampus));
@@ -140,9 +135,13 @@ class AppFixtures extends Fixture
             $event->setPlace($faker->randomElement($allPlaces));
             $event->setOrganiser($faker->randomElement($allUsers));
 
+
             $manager->persist($event);
             $manager->flush();
         }
+
+        // On appele la fonction createStatic date pour des données statiques en base de données
+        $this->createStaticData($manager);
 
         $eventRepository = $manager->getRepository(Event::class);
         $allEvents = $eventRepository->findAll();
@@ -150,15 +149,22 @@ class AppFixtures extends Fixture
         foreach ($allEvents as $event) {
             $randomParticipants = $faker->numberBetween(0, $event->getMaxNumberParticipants());
             for ($i = 0; $i < $randomParticipants; $i++) {
+
                 $event->addParticipant($faker->randomElement($allUsers));
+
+                $startDate = $event->getDateTimeStart();
+
+                $intervalDuration = $event->getDuration();
+                $dateTimeEnd = $startDate->add(new DateInterval('PT' . $intervalDuration . 'M'));
+                $event->setDateTimeEnd($dateTimeEnd);
+
              }
         }
 
         $manager->persist($event);
         $manager->flush();
 
-        // On appèle la fonction pour charger des données statiques en BDD
-        $this->createStaticData($manager);
+
 
     }
 
@@ -171,49 +177,52 @@ class AppFixtures extends Fixture
 
         $faker = \Faker\Factory::create("fr_FR");
 
-        $user = new User();
+        // Static user 1
+        $staticUser1 = new User();
 
-        $user->setPseudo("test");
-        $user->setFirstName("test");
-        $user->setLastName("test");
-        $user->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
-        $user->setEmail("test@test.com");
-        $user->setIsActive(1);
-        $user->setPhoneNumber("0606060606");
-        $password = $this->encoder->encodePassword($user, "test");
-        $user->setPassword($password);
-        $user->setRoles(["ROLE_USER"]);
-        $user->setIsActive(true);
-        $user->setIsAdmin(false);
+        $staticUser1->setPseudo("test");
+        $staticUser1->setFirstName("test");
+        $staticUser1->setLastName("test");
+        $staticUser1->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
+        $staticUser1->setEmail("test@test.com");
+        $staticUser1->setIsActive(1);
+        $staticUser1->setPhoneNumber("0606060606");
+        $password = $this->encoder->encodePassword($staticUser1, "test");
+        $staticUser1->setPassword($password);
+        $staticUser1->setRoles(["ROLE_USER"]);
+        $staticUser1->setIsActive(true);
+        $staticUser1->setIsAdmin(false);
 
-        $manager->persist($user);
+        $manager->persist($staticUser1);
 
-        $user2 = new User();
+        // Static user 2
+        $staticUser2 = new User();
 
-        $user2->setPseudo("Batman");
-        $user2->setFirstName("Bruce");
-        $user2->setLastName("Wayne");
+        $staticUser2->setPseudo("Batman");
+        $staticUser2->setFirstName("Bruce");
+        $staticUser2->setLastName("Wayne");
 
-        $user2->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
+        $staticUser2->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
 
-        $user2->setEmail("batman@test.com");
-        $user2->setIsActive(1);
-        $user2->setPhoneNumber("+33 6 44 61 13 44");
-        $password = $this->encoder->encodePassword($user, "test");
-        $user2->setPassword($password);
-        $user2->setRoles(["ROLE_USER"]);
-        $user2->setIsActive(true);
-        $user2->setIsAdmin(false);
+        $staticUser2->setEmail("batman@test.com");
+        $staticUser2->setIsActive(1);
+        $staticUser2->setPhoneNumber("+33 6 44 61 13 44");
+        $password = $this->encoder->encodePassword($staticUser2, "test");
+        $staticUser2->setPassword($password);
+        $staticUser2->setRoles(["ROLE_USER"]);
+        $staticUser2->setIsActive(true);
+        $staticUser2->setIsAdmin(false);
 
-        $manager->persist($user2);
+        $manager->persist($staticUser2);
 
-
+        // Static City "Saint-Herblain"
         $city = new City;
         $city->setName('Saint-Herblain');
         $city->setPostCode(	44800);
 
         $manager->persist($city);
 
+        // Static Lieu
         $place = new Place;
         $place->setName('Etang du ter');
         $place->setStreet('rue de la Poste');
@@ -226,12 +235,13 @@ class AppFixtures extends Fixture
         $userRepository = $manager->getRepository(User::class);
         $allUsers = $userRepository->findAll();
 
+        // Static Event 1
         $staticEvent = new Event();
 
         $staticEvent->setName('Sortie Kayak à Saint Herblain');
         $staticEvent->setDescription('Sortie Kayak à Saint Herblain, pensez à prendre un pique nique, de la crème solaire et un chapeau!');
         $staticEvent->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
-        $staticEvent->setOrganiser($user);
+        $staticEvent->setOrganiser($staticUser1);
         $staticEvent->setMaxNumberParticipants(6);
         $staticEvent->setDuration(90);
         $staticEvent->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
@@ -243,11 +253,12 @@ class AppFixtures extends Fixture
 
         $manager->persist($staticEvent);
 
-       $staticEvent2 = new Event();
+        // Static event 2
+        $staticEvent2 = new Event();
         $staticEvent2->setName('Apprendre Symfony en s\'amusant');
         $staticEvent2->setDescription('Apprendre Symfony dans la bonne humeur avec Taharqa, Camille et Benjamin. Prevoir un goûter et des dolipranes ! ');
         $staticEvent2->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
-        $staticEvent2->setOrganiser($user);
+        $staticEvent2->setOrganiser($staticUser1);
         $staticEvent2->setMaxNumberParticipants(6);
         $staticEvent2->setDuration(240);
         $staticEvent2->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
@@ -263,7 +274,7 @@ class AppFixtures extends Fixture
         $staticEvent3->setName('Manger des cailloux');
         $staticEvent3->setDescription('Quoi de meilleur que de manger des cailloux? Rejoins-nous pour manger des cailloux');
         $staticEvent3->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
-        $staticEvent3->setOrganiser($user);
+        $staticEvent3->setOrganiser($staticUser2);
         $staticEvent3->setMaxNumberParticipants(2);
         $staticEvent3->setDuration(240);
         $staticEvent3->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
@@ -280,7 +291,7 @@ class AppFixtures extends Fixture
         $staticEvent4->setDescription('Taharqa, Champion du monde de Ping-pong vous propose de partager ses talents avec vous. Prévoir une raquette et de l\'eau');
         $staticEvent4->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
         $staticEvent4->setOrganiser($faker->randomElement($allUsers));
-        $staticEvent4->setOrganiser($user);
+        $staticEvent4->setOrganiser($staticUser1);
         $staticEvent4->setMaxNumberParticipants(4);
         $staticEvent4->setDuration(120);
         $staticEvent4->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));

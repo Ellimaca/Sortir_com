@@ -1,27 +1,56 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer un évènement
+{% block title %}Créer une sortie
 
 {% endblock %}
 
 {% block body %}
 
-<p>Créer une sortie</p>
-
-    {{ form_start(eventForm) }}
-    {{ form_row((eventForm.name)) }}
-    {{ form_row((eventForm.dateTimeStart)) }}
-    {{ form_row((eventForm.registrationDeadline)) }}
-    {{ form_row((eventForm.maxNumberParticipants)) }}
-    {{ form_row((eventForm.duration)) }}
-    {{ form_row((eventForm.description)) }}
-    {{ form_row((eventForm.campus)) }}
-    {{ form_row((eventForm.city)) }}
-    {{ form_row ((eventForm.place)) }}
-    {{ form_row(eventForm.submit) }}
-    {{ form_end(eventForm) }}
+    <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+        <h6 class="display-6 fw-normal">Créer une sortie</h6>
+    </div>
 
 
+    <div class="p-5 mb-4 bg-light rounded-3">
+        <div class="row align-items-md-stretch">
+             <div class="col-md-6">
+                 <div class="h-100">
+
+                     {{ form_start(eventForm) }}
+                 <p>{{ form_row((eventForm.name)) }}</p>
+                 <p>{{ form_row((eventForm.dateTimeStart)) }}</p>
+                 <p>{{ form_row((eventForm.registrationDeadline)) }}</p>
+                 <p>{{ form_row((eventForm.maxNumberParticipants)) }}</p>
+                 <p>{{ form_row((eventForm.duration)) }}</p>
+                 <p>{{ form_row((eventForm.description)) }}</p>
+                 </div>
+            </div>
+            <div class="col-md-6">
+                <div class="h-100 ">
+                <p>{{ form_row((eventForm.campus)) }}</p>
+                <p>{{ form_row((eventForm.city)) }}</p>
+                <p>{{ form_row ((eventForm.place)) }}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    {{ form_row(eventForm.save) }}
+                </div>
+                <div class="col-lg-4">
+                    {{ form_row(eventForm.submit) }}
+                    {{ form_end(eventForm) }}
+                </div>
+                <div class="col-lg-4">
+                <a href="{{ path('main') }}"><button class="btn-success btn mt-2">Annuler</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+  {#  Formulaire à décomenter pour pour voir ajouter un nouveau lieu
     {{ form_start(placeForm) }}
     {{ form_row((placeForm.name)) }}
     {{ form_row((placeForm.street)) }}
@@ -29,10 +58,7 @@
     {{ form_row((placeForm.latitude)) }}
     {{ form_row((placeForm.longitude)) }}
     {{ form_row(((placeForm.submit))) }}
-    {{ form_end(placeForm) }}
-
-
-
+    {{ form_end(placeForm) }}#}
 
 {% endblock %}
 

@@ -10,6 +10,7 @@ use App\Form\PlaceType;
 use App\Repository\EventRepository;
 use App\Repository\StatusRepository;
 use App\Repository\UserRepository;
+use DateInterval;
 use Doctrine\ORM\EntityManagerInterface;
 use http\Env\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -58,18 +59,36 @@ class EventController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
+        // L'utilisateur connecté est l'organisateur
         $event->setOrganiser($user);
 
         $eventForm = $this->createForm(EventType::class, $event);
 
         $eventForm->handleRequest($request);
-        $placeCity = $eventForm['city']->getData();
+
         if($eventForm->isSubmitted() && $eventForm->isValid()) {
 
             $eventPlace =$eventForm->get('place')->getData();
             $event->setPlace($eventPlace);
+
+            //$objDateTime = new DateTime('NOW');
+
             $status = $statusRepository->findOneBy(["id" => 2]);
             $event->setStatus($status);
+
+            if ($nextAction = $eventForm->get('save')->isClicked()) {
+                $status = $statusRepository->findOneBy(["id" => 1]);
+                $event->setStatus($status);
+            }
+
+            $entityManager->persist($event);
+            $entityManager->flush();
+
+            $startDate = $event->getDateTimeStart();
+            $intervalDuration = $event->getDuration();
+            $dateTimeEnd = $startDate->add(new DateInterval('PT' . $intervalDuration . 'M'));
+            $event->setDateTimeEnd($dateTimeEnd);
+
             $entityManager->persist($event);
             $entityManager->flush();
 
@@ -77,13 +96,10 @@ class EventController extends AbstractController
             return $this->redirectToRoute('main');
         }
 
-
+        /**
         $place = new Place();
-
         $placeForm = $this->createForm(PlaceType::class, $place);
-
         $placeForm->handleRequest($request);
-
         if($placeForm->isSubmitted() && $placeForm->isValid()) {
             $placeCity = $placeForm->get('city')->getData();
             $place->setCity($placeCity);
@@ -94,11 +110,13 @@ class EventController extends AbstractController
             $this->addFlash('success', 'Votre lieu a bien été ajouté !');
 
         }
-
         $event->setPlace($place);
 
+         */
+
         return $this->render("event/create.html.twig", [
-            'eventForm' => $eventForm->createView(), 'placeForm' => $placeForm->createView()
+            'eventForm' => $eventForm->createView(),
+            //'placeForm' => $placeForm->createView()
         ]);
     }
 
