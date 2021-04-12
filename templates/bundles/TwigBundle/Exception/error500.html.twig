@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container center">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="error-template">
+                <img src="{{ asset('img/erreur500.gif') }}" width="250" height="250">
+                <h1>
+                    Perdu?</h1>
+                <h2>
+                    Problème de serveur... On fait notre maximum pour régler le problème!</h2>
+                <div class="error-actions">
+                    <a href="{{ path('main') }}" class="btn btn-primary btn-lg">
+                        <span class="glyphicon glyphicon-home"></span>
+                        Retour à l'accueil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
