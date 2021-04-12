@@ -59,10 +59,10 @@ class MainController extends AbstractController
             $eventLine->updateLinks($user);
             $eventLines[] = $eventLine;
 
-            $entityManager->persist($event);
+            //$entityManager->persist($event);
         }
 
-        $entityManager->flush();
+        //$entityManager->flush();
 
       return $this->render('main/index.html.twig', [
             'searchForm' => $searchForm->createView(),
