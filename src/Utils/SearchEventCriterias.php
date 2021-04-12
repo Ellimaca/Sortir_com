@@ -9,10 +9,10 @@ class SearchEventCriterias
     private $searchBar;
     private $dateStart;
     private $dateEnd;
-    private ?bool $isOrganisedByMe = false;
-    private ?bool $isAttendedByMe= false;
-    private ?bool $isNotAttendedByMe= false;
-    private ?bool $isFinished= false;
+    private bool $isOrganisedByMe = false;
+    private bool $isAttendedByMe= false;
+    private bool $isNotAttendedByMe= false;
+    private bool $isFinished= false;
     private $user;
 
     public function __construct()
@@ -100,7 +100,7 @@ class SearchEventCriterias
     }
 
     /**
-     * @return mixed
+     * @return bool|null
      */
     public function getIsOrganisedByMe(): ?bool
     {
@@ -108,7 +108,7 @@ class SearchEventCriterias
     }
 
     /**
-     * @return mixed
+     * @return bool|null
      */
     public function getIsAttendedByMe(): ?bool
     {
@@ -116,7 +116,7 @@ class SearchEventCriterias
     }
 
     /**
-     * @return mixed
+     * @return bool|null
      */
     public function getIsNotAttendedByMe(): ?bool
     {
@@ -124,7 +124,7 @@ class SearchEventCriterias
     }
 
     /**
-     * @return mixed
+     * @return bool|null
      */
     public function getIsFinished(): ?bool
     {
@@ -137,6 +137,30 @@ class SearchEventCriterias
     public function setIsFinished($isFinished): void
     {
         $this->isFinished = $isFinished;
+    }
+
+    /**
+     * @param bool $isOrganisedByMe
+     */
+    public function setIsOrganisedByMe(bool $isOrganisedByMe): void
+    {
+        $this->isOrganisedByMe = $isOrganisedByMe;
+    }
+
+    /**
+     * @param bool $isAttendedByMe
+     */
+    public function setIsAttendedByMe(bool $isAttendedByMe): void
+    {
+        $this->isAttendedByMe = $isAttendedByMe;
+    }
+
+    /**
+     * @param bool $isNotAttendedByMe
+     */
+    public function setIsNotAttendedByMe(bool $isNotAttendedByMe): void
+    {
+        $this->isNotAttendedByMe = $isNotAttendedByMe;
     }
 
 
