@@ -10,6 +10,7 @@ use App\Form\PlaceType;
 use App\Repository\EventRepository;
 use App\Repository\StatusRepository;
 use App\Repository\UserRepository;
+use App\Utils\Constantes;
 use DateInterval;
 use Doctrine\ORM\EntityManagerInterface;
 use http\Env\Request;
@@ -68,29 +69,23 @@ class EventController extends AbstractController
 
         if($eventForm->isSubmitted() && $eventForm->isValid()) {
 
-            $eventPlace =$eventForm->get('place')->getData();
-            $event->setPlace($eventPlace);
+            $startDate = $event->getDateTimeStart();
+            $dateTimeEnd = clone $startDate;
+            $intervalDuration = $event->getDuration();
+            $dateTimeEnd->add(new DateInterval('PT' . $intervalDuration . 'M'));
+            $event->setDateTimeEnd($dateTimeEnd);
 
-            //$objDateTime = new DateTime('NOW');
-
-            $status = $statusRepository->findOneBy(["id" => 2]);
+            $status = $statusRepository->findOneBy(["name" => Constantes::OPENED]);
             $event->setStatus($status);
 
-            if ($nextAction = $eventForm->get('save')->isClicked()) {
-                $status = $statusRepository->findOneBy(["id" => 1]);
+            if ($eventForm->get('save')->isClicked()) {
+                $status = $statusRepository->findOneBy(["name" => Constantes::CREATED]);
                 $event->setStatus($status);
             }
 
             $entityManager->persist($event);
             $entityManager->flush();
 
-            $startDate = $event->getDateTimeStart();
-            $intervalDuration = $event->getDuration();
-            $dateTimeEnd = $startDate->add(new DateInterval('PT' . $intervalDuration . 'M'));
-            $event->setDateTimeEnd($dateTimeEnd);
-
-            $entityManager->persist($event);
-            $entityManager->flush();
 
             $this->addFlash('success', 'Votre évènement a bien été ajouté !');
             return $this->redirectToRoute('main');

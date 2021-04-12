@@ -64,7 +64,7 @@ class EventType extends AbstractType
             ->add('place', EntityType::class, [
                 'label' => 'Lieu',
                 'class' => Place::class,
-                'choice_label' => 'name', 'mapped' => false
+                'choice_label' => 'name',
             ])
             ->add('save', SubmitType::class, ['label' => 'Enregistrer'])
             ->add('submit', SubmitType::class, ['label'=> 'publier la sortie'])

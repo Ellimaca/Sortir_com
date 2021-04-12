@@ -8,6 +8,8 @@ use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\Status;
 use App\Entity\User;
+use App\Utils\Constantes;
+use App\Utils\FunctionsStatus;
 use DateInterval;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -17,10 +19,16 @@ class AppFixtures extends Fixture
 
 {
     private $encoder;
+    private $functionStatus;
+    Const CREATED=0;
+    Const CANCELLED=2;
+    Const OPENED=1;
 
-    public function __construct(UserPasswordEncoderInterface $userPasswordEncoder)
+
+    public function __construct(UserPasswordEncoderInterface $userPasswordEncoder, FunctionsStatus $functionsStatus)
     {
         $this->encoder = $userPasswordEncoder;
+        $this->functionStatus = $functionsStatus;
     }
 
     /**
@@ -33,7 +41,7 @@ class AppFixtures extends Fixture
         $faker = \Faker\Factory::create("fr_FR");
 
         // Génération du nom des différents états possibles pour une sortie pour l'entité Status
-        $statusName = ["Créée", "Ouverte", "Clôturée", "Activité en cours", "Passée", "Annulée"];
+        $statusName = [Constantes::CREATED, Constantes::OPENED, Constantes::CLOSED, Constantes::ONGOING, Constantes::FINISHED, Constantes::CANCELLED, Constantes::ARCHIVED];
         foreach ($statusName as $name) {
             $status = new Status();
             $status->setName($name);
@@ -57,7 +65,6 @@ class AppFixtures extends Fixture
             $city->setPostCode($faker->randomElement($westernRegions) . $faker->numberBetween(10, 99) * 10);
             $manager->persist($city);
         }
-
         $manager->flush();
 
         $cityRepository = $manager->getRepository(City::class);
@@ -112,33 +119,70 @@ class AppFixtures extends Fixture
         $userRepository = $manager->getRepository(User::class);
         $allUsers = $userRepository->findAll();
 
-        // TODO vérification date et la durée
         // Génèration de données aléatoires pour l'entité Event
         for ($i = 0; $i < 50; $i++) {
             $event = new Event();
             $event->setName($faker->sentence(4));
             $event->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
-
             $fakeDuration = [60, 90, 120, 180, 240, 300];
             $event->setDuration($faker->randomElement($fakeDuration));
 
-            $manager->flush();
+            $startDate = $event->getDateTimeStart();
 
+            // Date de fin d'inscription
+            /** @var \DateTime $registrationDeadline */
+            $registrationDeadline = clone $startDate;
             $interval = new DateInterval("P1D");
-            $event->setRegistrationDeadline(date_sub($event->getDateTimeStart(), $interval));
+            $registrationDeadline->sub($interval);
+            $event->setRegistrationDeadline($registrationDeadline);
 
+            // Date de fin de la sortie
+            $dateTimeEnd = clone $startDate;
+            $intervalDuration = $event->getDuration();
+            $dateTimeEnd->add(new DateInterval('PT' . $intervalDuration . 'M'));
+            $event->setDateTimeEnd($dateTimeEnd);
+
+
+            // Les 3 statuts à injecter $statusArray = [$statusCreated, $statusOpen, $statusCancelled];
+            $today = new \DateTime('now');
+
+            $statusIsCancelled = $faker->boolean(10);
+
+            if ($statusIsCancelled) {
+                $event->setStatus($statusArray[self::CANCELLED]);
+            }
+            elseif ($startDate > $today) {
+                $event->setStatus($statusArray[self::OPENED]);
+            }
+            else {
+                $statusIsCreated = $faker->boolean(10);
+                if ($statusIsCreated) {
+                    $event->setStatus($statusArray[self::CREATED]);
+                } else {
+                    $event->setStatus($statusArray[self::OPENED]);
+                }
+            }
+
+            //Description
             $event->setDescription($faker->paragraphs($faker->numberBetween(0, 3), true));
+
+            //Campus
             $event->setCampus($faker->randomElement($allCampus));
+
+            //Max participants
             $event->setMaxNumberParticipants($faker->numberBetween(2, 6));
 
-            $event->setStatus($faker->randomElement($statusArray));
+            //Place
             $event->setPlace($faker->randomElement($allPlaces));
+
+            //Organisateur de la sortie
             $event->setOrganiser($faker->randomElement($allUsers));
 
-
             $manager->persist($event);
-            $manager->flush();
+
         }
+
+        $manager->flush();
 
         // On appele la fonction createStatic date pour des données statiques en base de données
         $this->createStaticData($manager);
@@ -149,22 +193,15 @@ class AppFixtures extends Fixture
         foreach ($allEvents as $event) {
             $randomParticipants = $faker->numberBetween(0, $event->getMaxNumberParticipants());
             for ($i = 0; $i < $randomParticipants; $i++) {
-
                 $event->addParticipant($faker->randomElement($allUsers));
-
-                $startDate = $event->getDateTimeStart();
-
-                $intervalDuration = $event->getDuration();
-                $dateTimeEnd = $startDate->add(new DateInterval('PT' . $intervalDuration . 'M'));
-                $event->setDateTimeEnd($dateTimeEnd);
-
              }
         }
 
+
+        $this->functionStatus->UpdateEventsStatus($allEvents);
+
         $manager->persist($event);
         $manager->flush();
-
-
 
     }
 
@@ -174,7 +211,6 @@ class AppFixtures extends Fixture
      */
     private function createStaticData($manager)
     {
-
         $faker = \Faker\Factory::create("fr_FR");
 
         // Static user 1

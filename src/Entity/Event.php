@@ -53,12 +53,9 @@ class Event
 
     /**
      * @Assert\NotBlank(message="Veuillez renseigner un nombre maximum de participants")
-     * @Assert\Length(
-     *     min=2,
-     *     max=6,
-     *     minMessage=" Le minimum doit être d'au moins 2 participants",
-     *     maxMessage=" la jauge de 6 personnes maximum doit être respectée ! "
-     * )
+     * @Assert\GreaterThan(2, message="Le minimum de participants est de 2")
+     * @Assert\LessThan(7, message=" Le nombre maximum de 6 participants doit être respecté")
+     *
      * @ORM\Column(type="integer")
      */
     private $maxNumberParticipants;
