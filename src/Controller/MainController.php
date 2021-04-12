@@ -8,7 +8,9 @@ use App\Repository\EventRepository;
 use App\Utils\EventLine;
 use App\Utils\FunctionsStatus;
 use App\Utils\SearchEventCriterias;
+
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -23,8 +25,7 @@ class MainController extends AbstractController
      */
     public function index(Request $request,
                           EventRepository $eventRepository,
-                          FunctionsStatus $functionsStatus,
-                          EntityManager $entityManager): Response
+                          FunctionsStatus $functionsStatus): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -58,11 +59,7 @@ class MainController extends AbstractController
             }
             $eventLine->updateLinks($user);
             $eventLines[] = $eventLine;
-
-            $entityManager->persist($event);
         }
-
-        $entityManager->flush();
 
       return $this->render('main/index.html.twig', [
             'searchForm' => $searchForm->createView(),
@@ -70,5 +67,13 @@ class MainController extends AbstractController
         ]);
     }
 
+    /*
+     *  function pour test
+     * @Route("/main/test", name="test")
+     *  TODO supprimer
+     */
+    public function test(EntityManagerInterface $entityManager,EventRepository $repository){
+        $repository->findOneBy();
+    }
 
 }
