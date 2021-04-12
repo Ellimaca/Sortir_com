@@ -40,6 +40,7 @@ class EventController extends AbstractController
      */
     public function view(int $id, EventRepository $eventRepository): Response
     {
+
         $foundEvent = $eventRepository->findOneBy(['id' => $id]);
         if (!$foundEvent) {
             throw $this->createNotFoundException("Cet évenement n'existe pas");

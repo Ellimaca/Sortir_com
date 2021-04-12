@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container center">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="error-template">
+                    <img src="{{ asset('img/pageErreur.gif') }}" width="250" height="250">
+                    <h1>
+                        Perdu?</h1>
+                    <h2>
+                        Tu recherches une page qui n'existe pas!</h2>
+                    <div class="error-actions">
+                        <a href="{{ path('main') }}" class="btn btn-primary btn-lg">
+                            <span class="glyphicon glyphicon-home"></span>
+                            Retour à l'accueil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
