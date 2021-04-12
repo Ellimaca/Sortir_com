@@ -67,68 +67,56 @@ class SecurityController extends AbstractController
 
         //je vérifie que si le formulaire est soumit il est bien valide
         if ($form->isSubmitted() && $form->isValid()) {
-                if($profilUser->getPassword() == null) {
-                    $profilUser->setPassword($this->getUser()->getPassword());
-                }
-            //$passwordConfirmation = $form['passwordConfirmation']->getData();
-            //$password = $form['password']->getData();
+            //Je récupère ce qui est rentré dans "Nouveau mot de passe"
+            $newPassword = $form['newPassword']->getData();
 
-           // if ($passwordConfirmation == $password) {
+            //si l'utilisateur ne change pas son mot de passe, alors je garde le même
+            if($newPassword == null){
+                $profilUser->setPassword($this->getUser()->getPassword());
                 $manager->persist($profilUser);
                 $manager->flush();
 
                 $this->addFlash('success', 'Profil modifié ! ');
 
-                //Si les mots de passe correspondent, je redirige vers son profil
+                //si l'utilisateur change son mot de passe...
+            } else {
+                //On vérifie avec l'appel de la fonction si les contraintes sont respectées.
+                if($this->verifyConstraintsNewPassword($newPassword)){
+                    $passwordEncoded = $passwordEncoder->encodePassword($profilUser, $newPassword);
+                    $profilUser->setPassword($passwordEncoded);
+                    $manager->persist($profilUser);
+                    $manager->flush();
+                    $this->addFlash('success', 'Profil modifié ! ');
+                }
 
-                //return $this->redirectToRoute('security_profil');
-                //Sinon j'ajoute un message un message d'erreur
-           // } else {
-                $this->addFlash("warning", "Le mot de passe ne correspond pas à la confirmation");
-                //et je redirige vers mon profil avec le message d'erreur
-               // return $this->redirectToRoute('security_profil');
-           // }
-
-        }
-
-        //Je crée ensuite mon formulaire photo
-        $profilePicture = new ProfilePicture();
-
-        $pictureForm = $this->createForm(ProfilePictureType::class, $profilePicture);
-
-        $pictureForm->handleRequest($request);
-
-        if ($pictureForm->isSubmitted() && $pictureForm->isValid()) {
-            /** UploadedFile $telechargementPhoto */
-            $downloadPicture = $pictureForm->get('file')->getData();
-            $newPictureName = ByteString::fromRandom(30) . '.' . $downloadPicture->guessExtension();
-
-            try {
-                $downloadPicture->move(__DIR__ . '/../../public/profile/img', $newPictureName);
-            } catch (\Exception $e) {
-                dd($e->getMessage());
             }
 
-            //Je récupère le user connecté
-            $user = $this->getUser();
-
-            //J'ajoute à mon user la photo de profil
-            $profilePicture->setUser($user);
-            $profilePicture->setFileName($newPictureName);
-
-            $manager->persist($profilePicture);
-            $manager->flush();
-
-            $this->addFlash('success', 'Photo de profil bien ajouté !');
         }
 
         //et je renvoie vers son profil
         return $this->render('security/profil.html.twig', [
             'modifForm' => $form->createView(),
-            'pictureForm' => $pictureForm->createView()
         ]);
     }
 
+    /**
+     * Fonction permettant de faire les vérifications type Regex sur le nouveau mot de passe
+     * @param $newPassword
+     * @return bool
+     */
+    public function verifyConstraintsNewPassword($newPassword) {
+        $isVerifiedConstraints = false;
+
+        //Minimum 8 caractères, au moins une lettre et un chiffre:
+        if(!preg_match("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$^", $newPassword)) {
+            $this->addFlash('warning', 'Le mot de passe doit contenir 8 caractères minimum, au moins une lettre ET un chiffre');
+            $isVerifiedConstraints = false;
+        } else {
+            return true;
+        }
+
+        return $isVerifiedConstraints;
+    }
 
 }
 

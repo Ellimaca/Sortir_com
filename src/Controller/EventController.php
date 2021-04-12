@@ -119,7 +119,7 @@ class EventController extends AbstractController
 
     /**
      * Permet de s'inscrire à un évènement
-     * @Route("/evenement{id}/inscription", name="event_registration")
+     * @Route("/evenement/inscription{id}", name="event_registration")
      */
     public function registration($id,
                                  EventRepository $eventRepository,
@@ -132,50 +132,57 @@ class EventController extends AbstractController
         //Je récupère l'évenement choisi par mon utilisateur via l'id récupérée dans l'URL
         $eventChoosen = $eventRepository->find($id);
 
-        //Je récupère tous les participants à cet event et vérifie que mon user n'est pas déjà inscrit !
-        $participantsTothisEvent = $eventChoosen->getParticipants();
-
-        //TODO: Ne pas persister si le user est déjà inscrit !!!
-
-        foreach($participantsTothisEvent as $participant) {
-            if ($participant->getId() == $user->getId()) {
-                $this->addFlash('warning', 'Vous êtes déjà inscrit à cette sortie!');
-                $this->redirectToRoute('main');
-            }
-        }
-
-        //et le nombre d'inscrits à la sortie
+        //Les inscrits à la sortie
         $foundParticipants = $eventChoosen->getParticipants();
 
-        //Vérifier que le statut de l'event soit "Ouverte"
-        if($eventChoosen->getStatus()->getName() != 'Ouverte') {
-            $this->addFlash('warning', "Cette sortie n'est plus ouverte à l'inscription");
+        //Si l'utilisateur est déjà inscrit à la sortie...
+        if($foundParticipants->contains($user)) {
+            $this->addFlash('warning', 'Vous êtes déjà inscrit à cette sortie!');
             $this->redirectToRoute('main');
+        }
 
-            //Vérifier que la RegistrationDeadLine ne soit pas dépassée
-        } if ($eventChoosen->getRegistrationDeadline() <= new \DateTime('now')) {
-            $this->addFlash('warning', "L'inscription à cette sortie est terminée");
+        //Si sorties annulées...
+        if($eventChoosen->getStatus()->getName() == Constantes::CANCELLED) {
+            $this->addFlash('warning', "Cette sortie a été annulée!");
             $this->redirectToRoute('main');
+        }
 
-
-        //Vérifier si il reste des places libres
-        } if ($eventChoosen->getParticipants()->count() == $eventChoosen->getMaxNumberParticipants()) {
-            $this->addFlash('warning', "Le nombre maximum de participants a été atteint !");
+        //Si sorties fermées à l'inscription...
+        if($eventChoosen->getStatus()->getName() == Constantes::CLOSED) {
+            $this->addFlash('warning', "La date limite d'inscription est dépassée");
             $this->redirectToRoute('main');
+        }
 
-        } else {
-        //Si toutes les conditions sont remplies pour que l'inscription puisse être faite,
-        // on inscrit notre user à la sortie
+        //Si sorties se déroulent au moment de l'inscription...
+        if($eventChoosen->getStatus()->getName() == Constantes::ONGOING) {
+            $this->addFlash('warning', "Impossible de s'inscrire, l'activité se déroule en ce moment-même!");
+            $this->redirectToRoute('main');
+        }
 
-        $eventChoosen->addParticipant($user);
+        //Si la sortie est déjà passée...
+        if($eventChoosen->getStatus()->getName() == Constantes::FINISHED) {
+            $this->addFlash('warning', "La sortie est finie!");
+            $this->redirectToRoute('main');
+        }
 
-        $manager->persist($eventChoosen);
-        $manager->flush();
+        //Si le statut de la sortie est "Ouverte"...
+        if($eventChoosen->getStatus()->getName() == Constantes::OPENED) {
+            //...on vérifie que la deadline ne soit pas dépassée...
+            if ($eventChoosen->getRegistrationDeadline() >= new \DateTime('now')) {
+                //... et enfin si la deadline n'est pas dépassée, on vérifie que le nombre max de participants n'est pas atteint
+                if ($eventChoosen->getParticipants()->count() != $eventChoosen->getMaxNumberParticipants()) {
+                    //Si toutes les conditions sont remplies, on ajoute notre user à la sortie
+                    $eventChoosen->addParticipant($user);
 
-        $this->addFlash('success', "Vous êtes bien inscrit à la sortie!");
-        $this->redirectToRoute('main');
+                    $manager->persist($eventChoosen);
+                    $manager->flush();
 
-    }
+                    $this->addFlash('success', "Vous êtes bien inscrit à la sortie!");
+                    $this->redirectToRoute('main');
+                }
+
+            }
+        }
 
         return $this->render("event/view.html.twig", [
             "foundEvent" => $eventChoosen,
@@ -184,7 +191,7 @@ class EventController extends AbstractController
     }
 
     /**
-     * @Route("/evenement{id}/desistement", name="event_abandonned")
+     * @Route("/evenement/desistement{id}", name="event_abandonned")
      */
     public function abandon ($id, EventRepository $eventRepository,
                           EntityManagerInterface $manager): Response
@@ -197,7 +204,7 @@ class EventController extends AbstractController
     }
 
     /**
-     * @Route("/evenement{id}/annuler", name="event_cancelled")
+     * @Route("/evenement/annuler{id}", name="event_cancelled")
      */
     public function cancel ($id, EventRepository $eventRepository,
                              EntityManagerInterface $manager): Response
@@ -210,7 +217,7 @@ class EventController extends AbstractController
     }
 
     /**
-     * @Route("/evenement{id}/modifier", name="event_modified")
+     * @Route("/evenement/modifier{id}", name="event_modified")
      */
     public function modify ($id, EventRepository $eventRepository,
                              EntityManagerInterface $manager): Response
@@ -223,7 +230,7 @@ class EventController extends AbstractController
     }
 
     /**
-     * @Route("/evenement{id}/publier", name="event_published")
+     * @Route("/evenement/publier{id}", name="event_published")
      */
     public function publish ($id, EventRepository $eventRepository,
                             EntityManagerInterface $manager): Response

@@ -16,6 +16,8 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class UserType extends AbstractType
 {
@@ -35,13 +37,13 @@ class UserType extends AbstractType
             ])
             ->add('email', EmailType::class)
 
-            ->add('password', RepeatedType::class, [
+            ->add('newPassword', RepeatedType::class, array(
                 'type' => PasswordType::class,
-                'first_options' => ['label' => 'Mot de passe'],
-                'second_options' => ['label' => 'Confirmation'],
-                'required' => 'false',
-                'mapped' => 'false'
-            ])
+                'invalid_message' => 'Le nouveau mot de passe et sa confirmation doivent correspondre!',
+                'first_options'  => array('label' => 'Nouveau mot de passe'),
+                'second_options' => array('label' => 'Confirmation'),
+                'mapped' => false
+            ))
 
             ->add('campus', EntityType::class, [
                 'label' => "Campus",
