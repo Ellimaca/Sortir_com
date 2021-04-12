@@ -198,7 +198,7 @@ class AppFixtures extends Fixture
         }
 
 
-        $this->functionStatus->UpdateEventsStatus($allEvents);
+        //$this->functionStatus->UpdateEventsStatus($allEvents);
 
         $manager->persist($event);
         $manager->flush();
