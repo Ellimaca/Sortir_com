@@ -13,6 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @UniqueEntity("pseudo", message="Le pseudo est déjà utilisé")
+ * @UniqueEntity("email", message="Le mail est déjà utilisé")
  */
 class User implements UserInterface
 {
@@ -51,9 +52,9 @@ class User implements UserInterface
      * @Assert\NotBlank(message="Veuillez renseigner votre prénom")
      * @Assert\Length(
      *     min=2,
-     *     max=50,
+     *     max=40,
      *     minMessage="Le prénom doit être d'au moins 2 caractères",
-     *     maxMessage="Le prénom ne doit pas excéder 50 caractères"
+     *     maxMessage="Le prénom ne doit pas excéder 40 caractères"
      * )
      * @Assert\Regex(pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$^",
      * message="Le format du prénom n'est pas valide")
@@ -113,9 +114,9 @@ class User implements UserInterface
      * @Assert\NotBlank(message="Veuillez choisir un pseudo")
      * @Assert\Length(
      *     min=4,
-     *     max=30,
+     *     max=20,
      *     minMessage="Le pseudo doit contenir au moins 4 caractères",
-     *     maxMessage="Le pseudo ne peut pas excéder 30 caractères"
+     *     maxMessage="Le pseudo ne peut pas excéder 20 caractères"
      * )
      * @Assert\Regex(pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$^",
      * message="Le format du pseudo n'est pas valide")
