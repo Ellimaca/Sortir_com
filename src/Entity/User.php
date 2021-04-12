@@ -39,12 +39,10 @@ class User implements UserInterface
      * @var ?string The hashed password
      * @Assert\Length(
      *     min=4,
-     *     max=30,
+     *     max=3000,
      *     minMessage="Le mot de passe doit être d'au moins 4 caractères",
      *     maxMessage="Le mot de passe ne doit pas excéder 30 caractères"
      * )
-     * @Assert\Regex(pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$^",
-     *     message="Le mot de passe doit contenir au moins 8 caractères dont au moins une lettre et un chiffre ")
      * @ORM\Column(type="string")
      */
     private ?string $password;
