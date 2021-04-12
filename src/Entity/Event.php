@@ -26,14 +26,14 @@ class Event
      *     min=2,
      *     max=50,
      *     minMessage="Le nom de l'évènement doit être d'au moins 2 caractères",
-     *     maxMessage="Le nom de l'évènement pas excéder 100 caractères")
-     * @Assert\Regex(pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$^",
-     * message="Le format du nom de votre sortie n'est pas valide")
+     *     maxMessage="Le nom de l'évènement pas excéder 50 caractères")
      * @ORM\Column(type="string", length=100)
      */
     private $name;
 
     /**
+     * @Assert\GreaterThan("today", message="Veuillez saisir une date postérieure à la date actuelle")
+     * @Assert\GreaterThan("+1 hour", message="Votre sortie doit se dérouler au minimum 1h après la date actuelle")
      * @Assert\NotBlank(message="Veuillez renseigner la date et l'heure de votre sortie")
      * @ORM\Column(type="datetime")
      */
@@ -45,6 +45,7 @@ class Event
     private $dateTimeEnd;
 
     /**
+     * @Assert\LessThan(propertyPath="dateTimeStart", message="Veuillez saisir une date de fin d'inscription avant la date et l'heure de début de votre sortie")
      * @Assert\NotBlank(message="Veuillez renseigner une date limite d'inscription")
      * @ORM\Column(type="datetime")
      */
@@ -52,6 +53,12 @@ class Event
 
     /**
      * @Assert\NotBlank(message="Veuillez renseigner un nombre maximum de participants")
+     * @Assert\Length(
+     *     min=2,
+     *     max=6,
+     *     minMessage=" Le minimum doit être d'au moins 2 participants",
+     *     maxMessage=" la jauge de 6 personnes maximum doit être respectée ! "
+     * )
      * @ORM\Column(type="integer")
      */
     private $maxNumberParticipants;
@@ -91,6 +98,7 @@ class Event
      */
     private $organiser;
 
+    //TO DO mettre une durée minimum et maximum
     /**
      * @Assert\NotBlank(message="Veuillez renseigner une durée pour votre sortie")
      * @ORM\Column(type="integer")
