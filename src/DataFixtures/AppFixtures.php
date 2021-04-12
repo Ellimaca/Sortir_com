@@ -33,6 +33,7 @@ class AppFixtures extends Fixture
     {
         $this->encoder = $userPasswordEncoder;
         $this->functionStatus = $functionsStatus;
+        //date_default_timezone_set ( Constantes::TIME_ZONE);
     }
 
     /**

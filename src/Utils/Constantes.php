@@ -29,6 +29,8 @@ class Constantes
     public const CANCELLED = 'Annulée';
     public const ARCHIVED = 'Archivée';
 
+    public const TIME_ZONE = 'Europe/Paris';
+
     public const EVENT_SHOW = ['afficher', 'event_view'];
     public const EVENT_MODIFY = ['modifier', 'event_modified'];
     public const EVENT_CANCEL = ['annuler', 'event_cancelled'];

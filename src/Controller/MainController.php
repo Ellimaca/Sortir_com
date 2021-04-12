@@ -9,6 +9,8 @@ use App\Utils\EventLine;
 use App\Utils\FunctionsStatus;
 use App\Utils\SearchEventCriterias;
 
+use DateTime;
+use DateTimeZone;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,12 +23,13 @@ class MainController extends AbstractController
 {
 
     /**
-     * @Route("/main", name="main")
+     * @Route("/", name="main")
      */
     public function index(Request $request,
                           EventRepository $eventRepository,
                           FunctionsStatus $functionsStatus): Response
     {
+
         /** @var User $user */
         $user = $this->getUser();
 
