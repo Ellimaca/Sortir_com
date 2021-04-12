@@ -9,19 +9,21 @@ use App\Entity\Place;
 use App\Entity\Status;
 use App\Entity\User;
 use App\Utils\Constantes;
+use App\Utils\DateTimeHandler;
 use App\Utils\FunctionsStatus;
 use DateInterval;
+use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Exception;
+use Faker\Factory;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use App\Utils\DateTimeHandler;
-use Symfony\Component\Validator\Constraints\Date;
 
 class AppFixtures extends Fixture
 
 {
-    private $encoder;
-    private $functionStatus;
+    private UserPasswordEncoderInterface $encoder;
+    private FunctionsStatus $functionStatus;
     Const CREATED=0;
     Const CANCELLED=2;
     Const OPENED=1;
@@ -31,17 +33,17 @@ class AppFixtures extends Fixture
     {
         $this->encoder = $userPasswordEncoder;
         $this->functionStatus = $functionsStatus;
-
     }
 
     /**
      * @param ObjectManager $manager
      * Permet de charger des données dans la base de données
+     * @throws Exception
      */
     public function load(ObjectManager $manager)
     {
         // On utilise Faker pour générer des données aléatoires en français
-        $faker = \Faker\Factory::create("fr_FR");
+        $faker = Factory::create("fr_FR");
 
         // Génération du nom des différents états possibles pour une sortie pour l'entité Status
         $statusName = [Constantes::CREATED, Constantes::OPENED, Constantes::CLOSED, Constantes::ONGOING, Constantes::FINISHED, Constantes::CANCELLED, Constantes::ARCHIVED];
@@ -130,22 +132,24 @@ class AppFixtures extends Fixture
             $fakeDuration = [60, 90, 120, 180, 240, 300];
             $event->setDuration($faker->randomElement($fakeDuration));
 
-            /** @var \DateTime $startDate */
             $startDate = $event->getDateTimeStart();
 
             // Date de fin d'inscription
-            $interval = 1440; // nombre de minutes dans une journée
-            $registrationDeadline = DateTimeHandler::dateSubMinutes($startDate, $interval);
+            /** @var DateTime $registrationDeadline */
+            $registrationDeadline = clone $startDate;
+            $interval = new DateInterval("P1D");
+            $registrationDeadline->sub($interval);
             $event->setRegistrationDeadline($registrationDeadline);
 
             // Date de fin de la sortie
+            $dateTimeEnd = clone $startDate;
             $intervalDuration = $event->getDuration();
-            $dateTimeEnd = DateTimeHandler::dateAddMinutes($startDate, $intervalDuration);
+            $dateTimeEnd->add(new DateInterval('PT' . $intervalDuration . 'M'));
             $event->setDateTimeEnd($dateTimeEnd);
 
 
             // Les 3 statuts à injecter $statusArray = [$statusCreated, $statusOpen, $statusCancelled];
-            $today = new \DateTime('now');
+            $today = new DateTime('now');
 
             $statusIsCancelled = $faker->boolean(10);
 
@@ -185,9 +189,6 @@ class AppFixtures extends Fixture
 
         $manager->flush();
 
-        // On appele la fonction createStatic date pour des données statiques en base de données
-        $this->createStaticData($manager);
-
         $eventRepository = $manager->getRepository(Event::class);
         $allEvents = $eventRepository->findAll();
 
@@ -198,8 +199,11 @@ class AppFixtures extends Fixture
              }
         }
 
+        // Création des données statiques en base de données
+        $this->createStaticData($manager);
 
-        //$this->functionStatus->UpdateEventsStatus($allEvents);
+        // Mise à jour des statuts
+        $this->functionStatus->UpdateEventsStatus($allEvents);
 
         $manager->persist($event);
         $manager->flush();
@@ -212,149 +216,321 @@ class AppFixtures extends Fixture
      */
     private function createStaticData($manager)
     {
-        $faker = \Faker\Factory::create("fr_FR");
+        $campus1 = $manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]);
+        $campus2 = $manager->getRepository(Campus::class)->findOneBy(['name' => "Rennes"]);
 
-        // Static user 1
-        $staticUser1 = new User();
+        $status = $manager->getRepository(Status::class)->findAll();
+        $statusCreated = FunctionsStatus::getStatusByName(Constantes::CREATED,$status);
+        $statusOpened = FunctionsStatus::getStatusByName(Constantes::OPENED,$status);
+        $statusCancelled = FunctionsStatus::getStatusByName(Constantes::CANCELLED,$status);
 
-        $staticUser1->setPseudo("test");
-        $staticUser1->setFirstName("test");
-        $staticUser1->setLastName("test");
-        $staticUser1->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
-        $staticUser1->setEmail("test@test.com");
-        $staticUser1->setIsActive(1);
-        $staticUser1->setPhoneNumber("0606060606");
-        $password = $this->encoder->encodePassword($staticUser1, "test");
-        $staticUser1->setPassword($password);
-        $staticUser1->setRoles(["ROLE_USER"]);
-        $staticUser1->setIsActive(true);
-        $staticUser1->setIsAdmin(false);
+        //data = [pseudo,firstName,LastName,Campus,email,isActif,telephone,password,[roles],isAdmin)
 
+        //Création de l'utilisateur 1
+        $dataUser = ["test","test","test",$campus1,"test@test.com",true,"06 06 06 06 06","test",["ROLE_USER"],false];
+        $staticUser1 = $this->createUser($dataUser);
         $manager->persist($staticUser1);
 
-        // Static user 2
-        $staticUser2 = new User();
-
-        $staticUser2->setPseudo("Batman");
-        $staticUser2->setFirstName("Bruce");
-        $staticUser2->setLastName("Wayne");
-
-        $staticUser2->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
-
-        $staticUser2->setEmail("batman@test.com");
-        $staticUser2->setIsActive(1);
-        $staticUser2->setPhoneNumber("+33 6 44 61 13 44");
-        $password = $this->encoder->encodePassword($staticUser2, "test");
-        $staticUser2->setPassword($password);
-        $staticUser2->setRoles(["ROLE_USER"]);
-        $staticUser2->setIsActive(true);
-        $staticUser2->setIsAdmin(false);
-
+        //Création de l'utilisateur 2
+        $dataUser = ["Batman","Bruce","Wayne",$campus1,"batman@test.com",true,"+33 6 44 61 13 44","test",["ROLE_USER"],false];
+        $staticUser2 = $this->createUser($dataUser);
         $manager->persist($staticUser2);
 
-        // Static City "Saint-Herblain"
-        $city = new City;
-        $city->setName('Saint-Herblain');
-        $city->setPostCode(	44800);
+        //Création de l'utilisateur 3
+        $dataUser = ["desactive","desactive","desactive",$campus2,"desactive@test.com",true,"+33 6 44 61 13 44","test",["ROLE_USER"],false];
+        $staticUser3 = $this->createUser($dataUser);
+        $manager->persist($staticUser3);
 
+        //dataCity(name,postcode)
+
+        //Création de la ville 1
+        $dataCity = ['Saint-Herblain',44800];
+        $city = $this->createCity($dataCity);
         $manager->persist($city);
 
-        // Static Lieu
-        $place = new Place;
-        $place->setName('Etang du ter');
-        $place->setStreet('rue de la Poste');
-        $place->setLongitude(47.226);
-        $place->setLatitude(-1.741);
-        $place->setCity($city);
+        //Création de la ville 2
+        $dataCity = ['Rennes',35000];
+        $city2 = $this->createCity($dataCity);
+        $manager->persist($city2);
 
-        $manager->persist($place);
+        //dataPlace(name,street,longitude,lattitude,City)
+
+        //Création du lieu 1
+        $dataPlace = ['Etang du ter','rue de la Poste',47.226,-1.741,$city];
+        $place1 = $this->createPlace($dataPlace);
+        $manager->persist($place1);
+
 
         $userRepository = $manager->getRepository(User::class);
         $allUsers = $userRepository->findAll();
 
-        // Static Event 1
-        $staticEvent = new Event();
+        //dataEvent(name,description,Campus,Organiser,maxNumberParticipants,duration,dateTimeStart,
+        //          registrationDeadline,Status,Place,nbParticipants)
 
-        $staticEvent->setName('Sortie Kayak à Saint Herblain');
-        $staticEvent->setDescription('Sortie Kayak à Saint Herblain, pensez à prendre un pique nique, de la crème solaire et un chapeau!');
-        $staticEvent->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
-        $staticEvent->setOrganiser($staticUser1);
-        $staticEvent->setMaxNumberParticipants(6);
-        $staticEvent->setDuration(90);
-        $staticEvent->setDateTimeStart(new \DateTime('now'));
 
-        /** @var \DateTime $startDate */
-        $startDate = $staticEvent->getDateTimeStart();
-        // Date de fin d'inscription
-        $interval = 1440; // nombre de minutes dans une journée
-        $registrationDeadline = DateTimeHandler::dateSubMinutes($startDate, $interval);
-        $staticEvent->setRegistrationDeadline($registrationDeadline);
+        $deadlineDuration = 1440;
 
-        // Date de fin de la sortie
-        $intervalDuration = $staticEvent->getDuration();
-        $dateTimeEnd = DateTimeHandler::dateAddMinutes($startDate, $intervalDuration);
-        $staticEvent->setDateTimeEnd($dateTimeEnd);
+        /** Static Event 1
+         *      statut : créée
+         *      date de début: futur
+         *      deadline : futur
+         *      fin activite : futur
+         *      nb Participants inscrits : incomplet
+         *      organiser : Test
+         */
+        $dateStart = new DateTime("+5 days");
+        $duration = 240;
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
 
-        // Statut
-        $statusCreated = $manager->getRepository(Status::class)->findOneBy(['name'=>'Ouverte']);
-        $staticEvent->setStatus($statusCreated);
-        $staticEvent->setPlace($place);
+        $dataEvent = ['Test 1',
+                      'statut : créée; date de début: futur ; deadline : futur ; fin activite : futur ; nb Participants inscrits : incomplet ; organiser : Test  ',
+                      $campus1,$staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusCreated,$place1,0];
+        $staticEvent1 = $this->createEvent($dataEvent,$allUsers);
+        $manager->persist($staticEvent1);
 
-        $manager->persist($staticEvent);
+        /** Static Event 2
+         *      statut : ouvert
+         *      date de début : futur
+         *      deadline : futur
+         *      fin activite : futur
+         *      nb Participants inscrits : incomplet
+         *      organiser : Test
+         */
 
-        // Static event 2
-        $staticEvent2 = new Event();
-        $staticEvent2->setName('Apprendre Symfony en s\'amusant');
-        $staticEvent2->setDescription('Apprendre Symfony dans la bonne humeur avec Taharqa, Camille et Benjamin. Prevoir un goûter et des dolipranes ! ');
-        $staticEvent2->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
-        $staticEvent2->setOrganiser($staticUser1);
-        $staticEvent2->setMaxNumberParticipants(6);
-        $staticEvent2->setDuration(240);
-        $staticEvent2->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
-        $interval = new DateInterval("P1D");
-        $staticEvent2->setRegistrationDeadline(date_sub($staticEvent2->getDateTimeStart(), $interval));
-        $statusCreated = $manager->getRepository(Status::class)->findOneBy(['name'=>'Annulée']);
-        $staticEvent2->setStatus($statusCreated);
-        $staticEvent2->setPlace($place);
+        $dateStart = new DateTime("+3 days");
+        $duration = 90;
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
 
+        $dataEvent = ['Test 2',
+                      'statut : ouvert ; date de début : futur ; deadline : futur ; fin activite : futur ; nb Participants inscrits : incomplet ; organiser : Test',
+                       $campus1,$staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
+        $staticEvent2 = $this->createEvent($dataEvent,$allUsers);
         $manager->persist($staticEvent2);
 
-        $staticEvent3 = new Event();
-        $staticEvent3->setName('Manger des cailloux');
-        $staticEvent3->setDescription('Quoi de meilleur que de manger des cailloux? Rejoins-nous pour manger des cailloux');
-        $staticEvent3->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
-        $staticEvent3->setOrganiser($staticUser2);
-        $staticEvent3->setMaxNumberParticipants(2);
-        $staticEvent3->setDuration(240);
-        $staticEvent3->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
-        $interval = new DateInterval("P1D");
-        $staticEvent3->setRegistrationDeadline(date_sub($staticEvent3->getDateTimeStart(), $interval));
-        $statusCreated = $manager->getRepository(Status::class)->findOneBy(['name'=>'Créée']);
-        $staticEvent3->setStatus($statusCreated);
-        $staticEvent3->setPlace($place);
+        /** Static Event 3
+         *      statut : ouvert
+         *      date de début : futur
+         *      deadline : futur
+         *      fin activite : futur
+         *      nb Participants inscrits : complet
+         *      organiser : Batman
+         */
 
+        $dateStart = new DateTime("+3 days");
+        $duration = 90;
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
+
+        $dataEvent = ['Test 3',
+                      'statut : ouvert ; date de début : futur ; deadline : futur ; fin activite : futur ; nb Participants inscrits : complet;
+                      organiser : Batman',
+            $campus1,$staticUser2,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,6];
+        $staticEvent3 = $this->createEvent($dataEvent,$allUsers);
         $manager->persist($staticEvent3);
 
-        $staticEvent4 = new Event();
-        $staticEvent4->setName('Apprendre le ping-pong avec Taharqa');
-        $staticEvent4->setDescription('Taharqa, Champion du monde de Ping-pong vous propose de partager ses talents avec vous. Prévoir une raquette et de l\'eau');
-        $staticEvent4->setCampus($manager->getRepository(Campus::class)->findOneBy(['name' => "Saint-Herblain"]));
-        $staticEvent4->setOrganiser($faker->randomElement($allUsers));
-        $staticEvent4->setOrganiser($staticUser1);
-        $staticEvent4->setMaxNumberParticipants(4);
-        $staticEvent4->setDuration(120);
-        $staticEvent4->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
-        $interval = new DateInterval("P1D");
-        $staticEvent4->setRegistrationDeadline(date_sub($staticEvent4->getDateTimeStart(), $interval));
-        $dateFin = $staticEvent4->getDateTimeStart()->add(new DateInterval('PT' . $staticEvent4->getDuration() . 'M'));
-        $staticEvent4->setDateTimeEnd($dateFin);
-        $statusCreated = $manager->getRepository(Status::class)->findOneBy(['name'=>'Créée']);
-        $staticEvent4->setStatus($statusCreated);
-        $staticEvent4->setPlace($place);
+        /** Static Event 4
+         *      statut : cloturé (à vérifier)
+         *      date de début : futur
+         *      deadline : passé
+         *      fin activite : futur
+         *      nb Participants inscrits : complet
+         *      organiser : Test
+         */
 
+        $dateStart = new DateTime("+1 days");
+        $duration = 90;
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
+
+        $dataEvent = ['Test 4',
+                      'statut : cloturé (à vérifier); date de début : futur ; deadline : passé ; fin activite : futur; nb Participants inscrits : incomplet; organiser : Test',
+                      $campus1,$staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,3];
+        $staticEvent4 = $this->createEvent($dataEvent,$allUsers);
         $manager->persist($staticEvent4);
 
+        /** Static Event 5
+         *      statut : En cours (à vérifier)
+         *      date de début : passé de moins d 1 mois
+         *      deadline : passé
+         *      fin activite : futur
+         *      nb Participants inscrits : incomplet
+         *      organiser : Test
+         */
+
+        $dateStart = new DateTime('now');
+        $duration = 90;
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
+
+        $dataEvent = ['Test 5',
+            'statut : En cours (à vérifier) ; date de début : passé de moins d 1 mois ; deadline : passé ; fin activite : futur ; nb Participants inscrits : incomplet ;organiser : Test',
+            $campus1,$staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
+        $staticEvent5 = $this->createEvent($dataEvent,$allUsers);
+        $manager->persist($staticEvent5);
+
+        /** Static Event 6
+         *      statut : Passé (à vérifier)
+         *      date de début : passé de moins d 1 mois
+         *      deadline : passé
+         *      fin activite : passé
+         *      nb Participants inscrits : incomplet
+         *      organiser : Test
+         */
+
+        $dateStart = new DateTime('- 1 week');
+        $duration = 90;
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
+
+        $dataEvent = ['Test 6',
+            'statut : Passé (à vérifier) ; date de début : passé de moins d 1 mois ; deadline : passé ; fin activite : passé nb Participants inscrits : incomplet ;organiser : Test',
+            $campus1,$staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
+        $staticEvent6 = $this->createEvent($dataEvent,$allUsers);
+        $manager->persist($staticEvent6);
+
+        /** Static Event 7
+         *      statut : Annulé (à vérifier)
+         *      date de début : futur
+         *      deadline : futur
+         *      fin activite : futur
+         *      nb Participants inscrits : incomplet
+         *      organiser : Test
+         */
+
+        $dateStart = new DateTime('+ 1 week');
+        $duration = 90;
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
+
+        $dataEvent = ['Test 7',
+            'statut : Annulé (à vérifier) ; date de début : futur ; deadline : futur ; fin activite : futur nb Participants inscrits : incomplet ;organiser : Test',
+            $campus1,$staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusCancelled,$place1,4];
+        $staticEvent7 = $this->createEvent($dataEvent,$allUsers);
+        $manager->persist($staticEvent7);
+
+        /** Static Event 8
+         *      statut : Archivé (à vérifier)
+         *      date de début : passé de plus d 1 mois
+         *      deadline : passé
+         *      fin activite : passé
+         *      nb Participants inscrits : incomplet
+         *      organiser : Test
+         */
+
+        $dateStart = new DateTime('- 2 month');
+        $duration = 90;
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
+
+        $dataEvent = ['Test 9',
+            'statut : Archivé (à vérifier) ; date de début : passé de plus d 1 mois ; deadline : passé ; fin activite : passé nb Participants inscrits : incomplet ;organiser : Test',
+            $campus1,$staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
+        $staticEvent8 = $this->createEvent($dataEvent,$allUsers);
+        $manager->persist($staticEvent8);
+
         $manager->flush();
+
+    }
+
+    const PSEUDO = 0;
+    const FIRSTNAME = 1;
+    const LASTNAME = 2;
+    const CAMPUS = 3;
+    const EMAIL = 4;
+    const IS_ACTIF = 5;
+    const TELEPHONE = 6;
+    const PASSWORD = 7;
+    const ROLES = 8;
+    const IS_ADMIN = 9;
+
+    /**
+     * @param array $dataUser
+     * @return User
+     */
+    private function createUser(array $dataUser): User
+    {
+        //data = [pseudo,firstName,LastName,Campus,email,isActif,telephone,password,[roles],isAdmin)
+
+        $staticUser = new User();
+
+        $staticUser->setPseudo($dataUser[self::PSEUDO]);
+        $staticUser->setFirstName($dataUser[self::FIRSTNAME]);
+        $staticUser->setLastName($dataUser[self::LASTNAME]);
+        $staticUser->setCampus($dataUser[self::CAMPUS]);
+        $staticUser->setEmail($dataUser[self::EMAIL]);
+        $staticUser->setIsActive($dataUser[self::IS_ACTIF]);
+        $staticUser->setPhoneNumber($dataUser[self::TELEPHONE]);
+        $password = $this->encoder->encodePassword($staticUser, $dataUser[self::PASSWORD]);
+        $staticUser->setPassword($password);
+        $staticUser->setRoles($dataUser[self::ROLES]);
+        $staticUser->setIsAdmin($dataUser[self::IS_ADMIN]);
+
+        return $staticUser;
+    }
+
+    const NAME_CITY = 0;
+    const POST_CODE = 1;
+
+    private function createCity(array $dataCity) : City
+    {
+        $staticCity = new City();
+
+        $staticCity->setName($dataCity[self::NAME_CITY]);
+        $staticCity->setPostCode($dataCity[self::POST_CODE]);
+
+        return $staticCity;
+    }
+
+    const NAME_PLACE = 0;
+    const STREET = 1;
+    const LONGITUDE = 2;
+    const LATTITUDE = 3;
+    const CITY = 4;
+
+    private function createPlace(array $dataPlace) : Place
+    {
+        //dataCity(name,street,longitude,lattitude,city)
+        $staticPlace = new Place();
+
+        $staticPlace->setName($dataPlace[self::NAME_PLACE]);
+        $staticPlace->setStreet($dataPlace[self::STREET]);
+        $staticPlace->setLongitude($dataPlace[self::LONGITUDE]);
+        $staticPlace->setLatitude($dataPlace[self::LATTITUDE]);
+        $staticPlace->setCity($dataPlace[self::CITY]);
+
+        return $staticPlace;
+    }
+
+    const EVENT_NAME = 0;
+    const DESCRIPTION = 1;
+    const EVENT_CAMPUS = 2;
+    const ORGANISER = 3;
+    const MAX_NB_PARTICIPANTS = 4;
+    const DURATION = 5;
+    const DATETIME_START = 6;
+    const REGISTRATION_DEADLINE = 7;
+    const STATUS = 8;
+    const PLACE = 9;
+    const NB_PARTICIPANTS = 10;
+
+    private function createEvent(array $dataEvent, $allUsers) : Event
+    {
+        //dataEvent(name,description,Campus,Organiser,maxNumberParticipants,duration,dateTimeStart,
+        //          registrationDeadline,Status,Place,nbParticipants)
+        $faker = Factory::create();
+        $staticEvent = new Event();
+
+        $staticEvent->setName($dataEvent[self::EVENT_NAME]);
+        $staticEvent->setDescription($dataEvent[self::DESCRIPTION]);
+        $staticEvent->setCampus($dataEvent[self::EVENT_CAMPUS]);
+        $staticEvent->setOrganiser($dataEvent[self::ORGANISER]);
+        $staticEvent->setMaxNumberParticipants($dataEvent[self::MAX_NB_PARTICIPANTS]);
+        $staticEvent->setDuration($dataEvent[self::DURATION]);
+        $staticEvent->setDateTimeStart($dataEvent[self::DATETIME_START]);
+        $staticEvent->setRegistrationDeadline($dataEvent[self::REGISTRATION_DEADLINE]);
+        $staticEvent->setDateTimeEnd(DateTimeHandler::dateAddMinutes($dataEvent[self::DATETIME_START],$dataEvent[self::DURATION]));
+        $staticEvent->setStatus($dataEvent[self::STATUS]);
+        $staticEvent->setPlace($dataEvent[self::PLACE]);
+
+        for($i = 0 ; $i < $dataEvent[self::NB_PARTICIPANTS];$i++ ){
+            $staticEvent->addParticipant($faker->randomElement($allUsers));
+        }
+
+        return $staticEvent;
 
     }
 }
