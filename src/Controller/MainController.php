@@ -8,6 +8,7 @@ use App\Repository\EventRepository;
 use App\Utils\EventLine;
 use App\Utils\FunctionsStatus;
 use App\Utils\SearchEventCriterias;
+use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -17,13 +18,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class MainController extends AbstractController
 {
 
-
     /**
      * @Route("/main", name="main")
      */
     public function index(Request $request,
                           EventRepository $eventRepository,
-                          FunctionsStatus $functionsStatus): Response
+                          FunctionsStatus $functionsStatus,
+                          EntityManager $entityManager): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -50,18 +51,18 @@ class MainController extends AbstractController
             $eventLine = new EventLine();
             $eventLine->setEvent($event);
             $eventLine->setNbRegistered(count($event->getParticipants()));
-            //$mapNbParticipantsByEvent[$event->getId()] = count($event->getParticipants());
             if ($event->getParticipants()->contains($user)){
-                //$mapIsRegisteredByEvent[$event->getId()] = 'X';
                 $eventLine->setIsRegistered('X');
             }else{
-                //$mapIsRegisteredByEvent[$event->getId()] = '';
                 $eventLine->setIsRegistered('');
             }
             $eventLine->updateLinks($user);
-
             $eventLines[] = $eventLine;
+
+            $entityManager->persist($event);
         }
+
+        $entityManager->flush();
 
       return $this->render('main/index.html.twig', [
             'searchForm' => $searchForm->createView(),
