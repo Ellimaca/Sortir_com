@@ -20,7 +20,6 @@ class FunctionsStatus
         $this->repository = $repository;
     }
 
-
     /**
      * fonction permettant de mettre à jour le status d'un event
      * @param Event $event
