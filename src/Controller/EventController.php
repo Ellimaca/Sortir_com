@@ -140,42 +140,48 @@ class EventController extends AbstractController
         //Les inscrits à la sortie
         $foundParticipants = $eventChoosen->getParticipants();
 
-        //Si l'utilisateur est déjà inscrit à la sortie...
-        if($foundParticipants->contains($user)) {
-            $this->addFlash('warning', 'Vous êtes déjà inscrit à cette sortie!');
-            $this->redirectToRoute('main');
-        }
+        //TODO : update le statut
 
-        //Si sorties annulées...
-        if($eventChoosen->getStatus()->getName() == Constantes::CANCELLED) {
-            $this->addFlash('warning', "Cette sortie a été annulée!");
-            $this->redirectToRoute('main');
-        }
+        $eventStatusName = $eventChoosen->getStatus()->getName();
 
-        //Si sorties fermées à l'inscription...
-        if($eventChoosen->getStatus()->getName() == Constantes::CLOSED) {
-            $this->addFlash('warning', "La date limite d'inscription est dépassée");
-            $this->redirectToRoute('main');
-        }
+        switch ($eventStatusName) {
+            //Si sorties annulées...
+            case Constantes::CANCELLED :
+                $this->addFlash('warning', "Cette sortie a été annulée!");
+                $this->redirectToRoute('main');
+                break;
+            //Si sorties fermées à l'inscription...
+            case Constantes::CLOSED :
+                $this->addFlash('warning', "La date limite d'inscription est dépassée");
+                $this->redirectToRoute('main');
+                break;
+            //Si sorties se déroulent au moment de l'inscription...
+            case Constantes::ONGOING :
+                $this->addFlash('warning', "Impossible de s'inscrire, l'activité se déroule en ce moment-même!");
+                $this->redirectToRoute('main');
+                break;
+            //Si la sortie est déjà passée...
+            case Constantes::FINISHED :
+                $this->addFlash('warning', "La sortie est finie!");
+                $this->redirectToRoute('main');
+                break;
+            //Si le statut de la sortie est "Ouverte"...
+            case Constantes::OPENED :
+            //Si l'utilisateur est l'organisateur de la sortie...
+                if($eventChoosen->getOrganiser() === $user) {
+                    $this->addFlash('warning', 'Vous avez crée la sortie, vous ne pouvez pas vous inscrire!');
+                }
+                //Si l'utilisateur est déjà inscrit à la sortie...
+                elseif($foundParticipants->contains($user)) {
+                    $this->addFlash('warning', 'Vous êtes déjà inscrit à cette sortie!');
+                }
 
-        //Si sorties se déroulent au moment de l'inscription...
-        if($eventChoosen->getStatus()->getName() == Constantes::ONGOING) {
-            $this->addFlash('warning', "Impossible de s'inscrire, l'activité se déroule en ce moment-même!");
-            $this->redirectToRoute('main');
-        }
+                //... On vérifie que le nombre max de participants n'est pas atteint
+                elseif ($eventChoosen->getParticipants()->count() >= $eventChoosen->getMaxNumberParticipants()) {
+                    $this->addFlash('warning', 'Le nombre maximum de participants a été atteint!');
+                }
 
-        //Si la sortie est déjà passée...
-        if($eventChoosen->getStatus()->getName() == Constantes::FINISHED) {
-            $this->addFlash('warning', "La sortie est finie!");
-            $this->redirectToRoute('main');
-        }
-
-        //Si le statut de la sortie est "Ouverte"...
-        if($eventChoosen->getStatus()->getName() == Constantes::OPENED) {
-            //...on vérifie que la deadline ne soit pas dépassée...
-            if ($eventChoosen->getRegistrationDeadline() >= new \DateTime('now')) {
-                //... et enfin si la deadline n'est pas dépassée, on vérifie que le nombre max de participants n'est pas atteint
-                if ($eventChoosen->getParticipants()->count() != $eventChoosen->getMaxNumberParticipants()) {
+                else {
                     //Si toutes les conditions sont remplies, on ajoute notre user à la sortie
                     $eventChoosen->addParticipant($user);
 
@@ -183,11 +189,14 @@ class EventController extends AbstractController
                     $manager->flush();
 
                     $this->addFlash('success', "Vous êtes bien inscrit à la sortie!");
-                    $this->redirectToRoute('main');
                 }
 
-            }
+                $this->redirectToRoute('main');
+                break;
+
         }
+
+
 
         return $this->render("event/view.html.twig", [
             "foundEvent" => $eventChoosen,
