@@ -3,15 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Event;
-use App\Entity\Place;
 use App\Entity\User;
 use App\Form\EventType;
-use App\Form\PlaceType;
 use App\Repository\EventRepository;
 use App\Repository\StatusRepository;
-use App\Repository\UserRepository;
 use App\Utils\Constantes;
-use DateInterval;
 use Doctrine\ORM\EntityManagerInterface;
 use http\Env\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
