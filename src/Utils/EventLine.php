@@ -83,42 +83,42 @@ class EventLine
         $this->links = [];
 
         switch ($this->event->getStatus()->getName()) {
-            case CREATED:
-                $this->links[] = EVENT_MODIFY;
-                $this->links[] = EVENT_PUBLISH;
+            case Constantes::CREATED:
+                $this->links[] = Constantes::EVENT_MODIFY;
+                $this->links[] = Constantes::EVENT_PUBLISH;
                 break;
-            case OPENED:
-                $this->links[] = EVENT_SHOW;
+            case Constantes::OPENED:
+                $this->links[] = Constantes::EVENT_SHOW;
 
                 if ($this->event->getOrganiser() === $user) {
-                    $this->links[] = EVENT_MODIFY;
-                    $this->links[] = EVENT_CANCEL;
+                    $this->links[] = Constantes::EVENT_MODIFY;
+                    $this->links[] = Constantes::EVENT_CANCEL;
                 } elseif ($this->nbRegistered < $this->event->getMaxNumberParticipants() &&
                     !$this->event->getParticipants()->contains($user)) {
-                    $this->links[] = EVENT_REGISTER;
+                    $this->links[] = Constantes::EVENT_REGISTER;
                 }
 
                 if ($this->event->getParticipants()->contains($user)) {
-                    $this->links[] = EVENT_ABANDON;
+                    $this->links[] = Constantes::EVENT_ABANDON;
                 }
                 break;
-            case CLOSED:
-                $this->links[] = EVENT_SHOW;
+            case Constantes::CLOSED:
+                $this->links[] = Constantes::EVENT_SHOW;
 
                 if ($this->event->getOrganiser() === $user) {
-                    $this->links[] = EVENT_MODIFY;
-                    $this->links[] = EVENT_CANCEL;
+                    $this->links[] = Constantes::EVENT_MODIFY;
+                    $this->links[] = Constantes::EVENT_CANCEL;
                 }
 
                 if ($this->event->getParticipants()->contains($user)) {
-                    $this->links[] = EVENT_ABANDON;
+                    $this->links[] = Constantes::EVENT_ABANDON;
                 }
                 break;
-            case ONGOING:
-            case FINISHED:
-            case CANCELLED:
-            case ARCHIVED:
-                $this->links[] = EVENT_SHOW;
+            case Constantes::ONGOING:
+            case Constantes::FINISHED:
+            case Constantes::CANCELLED:
+            case Constantes::ARCHIVED:
+                $this->links[] = Constantes::EVENT_SHOW;
                 break;
         }
 

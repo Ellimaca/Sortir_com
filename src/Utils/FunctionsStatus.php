@@ -12,13 +12,7 @@ use App\Repository\StatusRepository;
 
 class FunctionsStatus
 {
-    const CREATED = 'Créée';
-    const OPENED = 'Ouverte';
-    const CLOSED = 'Clôturée';
-    const ONGOING = 'Activité en cours';
-    const FINISHED = 'Passée';
-    const CANCELLED = 'Annulée';
-    const ARCHIVED = 'Archivée';
+
     private $repository;
     
     public function __construct(StatusRepository $repository)
@@ -64,33 +58,33 @@ class FunctionsStatus
         /** @var string $status */
         $status = $event->getStatus()->getName();
 
-        if($status == OPENED){
+        if($status == Constantes::OPENED){
             if($deadline >= new \DateTime('now')){
-                $event->setStatus($this->getStatusByName(CLOSED,$statusList));
+                $event->setStatus($this->getStatusByName(Constantes::CLOSED,$statusList));
             }
         }
 
-        if($status == CLOSED) {
+        if($status == Constantes::CLOSED) {
             if($dateStart >= new \DateTime('now')){
-                $event->setStatus($this->getStatusByName(ONGOING, $statusList));
+                $event->setStatus($this->getStatusByName(Constantes::ONGOING, $statusList));
             }
         }
 
-        if($status == ONGOING) {
+        if($status == Constantes::ONGOING) {
             if($dateEnd >= new \DateTime('now')){
-                $event->setStatus($this->getStatusByName(FINISHED, $statusList));
+                $event->setStatus($this->getStatusByName(Constantes::FINISHED, $statusList));
             }
         }
 
-        if($status == FINISHED) {
+        if($status == Constantes::FINISHED) {
             if(date_diff($dateEnd,new \DateTime('now'))->m >= 1){
-                $event->setStatus($this->getStatusByName(ARCHIVED, $statusList));
+                $event->setStatus($this->getStatusByName(Constantes::ARCHIVED, $statusList));
             }
         }
 
-        if($status == CANCELLED) {
+        if($status == Constantes::CANCELLED) {
             if(date_diff($dateEnd,new \DateTime('now'))->m >= 1){
-                $event->setStatus($this->getStatusByName(ARCHIVED, $statusList));
+                $event->setStatus($this->getStatusByName(Constantes::ARCHIVED, $statusList));
             }
         }
     }
