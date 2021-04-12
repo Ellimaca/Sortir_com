@@ -54,6 +54,7 @@ class EventType extends AbstractType
                 'class' => Campus::class,
                 'choice_label' => 'name',
                 'choice_value' => ChoiceList::value($this, 'name'),
+                'disabled' => true
             ])
             ->add('city', EntityType::class, [
                 'label' => 'Ville',

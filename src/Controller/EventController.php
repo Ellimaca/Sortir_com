@@ -56,30 +56,38 @@ class EventController extends AbstractController
      */
     public function create (\Symfony\Component\HttpFoundation\Request $request, EntityManagerInterface $entityManager, StatusRepository $statusRepository) {
 
+        // Creation d'un nouvel event
         $event = new Event();
 
+        // Récupération de l'utilisateur connecté
         /** @var User $user */
         $user = $this->getUser();
 
-        // L'utilisateur connecté est l'organisateur
+        // L'utilisateur connecté est défini comme organisateur
         $event->setOrganiser($user);
 
+        // On utilise le campus de l'utilisateur connecté dans le formulaire
+        $event->setCampus($user->getCampus());
+
+        // Création du formulaire
         $eventForm = $this->createForm(EventType::class, $event);
 
         $eventForm->handleRequest($request);
 
         if($eventForm->isSubmitted() && $eventForm->isValid()) {
 
+            // Calcul de la date de fin de l'évènement
+            /** @var \DateTime $startDate */
             $startDate = $event->getDateTimeStart();
-            $dateTimeEnd = clone $startDate;
             $intervalDuration = $event->getDuration();
-
-            $dateTimeEnd->add(new DateInterval('PT' . $intervalDuration . 'M'));
+            $dateTimeEnd = DateTimeHandler::dateAddMinutes($startDate, $intervalDuration);
             $event->setDateTimeEnd($dateTimeEnd);
 
+            // La sortie est "ouverte" si l'utilisateur clique sur "publier la sortie"
             $status = $statusRepository->findOneBy(["name" => Constantes::OPENED]);
             $event->setStatus($status);
 
+            // La sortie est "crée" si l'utilisateur clique sur "enregistrer"
             if ($eventForm->get('save')->isClicked()) {
                 $status = $statusRepository->findOneBy(["name" => Constantes::CREATED]);
                 $event->setStatus($status);
@@ -98,13 +106,13 @@ class EventController extends AbstractController
         $placeForm = $this->createForm(PlaceType::class, $place);
         $placeForm->handleRequest($request);
         if($placeForm->isSubmitted() && $placeForm->isValid()) {
-            $placeCity = $placeForm->get('city')->getData();
-            $place->setCity($placeCity);
+        $placeCity = $placeForm->get('city')->getData();
+        $place->setCity($placeCity);
 
-            $entityManager->persist($place);
-            $entityManager->flush();
+        $entityManager->persist($place);
+        $entityManager->flush();
 
-            $this->addFlash('success', 'Votre lieu a bien été ajouté !');
+        $this->addFlash('success', 'Votre lieu a bien été ajouté !');
 
         }
         $event->setPlace($place);
