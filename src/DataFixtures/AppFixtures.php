@@ -14,6 +14,8 @@ use DateInterval;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use App\Utils\DateTimeHandler;
+use Symfony\Component\Validator\Constraints\Date;
 
 class AppFixtures extends Fixture
 
@@ -29,6 +31,7 @@ class AppFixtures extends Fixture
     {
         $this->encoder = $userPasswordEncoder;
         $this->functionStatus = $functionsStatus;
+
     }
 
     /**
@@ -127,19 +130,17 @@ class AppFixtures extends Fixture
             $fakeDuration = [60, 90, 120, 180, 240, 300];
             $event->setDuration($faker->randomElement($fakeDuration));
 
+            /** @var \DateTime $startDate */
             $startDate = $event->getDateTimeStart();
 
             // Date de fin d'inscription
-            /** @var \DateTime $registrationDeadline */
-            $registrationDeadline = clone $startDate;
-            $interval = new DateInterval("P1D");
-            $registrationDeadline->sub($interval);
+            $interval = 1440; // nombre de minutes dans une journée
+            $registrationDeadline = DateTimeHandler::dateSubMinutes($startDate, $interval);
             $event->setRegistrationDeadline($registrationDeadline);
 
             // Date de fin de la sortie
-            $dateTimeEnd = clone $startDate;
             $intervalDuration = $event->getDuration();
-            $dateTimeEnd->add(new DateInterval('PT' . $intervalDuration . 'M'));
+            $dateTimeEnd = DateTimeHandler::dateAddMinutes($startDate, $intervalDuration);
             $event->setDateTimeEnd($dateTimeEnd);
 
 
@@ -280,9 +281,21 @@ class AppFixtures extends Fixture
         $staticEvent->setOrganiser($staticUser1);
         $staticEvent->setMaxNumberParticipants(6);
         $staticEvent->setDuration(90);
-        $staticEvent->setDateTimeStart($faker->dateTimeBetween(" -1 month", " + 1 month "));
-        $interval = new DateInterval("P1D");
-        $staticEvent->setRegistrationDeadline(date_sub($staticEvent->getDateTimeStart(), $interval));
+        $staticEvent->setDateTimeStart(new \DateTime('now'));
+
+        /** @var \DateTime $startDate */
+        $startDate = $staticEvent->getDateTimeStart();
+        // Date de fin d'inscription
+        $interval = 1440; // nombre de minutes dans une journée
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($startDate, $interval);
+        $staticEvent->setRegistrationDeadline($registrationDeadline);
+
+        // Date de fin de la sortie
+        $intervalDuration = $staticEvent->getDuration();
+        $dateTimeEnd = DateTimeHandler::dateAddMinutes($startDate, $intervalDuration);
+        $staticEvent->setDateTimeEnd($dateTimeEnd);
+
+        // Statut
         $statusCreated = $manager->getRepository(Status::class)->findOneBy(['name'=>'Ouverte']);
         $staticEvent->setStatus($statusCreated);
         $staticEvent->setPlace($place);

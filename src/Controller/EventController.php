@@ -17,6 +17,7 @@ use http\Env\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Utils\DateTimeHandler;
 
 class EventController extends AbstractController
 {
@@ -72,6 +73,7 @@ class EventController extends AbstractController
             $startDate = $event->getDateTimeStart();
             $dateTimeEnd = clone $startDate;
             $intervalDuration = $event->getDuration();
+
             $dateTimeEnd->add(new DateInterval('PT' . $intervalDuration . 'M'));
             $event->setDateTimeEnd($dateTimeEnd);
 
