@@ -23,7 +23,6 @@ class MainController extends AbstractController
      */
     public function index(Request $request,
                           EventRepository $eventRepository,
-                          SearchEventCriterias $searchEventCriterias,
                           FunctionsStatus $functionsStatus): Response
     {
         /** @var User $user */

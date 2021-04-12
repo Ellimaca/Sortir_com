@@ -3,11 +3,6 @@
 
 namespace App\Utils;
 
-
-use App\Entity\Campus;
-use App\Entity\User;
-
-
 class SearchEventCriterias
 {
     private $campus;
@@ -107,55 +102,31 @@ class SearchEventCriterias
     /**
      * @return mixed
      */
-    public function getIsOrganisedByMe()
+    public function getIsOrganisedByMe(): ?bool
     {
         return $this->isOrganisedByMe;
     }
 
     /**
-     * @param mixed $isOrganisedByMe
-     */
-    public function setIsOrganisedByMe($isOrganisedByMe): void
-    {
-        $this->isOrganisedByMe = $isOrganisedByMe;
-    }
-
-    /**
      * @return mixed
      */
-    public function getIsAttendedByMe()
+    public function getIsAttendedByMe(): ?bool
     {
         return $this->isAttendedByMe;
     }
 
     /**
-     * @param mixed $isAttendedByMe
-     */
-    public function setIsAttendedByMe($isAttendedByMe): void
-    {
-        $this->isAttendedByMe = $isAttendedByMe;
-    }
-
-    /**
      * @return mixed
      */
-    public function getIsNotAttendedByMe()
+    public function getIsNotAttendedByMe(): ?bool
     {
         return $this->isNotAttendedByMe;
     }
 
     /**
-     * @param mixed $isNotAttendedByMe
-     */
-    public function setIsNotAttendedByMe($isNotAttendedByMe): void
-    {
-        $this->isNotAttendedByMe = $isNotAttendedByMe;
-    }
-
-    /**
      * @return mixed
      */
-    public function getIsFinished()
+    public function getIsFinished(): ?bool
     {
         return $this->isFinished;
     }

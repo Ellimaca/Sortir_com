@@ -7,13 +7,13 @@ namespace App\Utils;
 use App\Entity\Event;
 use App\Entity\Status;
 use App\Repository\StatusRepository;
-
+use DateTime;
 
 
 class FunctionsStatus
 {
 
-    private $repository;
+    private StatusRepository $repository;
     
     public function __construct(StatusRepository $repository)
     {
@@ -49,41 +49,41 @@ class FunctionsStatus
      */
     public function UpdateStatus(Event $event,$statusList){
 
-        /** @var \DateTime $dateStart */
+        /** @var DateTime $dateStart */
         $dateStart = $event->getDateTimeStart();
-        /** @var \DateTime $dateEnd */
+        /** @var DateTime $dateEnd */
         $dateEnd = $event->getDateTimeEnd();
-        /** @var \DateTime $deadline */
+        /** @var DateTime $deadline */
         $deadline = $event->getRegistrationDeadline();
         /** @var string $status */
         $status = $event->getStatus()->getName();
 
         if($status == Constantes::OPENED){
-            if($deadline >= new \DateTime('now')){
+            if($deadline >= new DateTime('now')){
                 $event->setStatus($this->getStatusByName(Constantes::CLOSED,$statusList));
             }
         }
 
         if($status == Constantes::CLOSED) {
-            if($dateStart >= new \DateTime('now')){
+            if($dateStart >= new DateTime('now')){
                 $event->setStatus($this->getStatusByName(Constantes::ONGOING, $statusList));
             }
         }
 
         if($status == Constantes::ONGOING) {
-            if($dateEnd >= new \DateTime('now')){
+            if($dateEnd >= new DateTime('now')){
                 $event->setStatus($this->getStatusByName(Constantes::FINISHED, $statusList));
             }
         }
 
         if($status == Constantes::FINISHED) {
-            if(date_diff($dateEnd,new \DateTime('now'))->m >= 1){
+            if(date_diff($dateEnd,new DateTime('now'))->m >= 1){
                 $event->setStatus($this->getStatusByName(Constantes::ARCHIVED, $statusList));
             }
         }
 
         if($status == Constantes::CANCELLED) {
-            if(date_diff($dateEnd,new \DateTime('now'))->m >= 1){
+            if(date_diff($dateEnd,new DateTime('now'))->m >= 1){
                 $event->setStatus($this->getStatusByName(Constantes::ARCHIVED, $statusList));
             }
         }
