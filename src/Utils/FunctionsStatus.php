@@ -28,8 +28,8 @@ class FunctionsStatus
      */
     public function UpdateEventStatus(Event $event): Event{
         $events[] = $event;
-        $this->UpdateEventsStatus($events);
-        return $events;
+        $events = $this->UpdateEventsStatus($events);
+        return $events[0];
     }
 
     /**
@@ -52,7 +52,7 @@ class FunctionsStatus
      * @param Event $event
      * @param $statusList
      */
-    public function UpdateStatus(Event $event,$statusList): Event{
+    private function UpdateStatus(Event $event,$statusList): Event{
 
         //date_default_timezone_set ( Constantes::TIME_ZONE);
 
