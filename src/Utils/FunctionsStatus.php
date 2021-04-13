@@ -26,21 +26,25 @@ class FunctionsStatus
      * fonction permettant de mettre à jour le status d'un event
      * @param Event $event
      */
-    public function UpdateEventStatus(Event $event){
+    public function UpdateEventStatus(Event $event): Event{
         $events[] = $event;
         $this->UpdateEventsStatus($events);
+        return $events;
     }
 
     /**
      * Optimisation d'UpdateStatus pour limiter les appels à la base en traitant une collection d'events
      * @param $events
      */
-    public function UpdateEventsStatus($events){
+    public function UpdateEventsStatus($events): array
+    {
         $statusList = $this->repository->findAll();
 
         foreach ($events as $event){
             $this->UpdateStatus($event,$statusList);
         }
+
+        return $statusList;
     }
 
     /**
@@ -48,7 +52,7 @@ class FunctionsStatus
      * @param Event $event
      * @param $statusList
      */
-    public function UpdateStatus(Event $event,$statusList){
+    public function UpdateStatus(Event $event,$statusList): Event{
 
         date_default_timezone_set ( Constantes::TIME_ZONE);
 
