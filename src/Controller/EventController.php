@@ -36,13 +36,16 @@ class EventController extends AbstractController
      */
     public function view(int $id, EventRepository $eventRepository): Response
     {
-
+        /** @var User $user */
+        $user = $this->getUser();
         $foundEvent = $eventRepository->findOneBy(['id' => $id]);
-        if (!$foundEvent) {
+
+        if (!$foundEvent || ($foundEvent->getStatus()->getName() == Constantes::CREATED and $foundEvent->getOrganiser() !== $user)) {
             throw $this->createNotFoundException("Cet évenement n'existe pas");
+        } else {
+            $foundParticipants = $foundEvent->getParticipants();
+            return $this->render('event/view.html.twig', ['foundEvent' => $foundEvent, 'foundParticipants' => $foundParticipants]);
         }
-        $foundParticipants = $foundEvent->getParticipants();
-        return $this->render('event/view.html.twig', ['foundEvent' => $foundEvent, 'foundParticipants' => $foundParticipants]);
     }
 
     /**
@@ -51,7 +54,8 @@ class EventController extends AbstractController
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      */
-    public function create (\Symfony\Component\HttpFoundation\Request $request, EntityManagerInterface $entityManager, StatusRepository $statusRepository) {
+    public function create (\Symfony\Component\HttpFoundation\Request $request, EntityManagerInterface $entityManager, StatusRepository $statusRepository)
+    {
 
         // Creation d'un nouvel event
         $event = new Event();
@@ -98,6 +102,7 @@ class EventController extends AbstractController
             return $this->redirectToRoute('main');
         }
 
+        // Bloc à décommenter au moment de l'ajout de la fonctionnalité 'ajouter un lieu'
         /**
         $place = new Place();
         $placeForm = $this->createForm(PlaceType::class, $place);

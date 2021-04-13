@@ -29,8 +29,8 @@
             <div class="col-md-6">
                 <div class="h-100 ">
                 <p>{{ form_row((eventForm.campus)) }}</p>
-                <p>{{ form_row((eventForm.city)) }}</p>
-                <p>{{ form_row ((eventForm.place)) }}</p>
+                <p>{{ form_row((eventForm.city)) }}</p> {#<select id="event_city" #}
+                <p>{{ form_row ((eventForm.place)) }}</p>  {# <select id="event_place"  #}
                 </div>
             </div>
 
@@ -49,9 +49,32 @@
         </div>
     </div>
 
+    <script>
+        var $city = $('#event_city');
 
+        $city.change(function() {
 
-  {#  Formulaire à décomenter pour pour voir ajouter un nouveau lieu
+            var $form = $(this).closest('eventForm');
+
+            var data = {};
+            data[$city.attr('name')] = $city.val();
+
+            $.ajax({
+                url : $form.attr('action'),
+                type: $form.attr('method'),
+                data : data,
+                success: function(html) {
+
+                    $('#event_place').replaceWith(
+
+                        $(html).find('#event_place')
+                    );
+                }
+            });
+        });
+    </script>
+
+  {#  Formulaire à décommenter pour pouvoir ajouter un nouveau lieu
     {{ form_start(placeForm) }}
     {{ form_row((placeForm.name)) }}
     {{ form_row((placeForm.street)) }}

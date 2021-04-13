@@ -17,6 +17,9 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class EventType extends AbstractType
@@ -48,7 +51,8 @@ class EventType extends AbstractType
             ->add('description', TextareaType::class, [
                 'label' => 'Description et infos'
             ])
-            // TODO mettre le campus de l'utilisateur figé
+            ->add('save', SubmitType::class, ['label' => 'Enregistrer'])
+            ->add('submit', SubmitType::class, ['label'=> 'publier la sortie'])
             ->add('campus', EntityType::class, [
                 'label' => "Campus",
                 'class' => Campus::class,
@@ -59,18 +63,43 @@ class EventType extends AbstractType
             ->add('city', EntityType::class, [
                 'label' => 'Ville',
                 'class' => City::class,
-                'choice_label' => 'name',  'mapped' => false
-            ])
-
-            ->add('place', EntityType::class, [
-                'label' => 'Lieu',
-                'class' => Place::class,
                 'choice_label' => 'name',
+                'mapped' => false,
+                'placeholder' => 'Choisir une ville',
             ])
-            ->add('save', SubmitType::class, ['label' => 'Enregistrer'])
-            ->add('submit', SubmitType::class, ['label'=> 'publier la sortie'])
-
         ;
+        $formModifier = function (FormInterface $form, City $city = null) {
+            $places = null === $city ? [] : $city->getPlaces();
+
+            $form->add('place', EntityType::class, [
+                'class' => Place::class,
+                'label' => 'Lieu',
+                'choices' => $places,
+                'placeholder' => 'Définir un lieu'
+            ]);
+        };
+
+        $builder->addEventListener(
+            FormEvents::PRE_SET_DATA,
+            function (FormEvent $event) use ($formModifier) {
+
+            $data = $event->getData();
+
+            $formModifier($event->getForm(), $data->getPlace());
+             }
+        );
+
+        $builder->get('city')->addEventListener(
+            FormEvents::POST_SUBMIT,
+            function (FormEvent $event) use ($formModifier) {
+
+                $city = $event->getForm()->getData();
+
+                $formModifier($event->getForm()->getParent(), $city);
+            }
+        );
+
+
     }
 
     public function configureOptions(OptionsResolver $resolver)
