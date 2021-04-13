@@ -50,6 +50,8 @@ class FunctionsStatus
      */
     public function UpdateStatus(Event $event,$statusList){
 
+        date_default_timezone_set ( Constantes::TIME_ZONE);
+
         /** @var DateTime $dateStart */
         $dateStart = $event->getDateTimeStart();
         /** @var DateTime $dateEnd */
@@ -59,36 +61,34 @@ class FunctionsStatus
         /** @var string $status */
         $status = $event->getStatus()->getName();
 
-        var_dump($dateStart);
-        var_dump($dateEnd);
-        var_dump($deadline);
-        var_dump($status);
+//        var_dump(new DateTime());
+//        var_dump($deadline);
+//        var_dump($dateStart);
+//        var_dump($dateEnd);
+//        var_dump($status);
+//
+//        var_dump($status == Constantes::OPENED);
+//        var_dump($deadline <= new DateTime('now'));
 
         if($status == Constantes::OPENED){
-            if($deadline >= new DateTime('now')){
+            if($deadline <= new DateTime('now')){
                 $event->setStatus(self::getStatusByName(Constantes::CLOSED,$statusList));
             }
         }
 
         if($status == Constantes::CLOSED) {
-            if($dateStart >= new DateTime('now')){
+            if($dateStart <= new DateTime('now')){
                 $event->setStatus(self::getStatusByName(Constantes::ONGOING, $statusList));
             }
         }
 
         if($status == Constantes::ONGOING) {
-            if($dateEnd >= new DateTime('now')){
+            if($dateEnd <= new DateTime('now')){
                 $event->setStatus(self::getStatusByName(Constantes::FINISHED, $statusList));
             }
         }
 
-        if($status == Constantes::FINISHED) {
-            if(date_diff($dateEnd,new DateTime('now'))->m >= 1){
-                $event->setStatus(self::getStatusByName(Constantes::ARCHIVED, $statusList));
-            }
-        }
-
-        if($status == Constantes::CANCELLED) {
+        if($status == Constantes::FINISHED || $status == Constantes::CANCELLED) {
             if(date_diff($dateEnd,new DateTime('now'))->m >= 1){
                 $event->setStatus(self::getStatusByName(Constantes::ARCHIVED, $statusList));
             }
@@ -97,6 +97,7 @@ class FunctionsStatus
         $this->entityManager->persist($event);
         $this->entityManager->flush();
 
+        return $event;
     }
 
     /**
