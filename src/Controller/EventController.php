@@ -133,7 +133,7 @@ class EventController extends AbstractController
 
     /**
      * Permet de s'inscrire à un évènement
-     * @Route("/evenement/inscription{id}", name="event_registration")
+     * @Route("/evenement/inscription/{id}", name="event_registration")
      */
     public function registration($id,
                                  EventRepository $eventRepository,
@@ -215,7 +215,6 @@ class EventController extends AbstractController
                 break;
 
         }
-
 
         return $this->render("event/view.html.twig", [
             "foundEvent" => $eventChoosen,
