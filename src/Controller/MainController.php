@@ -45,8 +45,6 @@ class MainController extends AbstractController
 
         $eventsList = $eventRepository->findBySearchFormCriteria($searchEventCriterias);
 
-
-
         //Mis à jour des status
         $functionsStatus->UpdateEventsStatus($eventsList);
 
