@@ -74,28 +74,28 @@
     </section>
     <section id="EventsList" class="container">
         <div id="EventsListHeaders" name="EventsListHeaders" class="row align-items-start  m-0 p-0 border">
-            <article class="col text-center text-wrap">
+            <article class="col-2 text-center text-wrap m-0 p-0 ">
                 <p>Nom de la sortie</p>
             </article>
-            <article class="col-2 text-center text-wrap">
+            <article class="col text-center text-wrap m-0 p-0 border-start border-end border-end">
                 <p>Date de la sortie</p>
             </article>
-            <article class="col text-center text-wrap">
+            <article class="col text-center text-wrap m-0 p-0 border-start border-end">
                 <p>Clôture</p>
             </article>
-            <article class="col text-center text-wrap">
+            <article class="col text-center text-wrap m-0 p-0 border-start border-end">
                 <p>Inscrits/Places</p>
             </article>
-            <article class="col text-center text-wrap">
+            <article class="col text-center text-wrap m-0 p-0 border-start border-end">
                 <p>Etat</p>
             </article>
-            <article class="col text-center text-wrap">
+            <article class="col text-center text-wrap m-0 p-0 border-start border-end">
                 <p>Inscrit</p>
             </article>
-            <article class="col text-center text-wrap">
+            <article class="col text-center text-wrap m-0 p-0 border-start border-end">
                 <p>Organisateur</p>
             </article>
-            <article class="col text-center text-wrap">
+            <article class="col text-center text-wrap m-0 p-0 border-start border-end">
                 <p>Actions</p>
             </article>
         </div>
@@ -105,29 +105,29 @@
             {% for eventLine in eventLines %}
 
                 <li class="list-group-item m-0 p-0">
-                    <div class="row align-items-start m-0 p-0">
-                        <article id="eventName" class="col-2 text-center text-wrap m-0 p-0 border-start">
+                    <div class="row m-0 p-0">
+                        <article id="eventName" class="col-2 text-center text-wrap m-0 p-0 border-start border-end">
                             <p>{{ eventLine.event.name }}</p>
                         </article>
-                        <article id="eventDateStart" class="col text-center text-wrap m-0 p-0 border-start">
+                        <article id="eventDateStart" class="col text-center text-wrap m-0 p-0 border-start border-end">
                             <p>{{ eventLine.event.dateTimeStart | date('d-m-Y H:i:s') }}</p>
                         </article>
-                        <article id="eventDateEnd" class="col text-center text-wrap m-0 p-0 border-start">
+                        <article id="eventDateEnd" class="col text-center text-wrap m-0 p-0 border-start border-end">
                             <p>{{ eventLine.event.registrationDeadline | date('d-m-Y H:i:s') }}</p>
                         </article>
-                        <article id="eventNbRegisteredNbParticipants" class="col text-center text-wrap m-0 p-0 border-start">
+                        <article id="eventNbRegisteredNbParticipants" class="col text-center text-wrap m-0 p-0 border-start border-end">
                             <p>{{ eventLine.nbRegistered }}/{{ eventLine.event.maxNumberParticipants }}</p>
                         </article>
-                        <article id="eventStatusName" class="col text-center text-wrap m-0 p-0 border-start">
+                        <article id="eventStatusName" class="col text-center text-wrap m-0 p-0 border-start border-end">
                             <p>{{ eventLine.event.status.name }}</p>
                         </article>
-                        <article id="eventUserIsRegistered" class="col text-center text-wrap m-0 p-0 border-start">
+                        <article id="eventUserIsRegistered" class="col text-center text-wrap m-0 p-0 border-start border-end">
                             <p>{{ eventLine.isRegistered }}</p>
                         </article>
-                        <article id="eventOrganiserUsername" class="col text-center text-wrap m-0 p-0 border-start">
+                        <article id="eventOrganiserUsername" class="col text-center text-wrap m-0 p-0 border-start border-end">
                             <p>{{ eventLine.event.organiser.pseudo }}</p>
                         </article>
-                        <article id="eventLinks" class="col text-center text-wrap m-0 p-0 border-start">
+                        <article id="eventLinks" class="col text-center text-wrap m-0 p-0 border-start border-end">
                             <p>
                                 {% set nbLinks = eventLine.links|length - 1 %}
                                 {% for i in 0..nbLinks %}

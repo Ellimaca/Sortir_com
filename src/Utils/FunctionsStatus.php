@@ -54,7 +54,7 @@ class FunctionsStatus
      */
     public function UpdateStatus(Event $event,$statusList): Event{
 
-        date_default_timezone_set ( Constantes::TIME_ZONE);
+        //date_default_timezone_set ( Constantes::TIME_ZONE);
 
         /** @var DateTime $dateStart */
         $dateStart = $event->getDateTimeStart();
