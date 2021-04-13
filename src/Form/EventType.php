@@ -53,6 +53,7 @@ class EventType extends AbstractType
             ])
             ->add('save', SubmitType::class, ['label' => 'Enregistrer'])
             ->add('submit', SubmitType::class, ['label'=> 'publier la sortie'])
+
             ->add('campus', EntityType::class, [
                 'label' => "Campus",
                 'class' => Campus::class,
@@ -65,7 +66,7 @@ class EventType extends AbstractType
                 'class' => City::class,
                 'choice_label' => 'name',
                 'mapped' => false,
-                'placeholder' => 'Choisir une ville',
+
             ])
         ;
         $formModifier = function (FormInterface $form, City $city = null) {
@@ -75,17 +76,18 @@ class EventType extends AbstractType
                 'class' => Place::class,
                 'label' => 'Lieu',
                 'choices' => $places,
-                'placeholder' => 'Définir un lieu'
+                'placeholder' => 'Définir un lieu',
+                'mapped' => false
             ]);
         };
 
         $builder->addEventListener(
             FormEvents::PRE_SET_DATA,
             function (FormEvent $event) use ($formModifier) {
-
             $data = $event->getData();
 
             $formModifier($event->getForm(), $data->getPlace());
+
              }
         );
 
@@ -94,8 +96,8 @@ class EventType extends AbstractType
             function (FormEvent $event) use ($formModifier) {
 
                 $city = $event->getForm()->getData();
-
                 $formModifier($event->getForm()->getParent(), $city);
+
             }
         );
 

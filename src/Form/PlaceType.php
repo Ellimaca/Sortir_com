@@ -45,4 +45,5 @@ class PlaceType extends AbstractType
             'data_class' => Place::class,
         ]);
     }
+
 }

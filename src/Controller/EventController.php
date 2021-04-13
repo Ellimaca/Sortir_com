@@ -40,7 +40,7 @@ class EventController extends AbstractController
         $user = $this->getUser();
         $foundEvent = $eventRepository->findOneBy(['id' => $id]);
 
-        if (!$foundEvent || ($foundEvent->getStatus()->getName() == Constantes::CREATED and $foundEvent->getOrganiser() !== $user)) {
+        if (!$foundEvent || ($foundEvent->getStatus()->getName() == Constantes::CREATED and $foundEvent->getOrganiser() !== $user || $foundEvent->getStatus()->getName() == Constantes::ARCHIVED)) {
             throw $this->createNotFoundException("Cet évenement n'existe pas");
         } else {
             $foundParticipants = $foundEvent->getParticipants();
@@ -83,6 +83,9 @@ class EventController extends AbstractController
             $intervalDuration = $event->getDuration();
             $dateTimeEnd = DateTimeHandler::dateAddMinutes($startDate, $intervalDuration);
             $event->setDateTimeEnd($dateTimeEnd);
+
+            $place = $eventForm->get('place')->getData();
+            $event->setPlace($place);
 
             // La sortie est "ouverte" si l'utilisateur clique sur "publier la sortie"
             $status = $statusRepository->findOneBy(["name" => Constantes::OPENED]);
