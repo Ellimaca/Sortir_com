@@ -51,7 +51,7 @@ class User implements UserInterface
      *     maxMessage="Le prénom ne doit pas excéder 40 caractères"
      * )
      * @Assert\Regex(pattern="^[A-Za-zàâçéèêëîïôûùüÿñæœ' -]*$",
-     * message="Le format du prénom n'est pas valide. Caractères autorisés : a-z, ', -, )"
+     * message="Le format du prénom n'est pas valide. Caractères autorisés : a-z, ', -, ")
      * @ORM\Column(type="string", length=40)
      */
     private ?string $firstName;
@@ -65,7 +65,7 @@ class User implements UserInterface
      *     maxMessage="Le nom ne doit pas excéder 50 caractères"
      * )
      * @Assert\Regex(pattern="^[A-Za-zàâçéèêëîïôûùüÿñæœ' -]*$",
-     * message="Le format du prénom n'est pas valide. Caractères autorisés : a-z, ', -, )"
+     * message="Le format du prénom n'est pas valide. Caractères autorisés : a-z, ', -, ")
      * @ORM\Column(type="string", length=50)
      */
     private ?string $lastName;
