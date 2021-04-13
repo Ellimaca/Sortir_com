@@ -26,7 +26,7 @@ class User implements UserInterface
 
     /**
      * @Assert\NotBlank
-     * @Assert\Email()
+     * @Assert\Email(message="Veuillez insérer un format d'email valide. ")
      * @ORM\Column(type="string", length=180, unique=true)
      */
     private ?string $email;
@@ -38,12 +38,6 @@ class User implements UserInterface
 
     /**
      * @var ?string The hashed password
-     * @Assert\Length(
-     *     min=4,
-     *     max=3000,
-     *     minMessage="Le mot de passe doit être d'au moins 4 caractères",
-     *     maxMessage="Le mot de passe ne doit pas excéder 30 caractères"
-     * )
      * @ORM\Column(type="string")
      */
     private ?string $password;
@@ -56,8 +50,8 @@ class User implements UserInterface
      *     minMessage="Le prénom doit être d'au moins 2 caractères",
      *     maxMessage="Le prénom ne doit pas excéder 40 caractères"
      * )
-     * @Assert\Regex(pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$^",
-     * message="Le format du prénom n'est pas valide")
+     * @Assert\Regex(pattern="^[a-z '-]+$^",
+     * message="Le format du prénom n'est pas valide. Caractères autorisés : a-z, -, ' ")
      * @ORM\Column(type="string", length=40)
      */
     private ?string $firstName;
@@ -70,8 +64,8 @@ class User implements UserInterface
      *     minMessage="Le nom doit être d'au moins 2 caractères",
      *     maxMessage="Le nom ne doit pas excéder 50 caractères"
      * )
-     * @Assert\Regex(pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$^",
-     * message="Le format du nom n'est pas valide")
+     * @Assert\Regex(pattern="^[a-z '-]+$^",
+     * message="Le format du prénom n'est pas valide. Caractères autorisés : a-z, -, ' ")
      * @ORM\Column(type="string", length=50)
      */
     private ?string $lastName;
@@ -118,8 +112,8 @@ class User implements UserInterface
      *     minMessage="Le pseudo doit contenir au moins 4 caractères",
      *     maxMessage="Le pseudo ne peut pas excéder 20 caractères"
      * )
-     * @Assert\Regex(pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$^",
-     * message="Le format du pseudo n'est pas valide")
+     * @Assert\Regex(pattern="^[a-zA-Z0-9]+$^",
+     * message="Seulement les lettres et les chiffres sont acceptés, pas d'accents ou de caractères spéciaux autorisés")
      * @ORM\Column(type="string", length=20, nullable=true)
      */
     private ?string $pseudo;
