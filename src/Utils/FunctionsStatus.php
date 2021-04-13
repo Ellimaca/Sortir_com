@@ -59,10 +59,10 @@ class FunctionsStatus
         /** @var string $status */
         $status = $event->getStatus()->getName();
 
-//        var_dump($dateStart);
-//        var_dump($dateEnd);
-//        var_dump($deadline);
-//        var_dump($status);
+        var_dump($dateStart);
+        var_dump($dateEnd);
+        var_dump($deadline);
+        var_dump($status);
 
         if($status == Constantes::OPENED){
             if($deadline >= new DateTime('now')){

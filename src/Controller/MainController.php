@@ -70,13 +70,17 @@ class MainController extends AbstractController
         ]);
     }
 
-    /*
+    /**
      *  function pour test
-     * @Route("/main/test", name="test")
+     * @Route("/test", name="test")
      *  TODO supprimer
      */
-    public function test(EntityManagerInterface $entityManager,EventRepository $repository){
-        $repository->findOneBy();
+    public function test(EntityManagerInterface $entityManager,
+                         EventRepository $repository,FunctionsStatus $functionsStatus){
+        $event = $repository->findOneBy(['name' => 'test 2']);
+        var_dump($event->getStatus()->getName());
+        $functionsStatus->UpdateEventsStatus($event);
+        dd($event);
     }
 
 }
