@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\SearchEventsType;
 use App\Repository\EventRepository;
+use App\Utils\Constantes;
 use App\Utils\EventLine;
 use App\Utils\FunctionsStatus;
 use App\Utils\SearchEventCriterias;
@@ -44,6 +45,8 @@ class MainController extends AbstractController
 
         $eventsList = $eventRepository->findBySearchFormCriteria($searchEventCriterias);
 
+
+
         //Mis à jour des status
         $functionsStatus->UpdateEventsStatus($eventsList);
 
@@ -63,7 +66,7 @@ class MainController extends AbstractController
             $eventLine->updateLinks($user);
             $eventLines[] = $eventLine;
         }
-
+        //dd($eventLines);
       return $this->render('main/index.html.twig', [
             'searchForm' => $searchForm->createView(),
             'eventLines' => $eventLines,
@@ -77,9 +80,13 @@ class MainController extends AbstractController
      */
     public function test(EntityManagerInterface $entityManager,
                          EventRepository $repository,FunctionsStatus $functionsStatus){
+/*
+        date_default_timezone_set ( Constantes::TIME_ZONE);
+        dd(new DateTime('now'));
+*/
         $event = $repository->findOneBy(['name' => 'test 2']);
         var_dump($event->getStatus()->getName());
-        $functionsStatus->UpdateEventsStatus($event);
+        $event = $functionsStatus->UpdateEventStatus($event);
         dd($event);
     }
 

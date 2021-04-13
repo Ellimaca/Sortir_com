@@ -110,7 +110,7 @@
                             <p>{{ eventLine.event.name }}</p>
                         </article>
                         <article id="eventDateStart" class="col text-center text-wrap m-0 p-0 border-start">
-                            <p>{{ eventLine.event.dateTimeStart | date("d/m/Y h:i") }}</p>
+                            <p>{{ eventLine.event.dateTimeStart | date('d-m-Y H:i:s') }}</p>
                         </article>
                         <article id="eventDateEnd" class="col text-center text-wrap m-0 p-0 border-start">
                             <p>{{ eventLine.event.dateTimeEnd | date("d/m/Y h:i") }}</p>
