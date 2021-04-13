@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Event;
+use App\Utils\Constantes;
 use App\Utils\SearchEventCriterias;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Types\Type;
@@ -17,18 +18,18 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class EventRepository extends ServiceEntityRepository
 {
-    private $status_published;
+    private $status_not_published;
 
     public function __construct(ManagerRegistry $registry,StatusRepository $statusRepository)
     {
         parent::__construct($registry, Event::class);
-        $this->status_published = $statusRepository->findOneBy(["name"=>"Créée"]);
+        $this->status_not_published = $statusRepository->findOneBy(["name"=>Constantes::CREATED]);
     }
 
     public function findBySearchFormCriteria(SearchEventCriterias $criterias){
         $queryBuilder = $this->createQueryBuilder('events');
 
-        $queryBuilder->join('events.participants','u');
+        $queryBuilder->leftJoin('events.participants','u');
         $queryBuilder->orderBy('events.dateTimeStart','DESC');
         //$queryBuilder->andWhere('events.id = u.');
 
@@ -67,10 +68,10 @@ class EventRepository extends ServiceEntityRepository
                 ->andWhere('events.organiser = :user')
                 ->setParameter('user',$criterias->getUser()->getId());
         }else{
-            $status =$this->status_published->getId();
+            $statusId = $this->status_not_published->getId();
             $queryBuilder
                 ->andWhere('events.status != :status')
-                ->setParameter('status',$status,Type::INTEGER);
+                ->setParameter('status',$statusId);
         }
 
 
