@@ -17,7 +17,29 @@
                 <p>Nombres de places : {{ foundEvent.maxNumberParticipants }} </p>
                 <p>Durée : {{ foundEvent.duration }} minutes </p>
                 <a href="{{ path('event_registration', {id:foundEvent.id}) }}">
-                    <button class="btn-success btn mt-2">S'inscrire</button>
+
+                    {# Si le statut n'est pas "Ouverte" on bloque #}
+                    {# Si tu es organisateur on bloque #}
+                    {# Si le nombre de participants est atteint "complet" #}
+
+                    {% if(foundEvent.status.name == constant('App\\Utils\\Constantes::OPENED') and
+                          foundEvent.organiser != app.user and
+                          foundEvent.participants.count != foundEvent.maxNumberParticipants and
+                          not foundEvent.participants.contains(app.user))  %}
+
+                        <button class="btn-success btn mt-2">S'inscrire</button>
+                    {#
+                    {% elseif(foundEvent.organiser == app.user
+                              and date(foundEvent.dateTimeStart) > date())
+                    %}
+
+                        <button class="btn-success btn mt-2">Annuler</button>
+
+                    {% elseif(foundEvent.participants.contains(app.user)) %}
+                        <button class="btn-success btn mt-2">Se désister</button>
+                    #}
+                    {% endif %}
+
                 </a>
             </div>
         </div>

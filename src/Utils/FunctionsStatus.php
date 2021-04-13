@@ -29,14 +29,15 @@ class FunctionsStatus
     public function UpdateEventStatus(Event $event): Event{
         $events[] = $event;
         $events = $this->UpdateEventsStatus($events);
-        return $events[0];
+        $event = $events[0];
+        return $event;
     }
 
     /**
      * Optimisation d'UpdateStatus pour limiter les appels à la base en traitant une collection d'events
      * @param $events
      */
-    public function UpdateEventsStatus($events): array
+    public function UpdateEventsStatus(array $events): array
     {
         $statusList = $this->repository->findAll();
 
@@ -44,7 +45,7 @@ class FunctionsStatus
             $this->UpdateStatus($event,$statusList);
         }
 
-        return $statusList;
+        return $events;
     }
 
     /**

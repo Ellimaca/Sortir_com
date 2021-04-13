@@ -8,6 +8,7 @@ use App\Form\EventType;
 use App\Repository\EventRepository;
 use App\Repository\StatusRepository;
 use App\Utils\Constantes;
+use App\Utils\FunctionsStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use http\Env\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -136,7 +137,8 @@ class EventController extends AbstractController
      */
     public function registration($id,
                                  EventRepository $eventRepository,
-                                 EntityManagerInterface $manager): Response
+                                 EntityManagerInterface $manager,
+                                 FunctionsStatus $functionsStatus): Response
     {
 
         /** @var User $user */
@@ -148,11 +150,21 @@ class EventController extends AbstractController
         //Les inscrits à la sortie
         $foundParticipants = $eventChoosen->getParticipants();
 
-        //TODO : update le statut
+        //Mettre à jour le statut au moment où la personne s'inscrit
+        $functionsStatus->UpdateEventStatus($eventChoosen);
 
         $eventStatusName = $eventChoosen->getStatus()->getName();
 
         switch ($eventStatusName) {
+
+            case Constantes::CREATED :
+                $this->addFlash('warning', "Cette sortie n'est pas encore publiée!");
+                $this->redirectToRoute('main');
+                break;
+            case Constantes::ARCHIVED :
+                $this->addFlash('warning', "Cette sortie est archivée!");
+                $this->redirectToRoute('main');
+                break;
             //Si sorties annulées...
             case Constantes::CANCELLED :
                 $this->addFlash('warning', "Cette sortie a été annulée!");
@@ -203,7 +215,6 @@ class EventController extends AbstractController
                 break;
 
         }
-
 
 
         return $this->render("event/view.html.twig", [
