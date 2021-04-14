@@ -120,13 +120,18 @@ class SecurityController extends AbstractController
 
     /**
      * Fonction affichage du profil d'un participant à un évènement
-     * @Route("/evenement/profil/{id}", name="security-participant")
+     * @Route("/profil/consulter/{id}", name="profil_view")
      */
-    public function displayProfile()
+    public function displayProfile($id, UserRepository $userRepository)
     {
 
-        return $this->render('security/profilParticpant.html.twig', [
+        $userChoosen = $userRepository->find($id);
 
+        if (!$userChoosen){
+            throw $this->createNotFoundException("Participant inconnu");
+        }
+
+        return $this->render('participant/view.html.twig', [ 'userChoosen' => $userChoosen
         ]);
     }
 

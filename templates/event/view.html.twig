@@ -76,7 +76,7 @@
             <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
                 <div class="d-flex justify-content-between">
                     <strong class="text-gray-dark">{{ participant.firstName }} {{ participant.lastName }}</strong>
-                    <a href="#">Voir Profil</a>
+                    <a href="{{ path('profil_view', {'id': participant.id }) }}">Voir Profil</a>
                 </div>
                 <span class="d-block">{{ participant.pseudo }}</span>
             </div>

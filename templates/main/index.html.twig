@@ -4,8 +4,6 @@
 
 {% block body %}
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
-
     <section id="information" class="container">
         <div>
             <p>Date du jour : <span> {{ "now"|date("m/d/Y") }}</span></p>
@@ -102,7 +100,12 @@
 
                 <tfoot>
                 {% for eventLine in eventLines %}
-                <tr class="text-center">
+                    {% if eventLine.event.organiser.pseudo is same as app.user.pseudo %}
+                            <tr class="text-center text-white bg-light">
+                    {% else %}
+                            <tr class="text-center">
+                    {% endif %}
+
 
                     <th>{{ eventLine.event.name }}</th>
                     <th>{{ eventLine.event.dateTimeStart | date('d-m-Y H:i:s') }}</th>
@@ -114,7 +117,11 @@
                         <span class="icon mr-1"><i class="fas fa-user-check"></i></span>
                         {% endif %}
                     </th>
-                    <th>{{ eventLine.event.organiser.pseudo }}</th>
+                    <th> {% if eventLine.event.organiser.pseudo is same as app.user.pseudo %}
+                        <i class="fas fa-user-shield"></i> {{ eventLine.event.organiser.pseudo }}</th>
+                         {% else %}
+                             {{ eventLine.event.organiser.pseudo }}
+                    {% endif %}
                     <th>   {% set nbLinks = eventLine.links|length - 1 %}
                         {% for i in 0..nbLinks %}
                             {% if ( i > 0 ) %}
@@ -122,7 +129,6 @@
                             {% endif %}
                             <a href="{{ path(eventLine.links[i][1],{'id':eventLine.event.id}) }}"> {{ eventLine.links[i][0] }}</a>
                         {% endfor %}</th>
-
                 </tr>
                 {% endfor %}
                 </tfoot>
