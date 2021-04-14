@@ -5,7 +5,33 @@
 {% endblock %}
 
 {% block body %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
+    <script>
+        window.onload = init;
+        function init() {
+            var city = document.getElementById('event_city');
+
+            city.addEventListener("change", updatePlaceField);
+
+            function updatePlaceField() {
+
+                let city_id = document.getElementById('event_city')
+                let data = {"eventCity": city_id.value}
+
+                console.log(data)
+
+                fetch('ajax', {method: 'POST', body: JSON.stringify(data)})
+                    .then(function (response) {
+                        return response.json();
+                    }).then(function (data) {
+                    console.log(data);
+                    document.getElementById('event_place').innerHTML = data.name;
+                })
+
+            }
+        }
+    </script>
     <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
         <h6 class="display-6 fw-normal">Créer une sortie</h6>
     </div>
@@ -49,29 +75,6 @@
         </div>
     </div>
 
-    <script>
-        var $city = $('#event_city');
-
-        $city.change(function() {
-
-            var $form = $(this).closest('eventForm');
-            var data = {};
-            data[$city.attr('name')] = $city.val();
-
-            $.ajax({
-                url : $form.attr('action'),
-                type: $form.attr('method'),
-                data : data,
-                success: function(html) {
-
-                    $('#event_place').replaceWith(
-
-                        $(html).find('#event_place')
-                    );
-                }
-            });
-        });
-    </script>
 
   {#  Formulaire à décommenter pour pouvoir ajouter un nouveau lieu
     {{ form_start(placeForm) }}
