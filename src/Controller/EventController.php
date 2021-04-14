@@ -344,12 +344,14 @@ class EventController extends AbstractController
     }
 
     /**
-     * @Route("/evenement/modifier{id}", name="event_modified")
+     * @Route("/evenement/modifier/{id}", name="event_modified")
      */
     public function modify ($id,
                             EventRepository $eventRepository,
                             Request $request,
-                            FunctionsStatus $functionsStatus): Response
+                            FunctionsStatus $functionsStatus,
+                            EntityManagerInterface $manager
+                            ): Response
     {
 
         //Récupération de mon user
@@ -361,10 +363,10 @@ class EventController extends AbstractController
         //Mise à jour le statut de l'évenement
         $functionsStatus->UpdateEventStatus($eventToModify);
 
-        //Récupération des particpants de l'évenement
-        $numberOfParticipants = $eventToModify->getParticipants()->count();
-
+        //Récupération du statut de l'évènement
         $eventStatusName = $eventToModify->getStatus()->getName();
+
+        $eventForm = null;
 
         //Vérification si mon user est bien l'organisateur de l'évènement
         if($eventToModify->getOrganiser() != $user) {
@@ -378,36 +380,72 @@ class EventController extends AbstractController
             $this->addFlash("warning", "Impossible de modifier cette sortie!");
         } else {
 
+            $eventToModifyCity = $eventToModify->getPlace()->getCity();
+
             $eventForm = $this->createForm(EventType::class, $eventToModify);
-
             $eventForm->handleRequest($request);
-
+            $eventForm->get('city')->setData($eventToModifyCity);
             if($eventForm->isSubmitted() && $eventForm->isValid()) {
-                //Vérifier que le nombre max de participants ne soit pas inférieur aux nombre d'inscrits.
-                if($eventToModify->getMaxNumberParticipants() >= $numberOfParticipants) {
-                    //Vérifier que la date de sortie ne soit pas passée
-                    if($eventToModify->getDateTimeStart() > new DateTime('now')) {
-                        if($eventToModify->getRegistrationDeadline() > new DateTime('now')) {
-                            if($eventToModify->getRegistrationDeadline() < $eventToModify->getDateTimeStart()) {
 
-                            } else {
-                                $this->addFlash("warning", "Impossible de clôturer la sortie à une date passée");
-                            }
-                        } else {
-                            $this->addFlash("warning", "Impossible de clôturer la sortie à une date passée");
-                        }
-                    } else {
-                        $this->addFlash("warning", "Impossible de créer une sortie avec une date passée!");
-                    }
-                } else {
-                    $this->addFlash("warning", "Impossible de réduire le nombre de participants!");
+                if($this->checkEvent($eventToModify)) {
+
+                   /** @var DateTime $eventDateStart */
+                    $eventDuration = $eventToModify->getDuration();
+                    $eventDateStart = $eventToModify->getDateTimeStart();
+
+                    //Transformer la durée en nombre positif si besoin
+                    $eventToModify->setDuration(abs($eventToModify->getDuration()));
+                    $dateTimeEnd  = DateTimeHandler::dateAddMinutes($eventDateStart,$eventDuration);
+                    $eventToModify->setDateTimeEnd($dateTimeEnd);
+                    $functionsStatus->UpdateEventStatus($eventToModify);
+
+                    $manager->persist($eventToModify);
+                    $manager->flush();
+
+                    $this->addFlash('success', 'Sortie bien modifiée!');
+                    return $this->redirectToRoute('main');
+
                 }
+
             }
         }
 
-        return $this->render("", [
-
+        return $this->render("event/create.html.twig", [
+            'eventForm' => $eventForm->createView(),
+            'event' => $eventToModify,
+            'modif' => true
         ]);
+    }
+
+    public function checkEvent($eventToCheck) {
+        $isChecked = true;
+
+        $numberOfParticipants = $eventToCheck->getParticipants()->count();
+
+        //Vérifier que le nombre max de participants ne soit pas inférieur aux nombre d'inscrits.
+        if($eventToCheck->getMaxNumberParticipants() < $numberOfParticipants) {
+            $this->addFlash("warning", "Impossible de réduire le nombre de participants!");
+            $isChecked = false;
+        }
+
+        //Vérifier que la date de sortie ne soit pas passée
+        if($eventToCheck->getDateTimeStart() < new DateTime('now')) {
+            $this->addFlash("warning", "Impossible de créer une sortie avec une date passée!");
+            $isChecked = false;
+        }
+
+        //Vérifier que la date limite d'inscription est supérieur à la date du jour
+        if($eventToCheck->getRegistrationDeadline() <= new DateTime('now')) {
+            $this->addFlash("warning", "Impossible de clôturer la sortie à une date passée");
+            $isChecked = false;
+        }
+
+        //Vérifier que la date limite d'inscription soit inférieure à la date du début de la sortie
+        if($eventToCheck->getRegistrationDeadline() >= $eventToCheck->getDateTimeStart()) {
+            $this->addFlash("warning", "Impossible de clôturer la sortie à une date passée");
+            $isChecked = false;
+        }
+        return $isChecked;
     }
 
     /**
@@ -421,7 +459,7 @@ class EventController extends AbstractController
     }
 
     /**
-     * @Route ("/evenement/creer/ajaxCity")
+     * @Route ("/ajaxCity", name="ajaxCity")
      */
     public function updatePlace(Request $request,
                                 PlaceRepository $placeRepository)
@@ -450,7 +488,7 @@ class EventController extends AbstractController
     }
 
     /**
-     * @Route("/evenement/creer/ajaxPlace")
+     * @Route("/ajaxPlace", name="ajaxPlace")
      */
     public function updatePlaceInformation (Request $request,
                                             PlaceRepository $placeRepository): Response

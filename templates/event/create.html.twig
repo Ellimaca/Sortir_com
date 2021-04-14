@@ -12,7 +12,13 @@
     </script>
 
     <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+
+        {% if (modif is defined) %}
+
+        <h6 class="display-6 fw-normal">Modifier une sortie</h6>
+        {% else %}
         <h6 class="display-6 fw-normal">Créer une sortie</h6>
+        {% endif %}
     </div>
 
 
@@ -38,7 +44,9 @@
 
                     <div class="group">
                         <label for="{{ field_name(eventForm.place) }}">{{ form_label(eventForm.place)}} </label>
-                        <select name="{{ field_name(eventForm.place) }}" id="{{ field_name(eventForm.place) }}" class="form-control"></select>
+                        <select name="{{ field_name(eventForm.place) }}"  id="{{ field_name(eventForm.place) }}" class="form-control">
+                            <option value="" selected>Définir un lieu</option>
+                        </select>
                     </div>
                     <div>
                         <div>
@@ -58,14 +66,21 @@
             </div>
 
             <div class="row">
-                <div class="col-lg-4">
+                <div class="col-lg">
                     {{ form_row(eventForm.save) }}
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg">
                     {{ form_row(eventForm.submit) }}
                     {{ form_end(eventForm) }}
                 </div>
-                <div class="col-lg-4">
+                {% if (modif is defined) %}
+                <div class="col-lg">
+                    <a href="{{ path('event_cancelled', {id:event.id}) }}">
+                        <button class="btn-success btn mt-2">Supprimer la sortie</button>
+                    </a>
+                </div>
+                {% endif %}
+                <div class="col-lg">
                     <a href="{{ path('main') }}">
                         <button class="btn-success btn mt-2">Annuler</button>
                     </a>
@@ -73,7 +88,9 @@
             </div>
         </div>
     </div>
-
+    <script>
+      displayInformations();
+    </script>
 
     {# Formulaire à décommenter pour pouvoir ajouter un nouveau lieu
     {{ form_start(placeForm) }}
