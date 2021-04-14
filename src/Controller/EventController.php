@@ -148,31 +148,25 @@ class EventController extends AbstractController
             case Constantes::CREATED :
                 $this->addFlash('warning', "Cette sortie n'est pas encore publiée!");
                 return $this->redirectToRoute('main');
-                break;
             case Constantes::ARCHIVED :
                 $this->addFlash('warning', "Cette sortie est archivée!");
                 return $this->redirectToRoute('main');
-                break;
             //Si sorties annulées...
             case Constantes::CANCELLED :
                 $this->addFlash('warning', "Cette sortie a été annulée!");
                 return $this->redirectToRoute('main');
-                break;
             //Si sorties fermées à l'inscription...
             case Constantes::CLOSED :
                 $this->addFlash('warning', "La date limite d'inscription est dépassée");
                 return $this->redirectToRoute('main');
-                break;
             //Si sorties se déroulent au moment de l'inscription...
             case Constantes::ONGOING :
                 $this->addFlash('warning', "Impossible de s'inscrire, l'activité se déroule en ce moment-même!");
                 return $this->redirectToRoute('main');
-                break;
             //Si la sortie est déjà passée...
             case Constantes::FINISHED :
                 $this->addFlash('warning', "La sortie est finie!");
                 return $this->redirectToRoute('main');
-                break;
             //Si le statut de la sortie est "Ouverte"...
             case Constantes::OPENED :
             //Si l'utilisateur est l'organisateur de la sortie...
@@ -202,8 +196,6 @@ class EventController extends AbstractController
                 }
 
                 return $this->redirectToRoute('main');
-                break;
-
         }
 
         return $this->render("event/view.html.twig", [
