@@ -34,11 +34,7 @@ class EventType extends AbstractType
             ])
             ->add('dateTimeStart', DateTimeType::class, ['label' => 'Date et heure de la sortie',
                 'widget' => 'single_text'
-
             ])
-           // ->add('dateTimeEnd', DateTimeType::class, ['widget' => 'single_text',
-            //    'label' => 'Date et heure de fin'
-            //])
             ->add('registrationDeadline',DateTimeType::class, [  'widget' => 'single_text',
                 'label' => 'Date limite inscription'
             ])
@@ -51,9 +47,11 @@ class EventType extends AbstractType
             ->add('description', TextareaType::class, [
                 'label' => 'Description et infos'
             ])
+            ->add('cancellationReason', TextType::class, [
+                'label' => 'Motif d\'annulation'
+            ])
             ->add('save', SubmitType::class, ['label' => 'Enregistrer'])
             ->add('submit', SubmitType::class, ['label'=> 'publier la sortie'])
-
             ->add('campus', EntityType::class, [
                 'label' => "Campus",
                 'class' => Campus::class,
@@ -67,9 +65,7 @@ class EventType extends AbstractType
                 'choice_label' => 'name',
                 'mapped' => false,
             ])
-            ->add('cancellationReason', EntityType::class, [
-                'label' => 'Motif d\'annulation',
-            ])
+
         ;
         $formModifier = function (FormInterface $form, City $city = null) {
             $places = null === $city ? [] : $city->getPlaces();

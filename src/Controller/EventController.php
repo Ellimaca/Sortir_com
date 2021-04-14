@@ -283,10 +283,10 @@ class EventController extends AbstractController
         $user = $this->getUser();
 
         //Récupèration l'évenement choisi par mon utilisateur via l'id récupérée dans l'URL
-        $eventFound = $eventRepository->find($id);
+        $eventChoosen = $eventRepository->find($id);
 
         //Récupération de l'organisateur de la sortie
-        $eventOrganiser = $eventFound->getOrganiser();
+        $eventOrganiser = $eventChoosen->getOrganiser();
 
         // En commentaire le temps du test, à décommenter
        /* if ($eventOrganiser !== $user) {
@@ -294,32 +294,36 @@ class EventController extends AbstractController
         }*/
 
         //Mise à jour le statut de l'évenement
-        $functionsStatus->UpdateEventStatus($eventFound);
+        $functionsStatus->UpdateEventStatus($eventChoosen);
 
         //Récupération de l'organisateur de la sortie
-        $eventOrganiser = $eventFound->getOrganiser();
+        $eventOrganiser = $eventChoosen->getOrganiser();
 
         //Récupération du statut de la sortie
-        $eventStatus = $eventFound->getStatus();
+        $eventStatus = $eventChoosen->getStatus();
 
-        $eventForm = $this->createForm(EventType::class, $eventFound);
+        $eventForm = $this->createForm(EventType::class, $eventChoosen);
 
-        // Si l'utilisateur est bien l'organisateur et que le statut de la sortie est bien ouvert
-        if (($eventOrganiser === $user and $eventStatus === Constantes::OPENED)) {
+        if($eventForm->isSubmitted() && $eventForm->isValid()) {
 
-            // Suppresion de la sortie
-            $eventFound->removeParticipant($user);
+            // Si l'utilisateur est bien l'organisateur et que le statut de la sortie est bien ouvert
+            if ($eventOrganiser === $user and ($eventStatus === Constantes::OPENED or $eventStatus === Constantes::CLOSED or $eventStatus === Constantes::CREATED)) {
 
-            $manager->remove($eventFound);
-            $manager->flush();
+                // Changement du statut de la sortie en annulée
+                $eventChoosen->setStatus(Constantes::CANCELLED);
 
-            $this->addFlash('success', "Votre sortie est bien annulée!");
-            $this->redirectToRoute('main');
+
+                $manager->persist($eventChoosen);
+                $manager->flush();
+
+                $this->addFlash('success', "Votre sortie est bien annulée!");
+                $this->redirectToRoute('main');
+            }
+
+            return $this->render("event/cancel.html.twig", [
+                "foundEvent" => $eventChoosen, 'eventForm' => $eventForm->createView(),
+            ]);
         }
-
-        return $this->render("event/cancel.html.twig", [
-            "foundEvent" => $eventFound,  'eventForm' => $eventForm->createView(),
-        ]);
     }
 
     /**
