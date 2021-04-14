@@ -66,7 +66,6 @@ class EventType extends AbstractType
                 'class' => Place::class,
                 'label' => 'Lieu',
                 'placeholder' => 'Définir un lieu',
-                'mapped' => false
             ])
         ;
 

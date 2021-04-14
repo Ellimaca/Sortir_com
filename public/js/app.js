@@ -22,7 +22,7 @@ function updatePlaceField() {
 
     console.log(data)
 
-    fetch('ajaxCity', {method: 'POST', body: JSON.stringify(data)})
+    fetch('/Sortir_com/public/ajaxCity', {method: 'POST', body: JSON.stringify(data)})
         .then(function (response) {
             return response.json();
         }).then(function (data) {
@@ -50,7 +50,7 @@ function displayInformations() {
     if (place_id.options.length !== 0) {
         let data = {'placeId': place_id.options[place_id.selectedIndex].value}
 
-        fetch('ajaxPlace', {method: 'POST', body: JSON.stringify(data)})
+        fetch('/Sortir_com/public/ajaxPlace', {method: 'POST', body: JSON.stringify(data)})
             .then(function (response) {
                 return response.json();
             }).then(function (data) {
