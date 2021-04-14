@@ -20,7 +20,7 @@ class DateTimeHandler
     {
 
         $dateTimeEnd = clone $dateTimeStart;
-        $intervalDuration = $minutes;
+        $intervalDuration = abs($minutes);
         $dateTimeEnd->add(new DateInterval('PT' . $intervalDuration . 'M'));
 
         return $dateTimeEnd;
@@ -36,7 +36,7 @@ class DateTimeHandler
     {
 
         $dateTimeEnd = clone $dateTimeStart;
-        $intervalDuration = $minutes;
+        $intervalDuration = abs($minutes);
         $dateTimeEnd->sub(new DateInterval('PT' . $intervalDuration . 'M'));
 
         return $dateTimeEnd;

@@ -98,6 +98,8 @@ class Event
     //TO DO mettre une durée minimum et maximum
     /**
      * @Assert\NotBlank(message="Veuillez renseigner une durée pour votre sortie")
+     * @Assert\GreaterThan(15, message="La sortie doit au moins durer 15 minutes")
+     * @Assert\LessThan(1440, message="La sortie ne peut pas excéder 24h")
      * @ORM\Column(type="integer")
      */
     private $duration;

@@ -11,6 +11,7 @@ use App\Repository\PlaceRepository;
 use App\Repository\StatusRepository;
 use App\Utils\Constantes;
 use App\Utils\FunctionsStatus;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -84,7 +85,7 @@ class EventController extends AbstractController
             // Calcul de la date de fin de l'évènement
             /** @var \DateTime $startDate */
             $startDate = $event->getDateTimeStart();
-            $intervalDuration = $event->getDuration();
+            $intervalDuration = abs($event->getDuration());
             $dateTimeEnd = DateTimeHandler::dateAddMinutes($startDate, $intervalDuration);
             $event->setDateTimeEnd($dateTimeEnd);
 
@@ -359,13 +360,69 @@ class EventController extends AbstractController
         }
 
     /**
-     * @Route("/evenement/modifier/{id}", name="event_modified")
+     * @Route("/evenement/modifier{id}", name="event_modified")
      */
-    public function modify ($id, EventRepository $eventRepository,
-                             EntityManagerInterface $manager): Response
+    public function modify ($id,
+                            EventRepository $eventRepository,
+                            Request $request,
+                            FunctionsStatus $functionsStatus): Response
     {
 
+        //Récupération de mon user
+        $user = $this->getUser();
+
+        //Récupération de l'evenement à modifier
+        $eventToModify = $eventRepository->find($id);
+
+        //Mise à jour le statut de l'évenement
+        $functionsStatus->UpdateEventStatus($eventToModify);
+
+        //Récupération des particpants de l'évenement
+        $numberOfParticipants = $eventToModify->getParticipants()->count();
+
+        $eventStatusName = $eventToModify->getStatus()->getName();
+
+        //Vérification si mon user est bien l'organisateur de l'évènement
+        if($eventToModify->getOrganiser() != $user) {
+            $this->addFlash('warning', "Vous devez être l'organisateur pour pouvoir modifier une sortie");
+            $this->redirectToRoute('main');
+
+            //Vérification du statut de l'évènement
+        } elseif (!($eventStatusName == Constantes::OPENED or
+            $eventStatusName == Constantes::CREATED or
+            $eventStatusName == Constantes::CLOSED)) {
+            $this->addFlash("warning", "Impossible de modifier cette sortie!");
+        } else {
+
+            $eventForm = $this->createForm(EventType::class, $eventToModify);
+
+            $eventForm->handleRequest($request);
+
+            if($eventForm->isSubmitted() && $eventForm->isValid()) {
+                //Vérifier que le nombre max de participants ne soit pas inférieur aux nombre d'inscrits.
+                if($eventToModify->getMaxNumberParticipants() >= $numberOfParticipants) {
+                    //Vérifier que la date de sortie ne soit pas passée
+                    if($eventToModify->getDateTimeStart() > new DateTime('now')) {
+                        if($eventToModify->getRegistrationDeadline() > new DateTime('now')) {
+                            if($eventToModify->getRegistrationDeadline() < $eventToModify->getDateTimeStart()) {
+
+                            } else {
+                                $this->addFlash("warning", "Impossible de clôturer la sortie à une date passée");
+                            }
+                        } else {
+                            $this->addFlash("warning", "Impossible de clôturer la sortie à une date passée");
+                        }
+                    } else {
+                        $this->addFlash("warning", "Impossible de créer une sortie avec une date passée!");
+                    }
+                } else {
+                    $this->addFlash("warning", "Impossible de réduire le nombre de participants!");
+                }
+            }
+        }
+
         return $this->render("", [
+
         ]);
     }
 
