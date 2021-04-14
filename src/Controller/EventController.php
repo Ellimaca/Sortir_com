@@ -26,7 +26,7 @@ class EventController extends AbstractController
 {
     const WARNING_EVENT_NOT_AUTHORIZED = "Vous n'êtes pas autorisé à réaliser cette action";
     const WARNING_EVENT_WRONG_STATUS = "Action impossible, statut de la sortie incohérent";
-    const SUCCESS_EVENT_PUBLISHED = "La sortie à été publiée avec succès";
+    const SUCCESS_EVENT_PUBLISHED = "La sortie a été publiée avec succès";
 
     /**
      * Permet de visualiser les informations liées à un évenement
@@ -371,7 +371,7 @@ class EventController extends AbstractController
         //Vérification si mon user est bien l'organisateur de l'évènement
         if($eventToModify->getOrganiser() != $user) {
             $this->addFlash('warning', "Vous devez être l'organisateur pour pouvoir modifier une sortie");
-            $this->redirectToRoute('main');
+            return $this->redirectToRoute('main');
 
             //Vérification du statut de l'évènement
         } elseif (!($eventStatusName == Constantes::OPENED or
@@ -453,12 +453,16 @@ class EventController extends AbstractController
      * @Route("/evenement/publier/{id}", name="event_published")
      * @param $id
      * @param EntityManagerInterface $manager
+     * @param EventRepository $eventRepository
      * @return Response
      */
-    public function publish ($id, EntityManagerInterface $manager): Response
+    public function publish ($id,
+                             EntityManagerInterface $manager,
+                             EventRepository $eventRepository,
+                             StatusRepository $statusRepository): Response
     {
         /** @var Event $event */
-        $event = $manager->getRepository(EventRepository::class)->find($id);
+        $event = $eventRepository->find($id);
         /** @var Status $eventStatus */
         $eventStatus = $event->getStatus();
 
@@ -467,10 +471,13 @@ class EventController extends AbstractController
             // Test si la sortie a le statue créé
             if($eventStatus->getName() == Constantes::CREATED){
 
+
                 //Modification du statut et persistance
-                $eventStatus->setName(Constantes::CREATED);
-                $manager->persist($eventStatus);
+                $eventStatus = $statusRepository->findOneBy(['name' =>Constantes::OPENED]);
+                $event->setStatus($eventStatus);
+                $manager->persist($event);
                 $manager->flush();
+
                 $this->addFlash("success", self::SUCCESS_EVENT_PUBLISHED);
             }else{
                 $this->addFlash("warning", self::WARNING_EVENT_WRONG_STATUS);
@@ -478,8 +485,7 @@ class EventController extends AbstractController
         }else{
             $this->addFlash("warning",self::WARNING_EVENT_NOT_AUTHORIZED);
         }
-
-        return $this->redirect('main');
+        return $this->redirectToRoute('main');
     }
 
     /**

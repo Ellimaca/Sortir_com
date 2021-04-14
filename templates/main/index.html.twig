@@ -3,7 +3,6 @@
 {% block title %}Hello MainController!{% endblock %}
 
 {% block body %}
-
     <section id="information" class="container">
         <div>
             <p>Date du jour : <span> {{ "now"|date("m/d/Y") }}</span></p>
@@ -13,12 +12,8 @@
             {# <span> {{ app.user.firstName }}</span> #}
         </div>
     </section>
-<div class="card mb-6">
-    <div class="card-header bg-primary text-white">
-        <i class="fas fa-table mr-5"></i>
-        Filtrer les sorties
-    </div>
-    <section id="FiltreRecherche " class="container mt-2">
+    <section id="FiltreRecherche" class="container">
+        <h4>Filtrer les sorties</h4>
         {{ form_start(searchForm) }}
             <div class="row align-items-start">
 
@@ -29,29 +24,28 @@
                         {{ form_errors(searchForm.campus)}}
                     </div>
                     <div >
-                        <label class="mt-2" for="{{ field_name(searchForm.searchBar) }}">Le nom de la sortie contient :</label>
+                        <label for="{{ field_name(searchForm.searchBar) }}">Le nom de la sortie contient :</label>
                         <input type="search"
-                               class="form-control"
                                id="{{ field_name(searchForm.searchBar) }}"
                                name="{{ field_name(searchForm.searchBar) }}"
                                value="{{ field_value(searchForm.searchBar) }}"
                         >
                     </div>
-                    <div class = "group mt-2">
-                        <span class ="group">
+                    <div class = "group">
+                        <span class = "group">
                             <label for="{{ field_name(searchForm.dateStart) }}">Entre le </label>
                             <input type="date"
                                    id="{{ field_name(searchForm.dateStart) }}"
                                    name="{{ field_name(searchForm.dateStart) }}"
                                    value="{{ field_value(searchForm.dateStart) }}"
-                                   class="form-control"
                             >
+                        </span>
+                        <span class = "group">
                             <label for="{{ field_name(searchForm.dateEnd) }}"> et le </label>
                             <input type="date"
                                    id="{{ field_name(searchForm.dateEnd) }}"
                                    name="{{ field_name(searchForm.dateEnd) }}"
                                    value="{{ field_value(searchForm.dateEnd) }}"
-                                   class="form-control"
                             >
                         </span>
                     </div>
@@ -72,70 +66,12 @@
                     </div>
                 </article>
                 <article class="col-2">
-                    <a href="{{ path('event_creation') }}">
-                        <button type="submit" class="btn-primary btn mt-4">Rechercher</button>
-                    </a>
+                    <input type="submit" value="Rechercher">
                 </article>
 
             </div>
         {{ form_end(searchForm) }}
     </section>
-
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100" cellspacing="0">
-                <thead>
-                <tr class="text-center text-white bg-primary">
-                    <th>Nom de la sortie</th>
-                    <th>Date de la sortie</th>
-                    <th>Clôture</th>
-                    <th>Inscrits/places</th>
-                    <th>Etat</th>
-                    <th>Inscrit</th>
-                    <th>Organisateur</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-
-                <tfoot>
-                {% for eventLine in eventLines %}
-                    {% if eventLine.event.organiser.pseudo is same as app.user.pseudo %}
-                            <tr class="text-center text-danger bg-light">
-                    {% else %}
-                            <tr class="text-center bg-light">
-                    {% endif %}
-
-
-                    <th>{{ eventLine.event.name }}</th>
-                    <th>{{ eventLine.event.dateTimeStart | date('d-m-Y H:i:s') }}</th>
-                    <th>{{ eventLine.event.registrationDeadline | date('d-m-Y H:i:s') }}</th>
-                    <th>{{ eventLine.nbRegistered }}/{{ eventLine.event.maxNumberParticipants }}</th>
-                    <th>{{ eventLine.event.status.name }}</th>
-                    <th>
-                        {%  if eventLine.isRegistered %}
-                        <span class="icon mr-1"><i class="fas fa-user-check"></i></span>
-                        {% endif %}
-                    </th>
-                    <th> {% if eventLine.event.organiser.pseudo is same as app.user.pseudo %}
-                        <i class="fas fa-user-shield"></i> {{ eventLine.event.organiser.pseudo }}</th>
-                         {% else %}
-                             {{ eventLine.event.organiser.pseudo }}
-                    {% endif %}
-                    <th>   {% set nbLinks = eventLine.links|length - 1 %}
-                        {% for i in 0..nbLinks %}
-                            {% if ( i > 0 ) %}
-                                <span> - </span>
-                            {% endif %}
-                            <a href="{{ path(eventLine.links[i][1],{'id':eventLine.event.id}) }}"> {{ eventLine.links[i][0] }}</a>
-                        {% endfor %}</th>
-                </tr>
-                {% endfor %}
-                </tfoot>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
     <section id="EventsList" class="container">
         <div id="EventsListHeaders" name="EventsListHeaders" class="row align-items-start  m-0 p-0 border">
             <article class="col-2 text-center text-wrap m-0 p-0 ">
@@ -209,8 +145,6 @@
         </ul>
     </section>
     <section id="CreateEvent" class="container">
-        <a href="{{ path('event_creation') }}">
-            <button class="btn-success btn mt-2">Créer une sortie</button>
-        </a>
+        <a href="{{ path('event_creation') }}"> <input type="button" value="Créer une sortie"></a>
     </section>
 {% endblock %}

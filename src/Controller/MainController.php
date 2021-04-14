@@ -27,7 +27,7 @@ class MainController extends AbstractController
                           EventRepository $eventRepository,
                           FunctionsStatus $functionsStatus): Response
     {
-
+var_dump('passé par main');
         /** @var User $user */
         $user = $this->getUser();
 
