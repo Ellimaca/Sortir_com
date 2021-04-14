@@ -1,43 +1,14 @@
 {% extends 'base.html.twig' %}
 
+
 {% block title %}Créer une sortie
 
 {% endblock %}
 
 {% block body %}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
     <script>
-        window.onload = init;
-
-        function init() {
-            var city = document.getElementById('event_city');
-
-            city.addEventListener("change", updatePlaceField);
-
-            function updatePlaceField() {
-
-                let city_id = document.getElementById('event_city')
-                let data = {"eventCity": city_id.value}
-
-                console.log(data)
-
-                fetch('ajax', {method: 'POST', body: JSON.stringify(data)})
-                    .then(function (response) {
-                        return response.json();
-                    }).then(function (data) {
-
-                    places = data.places
-                    html = "";
-
-                    for (const [key, value] of Object.entries(places)) {
-                        html = html + "<option value='" + `${key}` +"'>" + `${value.name}` + "</option>" + "\n";
-                    }
-                    document.getElementById('event_place').innerHTML = html;
-                })
-            }
-        }
+        window.onload = init ;
     </script>
 
     <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
@@ -51,37 +22,40 @@
                 <div class="h-100">
 
                     {{ form_start(eventForm) }}
-                    <p>{{ form_row((eventForm.name)) }}</p>
-                    <p>{{ form_row((eventForm.dateTimeStart)) }}</p>
-                    <p>{{ form_row((eventForm.registrationDeadline)) }}</p>
-                    <code>COVID 19 - Les rassemblements de plus de 6 personnes sont interdits</code>
-                    <p>{{ form_row((eventForm.maxNumberParticipants)) }}</p>
-                    <p>{{ form_row((eventForm.duration)) }}</p>
-                    <p>{{ form_row((eventForm.description)) }}</p>
+                    <div>{{ form_row((eventForm.name)) }}</div>
+                    <div>{{ form_row((eventForm.dateTimeStart)) }}</div>
+                    <div>{{ form_row((eventForm.registrationDeadline)) }}</div>
+                        <code>COVID 19 - Les rassemblements de plus de 6 personnes sont interdits</code>
+                    <div>{{ form_row((eventForm.maxNumberParticipants)) }}</div>
+                    <div>{{ form_row((eventForm.duration)) }}</div>
+                    <div>{{ form_row((eventForm.description)) }}</div>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class='h-100'>
-                    <p>{{ form_row((eventForm.campus)) }}</p>
-                    <p>{{ form_row((eventForm.city)) }}</p> {# <select id="event_city" #}
+                    <div>{{ form_row((eventForm.campus)) }}</div>
+                    <div>{{ form_row((eventForm.city)) }}</div> {# <select id="event_city" #}
 
-                    <span id="testAjax" class = "group">
+                    <div class="group">
                         <label for="{{ field_name(eventForm.place) }}">{{ form_label(eventForm.place)}} </label>
-                        <select name="{{ field_name(eventForm.place) }}" id="event_place" class="form-control">
-                        </select>
-                        {#<p>{{ form_row ((eventForm.place)) }}</p>  {# <select id="event_place" #}
-                    </span>
-
+                        <select name="{{ field_name(eventForm.place) }}" id="{{ field_name(eventForm.place) }}" class="form-control"></select>
+                    </div>
+                    <div>
+                        <div>
+                            <label class="mt-3">Adresse </label>
+                            <div id="streetPlace"></div>
+                        </div>
+                        <div>
+                            <label>Latitude </label>
+                            <div id="latitudePlace"></div>
+                        </div>
+                        <div>
+                            <label>Longitude </label>
+                            <div id="longitudePlace"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            {#  <span class = "group">
-                            <label for="{{ field_name(searchForm.dateStart) }}">Entre le </label>
-                            <input type="date"
-                                   id="{{ field_name(searchForm.dateStart) }}"
-                                   name="{{ field_name(searchForm.dateStart) }}"
-                                   value="{{ field_value(searchForm.dateStart) }}"
-                            >
-                        </span>#}
 
             <div class="row">
                 <div class="col-lg-4">
