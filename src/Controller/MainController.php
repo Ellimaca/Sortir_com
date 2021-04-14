@@ -70,22 +70,4 @@ class MainController extends AbstractController
             'eventLines' => $eventLines,
         ]);
     }
-
-    /**
-     *  function pour test
-     * @Route("/test", name="test")
-     *  TODO supprimer
-     */
-    public function test(EntityManagerInterface $entityManager,
-                         EventRepository $repository,FunctionsStatus $functionsStatus){
-/*
-        date_default_timezone_set ( Constantes::TIME_ZONE);
-        dd(new DateTime('now'));
-*/
-        $event = $repository->findOneBy(['name' => 'test 2']);
-        var_dump($event->getStatus()->getName());
-        $event = $functionsStatus->UpdateEventStatus($event);
-        dd($event);
-    }
-
 }
