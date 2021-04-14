@@ -132,13 +132,13 @@ class EventController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        //Je récupère l'évenement choisi par mon utilisateur via l'id récupérée dans l'URL
+        //Récupération de l'évenement choisi par mon utilisateur via l'id récupérée dans l'URL
         $eventChoosen = $eventRepository->find($id);
 
         //Les inscrits à la sortie
         $foundParticipants = $eventChoosen->getParticipants();
 
-        //Mettre à jour le statut au moment où la personne s'inscrit
+        //Mise à jour du statut au moment où la personne s'inscrit
         $functionsStatus->UpdateEventStatus($eventChoosen);
 
         $eventStatusName = $eventChoosen->getStatus()->getName();
@@ -147,31 +147,31 @@ class EventController extends AbstractController
 
             case Constantes::CREATED :
                 $this->addFlash('warning', "Cette sortie n'est pas encore publiée!");
-                $this->redirectToRoute('main');
+                return $this->redirectToRoute('main');
                 break;
             case Constantes::ARCHIVED :
                 $this->addFlash('warning', "Cette sortie est archivée!");
-                $this->redirectToRoute('main');
+                return $this->redirectToRoute('main');
                 break;
             //Si sorties annulées...
             case Constantes::CANCELLED :
                 $this->addFlash('warning', "Cette sortie a été annulée!");
-                $this->redirectToRoute('main');
+                return $this->redirectToRoute('main');
                 break;
             //Si sorties fermées à l'inscription...
             case Constantes::CLOSED :
                 $this->addFlash('warning', "La date limite d'inscription est dépassée");
-                $this->redirectToRoute('main');
+                return $this->redirectToRoute('main');
                 break;
             //Si sorties se déroulent au moment de l'inscription...
             case Constantes::ONGOING :
                 $this->addFlash('warning', "Impossible de s'inscrire, l'activité se déroule en ce moment-même!");
-                $this->redirectToRoute('main');
+                return $this->redirectToRoute('main');
                 break;
             //Si la sortie est déjà passée...
             case Constantes::FINISHED :
                 $this->addFlash('warning', "La sortie est finie!");
-                $this->redirectToRoute('main');
+                return $this->redirectToRoute('main');
                 break;
             //Si le statut de la sortie est "Ouverte"...
             case Constantes::OPENED :
@@ -201,7 +201,7 @@ class EventController extends AbstractController
                     $this->addFlash('success', "Vous êtes bien inscrit à la sortie!");
                 }
 
-                $this->redirectToRoute('main');
+                return $this->redirectToRoute('main');
                 break;
 
         }
