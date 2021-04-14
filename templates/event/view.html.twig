@@ -4,7 +4,11 @@
     <h1>{{ foundEvent.name }}</h1>
     <p class="fs-5 col-md-8">{{ foundEvent.description }}</p>
 
-    <hr class="col-3 col-md-2 mb-5">
+    <hr class="col-3 col-md-2 mb-4">
+
+    {% if (foundEvent.cancellationReason) %}
+    <p>SORTIE ANNULÉ : {{ foundEvent.cancellationReason }}</p>
+    {% endif %}
 
     <div class="row align-items-md-stretch">
         <div class="col-md-6">

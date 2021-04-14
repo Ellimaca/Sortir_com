@@ -18,7 +18,7 @@ class EventCancellationType extends AbstractType
                 'label' => 'Motif de l\'annulation',
                 'required' => true,
             ])
-           ;
+            ;
     }
 
     public function configureOptions(OptionsResolver $resolver)

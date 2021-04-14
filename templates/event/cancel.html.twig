@@ -23,9 +23,9 @@
         {{ form_start(eventCancellationForm) }}
         {{ form_row(eventCancellationForm.cancellation_reason) }}
         <div class="p-3 pb-md-4 mx-auto text-center">
-            <button type="submit">Confirmer</button>
+            <button type="submit"  class="btn btn-danger">Confirmer</button>
             {{ form_end(eventCancellationForm) }}
-            <a href="{{ path('main') }}"><button class="btn-success btn mt-2" id="cancel">Annuler</button></a>
+            <a href="{{ path('main') }}"><button class="btn text-white" id="cancel">Annuler</button></a>
         </div>
 </main>
 
