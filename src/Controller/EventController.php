@@ -103,7 +103,6 @@ class EventController extends AbstractController
             $entityManager->persist($event);
             $entityManager->flush();
 
-
             $this->addFlash('success', 'Votre évènement a bien été ajouté !');
             return $this->redirectToRoute('main');
         }
@@ -124,7 +123,6 @@ class EventController extends AbstractController
 
         }
         $event->setPlace($place);
-
          */
 
         return $this->render("event/create.html.twig", [
@@ -225,28 +223,102 @@ class EventController extends AbstractController
     }
 
     /**
-     * @Route("/evenement/desistement{id}", name="event_abandonned")
+     * @Route("/evenement/desistement/{id}", name="event_abandonned")
      */
     public function abandon ($id, EventRepository $eventRepository,
-                          EntityManagerInterface $manager): Response
+                          EntityManagerInterface $manager, FunctionsStatus $functionsStatus): Response
     {
+        // Récupération de l'utilisateur connecté
+        /** @var User $user */
+        $user = $this->getUser();
 
+        //Récupération de l'évenement choisi par mon utilisateur via l'id récupérée dans l'URL
+        $eventChoosen = $eventRepository->find($id);
 
+        //Récupération des inscrits à la sortie
+        $foundParticipants = $eventChoosen->getParticipants();
 
-        return $this->render("", [
+        //Mise à jour le statut de l'évenement
+        $functionsStatus->UpdateEventStatus($eventChoosen);
+
+        // Récupération du statut de l'évenement
+        $eventStatusName = $eventChoosen->getStatus()->getName();
+
+        // Si l'utilisateur est bien dans les participants et que le statut de la sortie est "ouvert
+        if (($foundParticipants->contains($user) and ($eventStatusName === Constantes::OPENED or $eventStatusName === Constantes::CLOSED))) {
+
+                    $eventChoosen->removeParticipant($user);
+
+                    $manager->persist($eventChoosen);
+                    $manager->flush();
+
+                    $this->addFlash('success', "Vous êtes bien désinscrit de la sortie!");
+
+                    $this->redirectToRoute('main');
+        }
+
+        // Si le statut de l'event est "en cours"
+        elseif ((($foundParticipants->contains($user) && $eventStatusName == Constantes::ONGOING))) {
+                    $this->addFlash('warning', 'La sortie est en cours, vous ne pouvez pas vous désinscrire  !');
+
+        }
+        else {
+            throw $this->createNotFoundException("Erreur de route");
+        }
+
+        return $this->render("event/view.html.twig", [
+            "foundEvent" => $eventChoosen,
+            "foundParticipants" => $foundParticipants
         ]);
     }
 
     /**
-     * @Route("/evenement/annuler{id}", name="event_cancelled")
+     * @Route("/evenement/annuler/{id}", name="event_cancelled")
      */
     public function cancel ($id, EventRepository $eventRepository,
-                             EntityManagerInterface $manager): Response
+                             EntityManagerInterface $manager, FunctionsStatus $functionsStatus): Response
     {
+        // Récupération de l'utilisateur connecté
+        /** @var User $user */
+        $user = $this->getUser();
 
+        //Récupèration l'évenement choisi par mon utilisateur via l'id récupérée dans l'URL
+        $eventFound = $eventRepository->find($id);
 
+        //Récupération de l'organisateur de la sortie
+        $eventOrganiser = $eventFound->getOrganiser();
 
-        return $this->render("", [
+        // En commentaire le temps du test, à décommenter
+       /* if ($eventOrganiser !== $user) {
+            throw $this->createNotFoundException("Erreur de route");
+        }*/
+
+        //Mise à jour le statut de l'évenement
+        $functionsStatus->UpdateEventStatus($eventFound);
+
+        //Récupération de l'organisateur de la sortie
+        $eventOrganiser = $eventFound->getOrganiser();
+
+        //Récupération du statut de la sortie
+        $eventStatus = $eventFound->getStatus();
+
+        $eventForm = $this->createForm(EventType::class, $eventFound);
+
+        // Si l'utilisateur est bien l'organisateur et que le statut de la sortie est bien ouvert
+        if (($eventOrganiser === $user and $eventStatus === Constantes::OPENED)) {
+
+            // Suppresion de la sortie
+            $eventFound->removeParticipant($user);
+
+            $manager->remove($eventFound);
+            $manager->flush();
+
+            $this->addFlash('success', "Votre sortie est bien annulée!");
+            $this->redirectToRoute('main');
+        }
+
+        return $this->render("event/cancel.html.twig", [
+            "foundEvent" => $eventFound,  'eventForm' => $eventForm->createView(),
         ]);
     }
 
@@ -256,8 +328,6 @@ class EventController extends AbstractController
     public function modify ($id, EventRepository $eventRepository,
                              EntityManagerInterface $manager): Response
     {
-
-
 
         return $this->render("", [
         ]);
@@ -292,18 +362,10 @@ class EventController extends AbstractController
         //je récupère ma série qui est bdd, avec l'id
         $places = $placeRepository->findBy(['city'=>$city]);
 
-        //return new JsonResponse(['places' => $places]);
-
-/*        $placesName = [];
-        $placesLattitude = [];
-        $placesLongitude = [];*/
         $placesObject = [];
 
         foreach ($places as $place){
             $placesObject[$place->getId()]['name']  = $place->getName();
-            $placesObject[$place->getId()]['street']  = $place->getStreet();
-            $placesObject[$place->getId()]['latitude']  = $place->getLatitude();
-            $placesObject[$place->getId()]['longitude']  = $place->getLongitude();
         }
 
         return new JsonResponse([

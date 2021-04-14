@@ -66,7 +66,9 @@ class EventType extends AbstractType
                 'class' => City::class,
                 'choice_label' => 'name',
                 'mapped' => false,
-
+            ])
+            ->add('cancellationReason', EntityType::class, [
+                'label' => 'Motif d\'annulation',
             ])
         ;
         $formModifier = function (FormInterface $form, City $city = null) {
@@ -100,8 +102,6 @@ class EventType extends AbstractType
 
             }
         );
-
-
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -102,6 +102,11 @@ class Event
      */
     private $duration;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $cancellation_reason;
+
 
     public function __construct()
     {
@@ -265,6 +270,18 @@ class Event
     public function setDuration(int $duration): self
     {
         $this->duration = $duration;
+
+        return $this;
+    }
+
+    public function getCancellationReason(): ?string
+    {
+        return $this->cancellation_reason;
+    }
+
+    public function setCancellationReason(?string $cancellation_reason): self
+    {
+        $this->cancellation_reason = $cancellation_reason;
 
         return $this;
     }

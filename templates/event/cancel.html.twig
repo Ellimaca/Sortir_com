@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Annuler votre sortie
+
+{% endblock %}
+
+{% block body %}
+    <div class="p-3 pb-md-4 mx-auto text-center">
+        <h6 class="display-6 fw-normal">Annuler une sortie</h6>
+    </div>
+
+<main class="form-cancel">
+    <form>
+        <fieldset disabled>
+
+        <label for="event_name">Nom de la sortie</label>
+        <input type="text" class="form-control" id="event_name" placeholder="{{ foundEvent.name }}">
+        <label for="event_date">Date de la sortie</label>
+        <input type="text" class="form-control" id="event_datestart" placeholder="{{ foundEvent.dateTimeStart|date('d-m-Y') }}">
+        <label for="event_date">Campus</label>
+        <input type="text" class="form-control" id="event_campus" placeholder="{{ foundEvent.campus.name }}">
+        <label for="event_date">Lieu</label>
+        <input type="text" class="form-control" id="event_place" placeholder="{{ foundEvent.place.name }}">
+        </fieldset>
+
+        <div class="col-lg-4">
+            <label for="event_cancellation-reason">Motif d'annulation</label>
+            <input type="text" class="form-control" id="event_cancellation-reason">
+        </div>
+
+        {{ form_row ((eventForm.cancellationReason )) }}
+        <div class="col-lg-4">
+            <a href="{{ path('main') }}"><button class="btn-success btn mt-2">Enregistrer</button></a>
+        </div>
+        <div class="col-lg-4">
+            <a href="{{ path('main') }}"><button class="btn-success btn mt-2">Annuler</button></a>
+        </div>
+
+    </form>
+</main>
+
+{% endblock %}
+
