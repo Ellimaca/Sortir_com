@@ -65,18 +65,17 @@ class EventType extends AbstractType
                 'choice_label' => 'name',
                 'mapped' => false,
             ])
-
-        ;
-        $formModifier = function (FormInterface $form, City $city = null) {
-            $places = null === $city ? [] : $city->getPlaces();
-
-            $form->add('place', EntityType::class, [
+            ->add('place', EntityType::class, [
                 'class' => Place::class,
                 'label' => 'Lieu',
-                'choices' => $places,
                 'placeholder' => 'Définir un lieu',
                 'mapped' => false
-            ]);
+            ])
+        ;
+
+
+/*        $formModifier = function (FormInterface $form, City $city = null) {
+            $places = null === $city ? [] : $city->getPlaces();
         };
 
         $builder->addEventListener(
@@ -88,16 +87,14 @@ class EventType extends AbstractType
 
              }
         );
-
         $builder->get('city')->addEventListener(
             FormEvents::POST_SUBMIT,
             function (FormEvent $event) use ($formModifier) {
 
                 $city = $event->getForm()->getData();
                 $formModifier($event->getForm()->getParent(), $city);
-
             }
-        );
+        );*/
     }
 
     public function configureOptions(OptionsResolver $resolver)
