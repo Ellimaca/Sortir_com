@@ -15,6 +15,7 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -58,8 +59,10 @@ class EventController extends AbstractController
      * @Route ("/evenement/creer/", name="event_creation")
      * @param Request $request
      * @param EntityManagerInterface $entityManager
+     * @param StatusRepository $statusRepository
+     * @return RedirectResponse|Response
      */
-    public function create (\Symfony\Component\HttpFoundation\Request $request, EntityManagerInterface $entityManager, StatusRepository $statusRepository)
+    public function create (Request $request, EntityManagerInterface $entityManager, StatusRepository $statusRepository)
     {
 
         // Creation d'un nouvel event
@@ -83,7 +86,7 @@ class EventController extends AbstractController
         if($eventForm->isSubmitted() && $eventForm->isValid()) {
 
             // Calcul de la date de fin de l'évènement
-            /** @var \DateTime $startDate */
+            /** @var DateTime $startDate */
             $startDate = $event->getDateTimeStart();
             $intervalDuration = abs($event->getDuration());
             $dateTimeEnd = DateTimeHandler::dateAddMinutes($startDate, $intervalDuration);
@@ -136,6 +139,11 @@ class EventController extends AbstractController
     /**
      * Permet de s'inscrire à un évènement
      * @Route("/evenement/inscription/{id}", name="event_registration")
+     * @param $id
+     * @param EventRepository $eventRepository
+     * @param EntityManagerInterface $manager
+     * @param FunctionsStatus $functionsStatus
+     * @return Response
      */
     public function registration($id,
                                  EventRepository $eventRepository,
@@ -226,6 +234,11 @@ class EventController extends AbstractController
 
     /**
      * @Route("/evenement/desistement/{id}", name="event_abandonned")
+     * @param $id
+     * @param EventRepository $eventRepository
+     * @param EntityManagerInterface $manager
+     * @param FunctionsStatus $functionsStatus
+     * @return Response
      */
     public function abandon ($id, EventRepository $eventRepository,
                           EntityManagerInterface $manager, FunctionsStatus $functionsStatus): Response
@@ -276,7 +289,7 @@ class EventController extends AbstractController
 
     /**
      * @Route("/evenement/annuler/{id}", name="event_cancelled", methods={"GET", "POST"})
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      * @param $id
      * @param EventRepository $eventRepository
      * @param EntityManagerInterface $entityManager
@@ -345,6 +358,12 @@ class EventController extends AbstractController
 
     /**
      * @Route("/evenement/modifier/{id}", name="event_modified")
+     * @param $id
+     * @param EventRepository $eventRepository
+     * @param Request $request
+     * @param FunctionsStatus $functionsStatus
+     * @param EntityManagerInterface $manager
+     * @return Response
      */
     public function modify ($id,
                             EventRepository $eventRepository,
@@ -417,7 +436,8 @@ class EventController extends AbstractController
         ]);
     }
 
-    public function checkEvent($eventToCheck) {
+    public function checkEvent($eventToCheck): bool
+    {
         $isChecked = true;
 
         $numberOfParticipants = $eventToCheck->getParticipants()->count();
@@ -450,6 +470,10 @@ class EventController extends AbstractController
 
     /**
      * @Route("/evenement/publier/{id}", name="event_published")
+     * @param $id
+     * @param EventRepository $eventRepository
+     * @param EntityManagerInterface $manager
+     * @return Response
      */
     public function publish ($id, EventRepository $eventRepository,
                             EntityManagerInterface $manager): Response
@@ -460,9 +484,12 @@ class EventController extends AbstractController
 
     /**
      * @Route ("/ajaxCity", name="ajaxCity")
+     * @param Request $request
+     * @param PlaceRepository $placeRepository
+     * @return JsonResponse
      */
     public function updatePlace(Request $request,
-                                PlaceRepository $placeRepository)
+                                PlaceRepository $placeRepository): JsonResponse
     {
 
         //me ramène le contenu de ma requête, qui est mon JSON à l'intérieur
@@ -489,6 +516,9 @@ class EventController extends AbstractController
 
     /**
      * @Route("/ajaxPlace", name="ajaxPlace")
+     * @param Request $request
+     * @param PlaceRepository $placeRepository
+     * @return Response
      */
     public function updatePlaceInformation (Request $request,
                                             PlaceRepository $placeRepository): Response
