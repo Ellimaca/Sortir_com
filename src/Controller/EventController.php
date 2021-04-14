@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Event;
+use App\Entity\Status;
 use App\Entity\User;
 use App\Form\EventCancellationType;
 use App\Form\EventType;
@@ -23,15 +24,9 @@ use App\Utils\DateTimeHandler;
 
 class EventController extends AbstractController
 {
-    /**
-     * @Route("/event", name="event")
-     */
-    public function index(): Response
-    {
-        return $this->render('event/index.html.twig', [
-            'controller_name' => 'EventController',
-        ]);
-    }
+    const WARNING_EVENT_NOT_AUTHORIZED = "Vous n'êtes pas autorisé à réaliser cette action";
+    const WARNING_EVENT_WRONG_STATUS = "Action impossible, statut de la sortie incohérent";
+    const SUCCESS_EVENT_PUBLISHED = "La sortie à été publiée avec succès";
 
     /**
      * Permet de visualiser les informations liées à un évenement
@@ -112,23 +107,6 @@ class EventController extends AbstractController
             return $this->redirectToRoute('main');
         }
 
-        // Bloc à décommenter au moment de l'ajout de la fonctionnalité 'ajouter un lieu'
-        /**
-        $place = new Place();
-        $placeForm = $this->createForm(PlaceType::class, $place);
-        $placeForm->handleRequest($request);
-        if($placeForm->isSubmitted() && $placeForm->isValid()) {
-        $placeCity = $placeForm->get('city')->getData();
-        $place->setCity($placeCity);
-
-        $entityManager->persist($place);
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Votre lieu a bien été ajouté !');
-
-        }
-        $event->setPlace($place);
-         */
 
         return $this->render("event/create.html.twig", [
             'eventForm' => $eventForm->createView(),
@@ -199,7 +177,9 @@ class EventController extends AbstractController
             case Constantes::OPENED :
             //Si l'utilisateur est l'organisateur de la sortie...
                 if($eventChoosen->getOrganiser() === $user) {
+                    
                     $this->addFlash('warning', 'Vous avez crée la sortie, vous ne pouvez pas vous inscrire!');
+
                 }
                 //Si l'utilisateur est déjà inscrit à la sortie...
                 elseif($foundParticipants->contains($user)) {
@@ -312,7 +292,8 @@ class EventController extends AbstractController
 
         //Vérification que l'utilisateur est bien l'organisateur de la sortie
         if ($eventOrganiser !== $user) {
-            throw $this->createNotFoundException("L'utilisateur n'est pas l'organisateur");
+            //throw $this->createNotFoundException("L'utilisateur n'est pas l'organisateur");//TODO choisir
+            throw $this->createNotFoundException(self::WARNING_EVENT_NOT_AUTHORIZED);
         }
 
         //Mise à jour du statut de l'évenement
@@ -471,15 +452,34 @@ class EventController extends AbstractController
     /**
      * @Route("/evenement/publier/{id}", name="event_published")
      * @param $id
-     * @param EventRepository $eventRepository
      * @param EntityManagerInterface $manager
      * @return Response
      */
-    public function publish ($id, EventRepository $eventRepository,
-                            EntityManagerInterface $manager): Response
+    public function publish ($id, EntityManagerInterface $manager): Response
     {
-        return $this->render("", [
-        ]);
+        /** @var Event $event */
+        $event = $manager->getRepository(EventRepository::class)->find($id);
+        /** @var Status $eventStatus */
+        $eventStatus = $event->getStatus();
+
+        // Test si l'utilisateur est l'organisateur
+        if($event->getOrganiser() === $this->getUser()){
+            // Test si la sortie a le statue créé
+            if($eventStatus->getName() == Constantes::CREATED){
+
+                //Modification du statut et persistance
+                $eventStatus->setName(Constantes::CREATED);
+                $manager->persist($eventStatus);
+                $manager->flush();
+                $this->addFlash("success", self::SUCCESS_EVENT_PUBLISHED);
+            }else{
+                $this->addFlash("warning", self::WARNING_EVENT_WRONG_STATUS);
+            }
+        }else{
+            $this->addFlash("warning",self::WARNING_EVENT_NOT_AUTHORIZED);
+        }
+
+        return $this->redirect('main');
     }
 
     /**
