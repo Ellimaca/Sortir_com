@@ -5,17 +5,10 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\SearchEventsType;
 use App\Repository\EventRepository;
-use App\Utils\Constantes;
 use App\Utils\EventLine;
 use App\Utils\FunctionsStatus;
 use App\Utils\SearchEventCriterias;
-
-use DateTime;
-use DateTimeZone;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,6 +18,10 @@ class MainController extends AbstractController
 
     /**
      * @Route("/", name="main")
+     * @param Request $request
+     * @param EventRepository $eventRepository
+     * @param FunctionsStatus $functionsStatus
+     * @return Response
      */
     public function index(Request $request,
                           EventRepository $eventRepository,
@@ -64,7 +61,6 @@ class MainController extends AbstractController
             $eventLine->updateLinks($user);
             $eventLines[] = $eventLine;
         }
-        //dd($eventLines);
       return $this->render('main/index.html.twig', [
             'searchForm' => $searchForm->createView(),
             'eventLines' => $eventLines,
