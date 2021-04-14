@@ -95,8 +95,6 @@ class EventRepository extends ServiceEntityRepository
                 ->andWhere('events.dateTimeEnd <= CURRENT_TIME()');
         }
 
-        $queryBuilder->andWhere()
-
         $query= $queryBuilder->getQuery();
 
         //dd($query);

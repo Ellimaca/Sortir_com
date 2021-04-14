@@ -22,7 +22,7 @@ function updatePlaceField() {
 
     console.log(data)
 
-    fetch('ajax', {method: 'POST', body: JSON.stringify(data)})
+    fetch('ajaxCity', {method: 'POST', body: JSON.stringify(data)})
         .then(function (response) {
             return response.json();
         }).then(function (data) {
@@ -33,12 +33,12 @@ function updatePlaceField() {
         for (const [key, value] of Object.entries(places)) {
             html = html + "<option value='" + `${key}` + "'>" + `${value.name}` + "</option>" + "\n";
         }
+
         document.getElementById('event[place]').innerHTML = html;
+        displayInformations();
     })
 
-    displayInformations();
 }
-
 
 function displayInformations() {
 
@@ -47,13 +47,26 @@ function displayInformations() {
 
     console.log(place_id.options.length);
 
-    if (place_id.options.length !== 0){
-        let data = {'placeId' : place_id.options[place_id.selectedIndex].value}
-        console.log(data)
-    }else{
+    if (place_id.options.length !== 0) {
+        let data = {'placeId': place_id.options[place_id.selectedIndex].value}
+
+        fetch('ajaxPlace', {method: 'POST', body: JSON.stringify(data)})
+            .then(function (response) {
+                return response.json();
+            }).then(function (data) {
+            placeStreet = data.placeStreet;
+            placeLongitude = data.placeLongitude;
+            placeLatitude = data.placeLatitude;
+
+            document.getElementById("streetPlace").innerText = placeStreet;
+            document.getElementById("latitudePlace").innerText = placeLatitude;
+            document.getElementById("longitudePlace").innerText = placeLongitude;
+
+            console.log(data)
+        })
+    } else {
         console.log('no data')
     }
-
 
 }
 

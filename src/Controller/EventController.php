@@ -11,9 +11,9 @@ use App\Repository\StatusRepository;
 use App\Utils\Constantes;
 use App\Utils\FunctionsStatus;
 use Doctrine\ORM\EntityManagerInterface;
-use http\Env\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Utils\DateTimeHandler;
@@ -348,11 +348,10 @@ class EventController extends AbstractController
     }
 
     /**
-     * @Route ("/evenement/creer/ajax", name="ajax")
+     * @Route ("/evenement/creer/ajaxCity")
      */
-    public function updatePlace(\Symfony\Component\HttpFoundation\Request $request,
-                                PlaceRepository $placeRepository,
-                                EntityManagerInterface $manager)
+    public function updatePlace(Request $request,
+                                PlaceRepository $placeRepository)
     {
 
         //me ramène le contenu de ma requête, qui est mon JSON à l'intérieur
@@ -375,5 +374,30 @@ class EventController extends AbstractController
         return new JsonResponse([
             'places' => $placesObject,
         ]);
+    }
+
+    /**
+     * @Route("/evenement/creer/ajaxPlace")
+     */
+    public function updatePlaceInformation (Request $request,
+                                            PlaceRepository $placeRepository): Response
+    {
+        //me ramène le contenu de ma requête, qui est mon JSON à l'intérieur
+        $data = json_decode($request-> getContent());
+
+        $placeId = $data->placeId;
+
+        $placeInformation = $placeRepository->find($placeId);
+
+        $placeStreet = $placeInformation->getStreet();
+        $placeLatitude = $placeInformation->getLatitude();
+        $placeLongitude = $placeInformation->getLongitude();
+
+        return new JsonResponse([
+            'placeStreet' => $placeStreet,
+            'placeLatitude' => $placeLatitude,
+            'placeLongitude' => $placeLongitude
+        ]);
+
     }
 }
