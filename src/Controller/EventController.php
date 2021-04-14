@@ -285,7 +285,7 @@ class EventController extends AbstractController
      * @return Response
      */
     public function cancel ($id,Request $request, EventRepository $eventRepository,
-                             EntityManagerInterface $entityManager, FunctionsStatus $functionsStatus, StatusRepository $statusRepository): Response
+                            EntityManagerInterface $entityManager, FunctionsStatus $functionsStatus, StatusRepository $statusRepository): Response
     {
         // Récupération de l'utilisateur connecté
         /** @var User $user */
@@ -317,47 +317,31 @@ class EventController extends AbstractController
 
         $eventCancellationForm->handleRequest($request);
 
-        dump($eventChoosen);
+        if ($eventCancellationForm->isSubmitted() && $eventCancellationForm->isValid()) {
 
-        dump($request);
-        dump($eventCancellationForm->isSubmitted());
-        if($eventCancellationForm->isSubmitted()) {
-            dump($eventCancellationForm->isValid());
+            // Si l'utilisateur est bien l'organisateur et que le statut de la sortie est bien ouvert
+            $statusCancelled = $statusRepository->findOneBy(["name" => Constantes::CANCELLED]);
+
+            // Changement du statut de la sortie en annulée
+            $eventChoosen->setStatus($statusCancelled);
+
+            // Récupération du motif de l'annulation
+            $cancellationReason = $eventCancellationForm->get('cancellation_reason')->getData();
+
+            $eventChoosen->setCancellationReason($cancellationReason);
+
+            $entityManager->persist($eventChoosen);
+            $entityManager->flush();
+
+            $this->addFlash('success', "Votre sortie est bien annulée!");
+            return $this->redirectToRoute('main');
+
         }
-            if ($eventCancellationForm->isSubmitted() && $eventCancellationForm->isValid()) {
-
-                // Si l'utilisateur est bien l'organisateur et que le statut de la sortie est bien ouvert
-                $statusCancelled = $statusRepository->findOneBy(["name" => Constantes::CANCELLED]);
-
-                // Changement du statut de la sortie en annulée
-                $eventChoosen->setStatus($statusCancelled);
-
-                // Récupération du motif de l'annulation
-                $cancellationReason = $eventCancellationForm->get('cancellation_reason')->getData();
-
-                $eventChoosen->setCancellationReason($cancellationReason);
-
-                /**
-                $description = $eventChoosen->getDescription();
-                 $description = $description . "\n" . $cancellationReason;
-                 *
-                 */
-
-                // On passe le motif d'annulation dans l'évènement
-                $eventChoosen->setDescription($cancellationReason);
-
-                $entityManager->persist($eventChoosen);
-                $entityManager->flush();
-
-                $this->addFlash('success', "Votre sortie est bien annulée!");
-                return $this->redirectToRoute('main');
-
-            }
-            return $this->render("event/cancel.html.twig", [
-                "foundEvent" => $eventChoosen,
-                'eventCancellationForm' => $eventCancellationForm->createView(),
-            ]);
-        }
+        return $this->render("event/cancel.html.twig", [
+            "foundEvent" => $eventChoosen,
+            'eventCancellationForm' => $eventCancellationForm->createView(),
+        ]);
+    }
 
     /**
      * @Route("/evenement/modifier{id}", name="event_modified")
