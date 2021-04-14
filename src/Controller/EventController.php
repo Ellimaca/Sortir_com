@@ -292,7 +292,22 @@ class EventController extends AbstractController
         //je récupère ma série qui est bdd, avec l'id
         $places = $placeRepository->findBy(['city'=>$city]);
 
-        return new JsonResponse(['places' => $places]);
+        //return new JsonResponse(['places' => $places]);
 
+/*        $placesName = [];
+        $placesLattitude = [];
+        $placesLongitude = [];*/
+        $placesObject = [];
+
+        foreach ($places as $place){
+            $placesObject[$place->getId()]['name']  = $place->getName();
+            $placesObject[$place->getId()]['street']  = $place->getStreet();
+            $placesObject[$place->getId()]['latitude']  = $place->getLatitude();
+            $placesObject[$place->getId()]['longitude']  = $place->getLongitude();
+        }
+
+        return new JsonResponse([
+            'places' => $placesObject,
+        ]);
     }
 }
