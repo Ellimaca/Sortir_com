@@ -45,11 +45,15 @@ function displayInformations() {
     //Récupération de l'id du lieu
     let place_id = document.getElementById('event[place]')
 
-    console.log(place_id);
+    console.log(place_id.options.length);
 
-    let data = {'placeId' : place_id.options[place_id.selectedIndex].value}
+    if (place_id.options.length !== 0){
+        let data = {'placeId' : place_id.options[place_id.selectedIndex].value}
+        console.log(data)
+    }else{
+        console.log('no data')
+    }
 
-    console.log(data)
 
 }
 
