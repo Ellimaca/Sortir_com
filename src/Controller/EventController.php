@@ -454,6 +454,7 @@ class EventController extends AbstractController
      * @param $id
      * @param EntityManagerInterface $manager
      * @param EventRepository $eventRepository
+     * @param StatusRepository $statusRepository
      * @return Response
      */
     public function publish ($id,
