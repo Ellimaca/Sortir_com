@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Event;
 use App\Entity\User;
+use App\Form\EventCancellationType;
 use App\Form\EventType;
 use App\Repository\EventRepository;
 use App\Repository\PlaceRepository;
@@ -273,10 +274,17 @@ class EventController extends AbstractController
     }
 
     /**
-     * @Route("/evenement/annuler/{id}", name="event_cancelled")
+     * @Route("/evenement/annuler/{id}", name="event_cancelled", methods={"GET", "POST"})
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param $id
+     * @param EventRepository $eventRepository
+     * @param EntityManagerInterface $entityManager
+     * @param FunctionsStatus $functionsStatus
+     * @param StatusRepository $statusRepository
+     * @return Response
      */
-    public function cancel ($id, EventRepository $eventRepository,
-                             EntityManagerInterface $manager, FunctionsStatus $functionsStatus): Response
+    public function cancel ($id,Request $request, EventRepository $eventRepository,
+                             EntityManagerInterface $entityManager, FunctionsStatus $functionsStatus, StatusRepository $statusRepository): Response
     {
         // Récupération de l'utilisateur connecté
         /** @var User $user */
@@ -288,46 +296,70 @@ class EventController extends AbstractController
         //Récupération de l'organisateur de la sortie
         $eventOrganiser = $eventChoosen->getOrganiser();
 
-        // En commentaire le temps du test, à décommenter
-       /* if ($eventOrganiser !== $user) {
-            throw $this->createNotFoundException("Erreur de route");
-        }*/
+        //Vérification que l'utilisateur est bien l'organisateur de la sortie
+        if ($eventOrganiser !== $user) {
+            throw $this->createNotFoundException("L'utilisateur n'est pas l'organisateur");
+        }
 
-        //Mise à jour le statut de l'évenement
+        //Mise à jour du statut de l'évenement
         $functionsStatus->UpdateEventStatus($eventChoosen);
-
-        //Récupération de l'organisateur de la sortie
-        $eventOrganiser = $eventChoosen->getOrganiser();
 
         //Récupération du statut de la sortie
         $eventStatus = $eventChoosen->getStatus();
 
-        $eventForm = $this->createForm(EventType::class, $eventChoosen);
+        if ($eventStatus === Constantes::ONGOING or $eventStatus === Constantes::FINISHED or $eventStatus === Constantes::ARCHIVED or $eventStatus === Constantes::CANCELLED) {
+            throw $this->createNotFoundException("Erreur de statut");
+        }
 
-        if($eventForm->isSubmitted() && $eventForm->isValid()) {
+        // Création du formulaire
+        $eventCancellationForm = $this->createForm(EventCancellationType::class, $eventChoosen);
 
-            // Si l'utilisateur est bien l'organisateur et que le statut de la sortie est bien ouvert
-            if ($eventOrganiser === $user and ($eventStatus === Constantes::OPENED or $eventStatus === Constantes::CLOSED or $eventStatus === Constantes::CREATED)) {
+        $eventCancellationForm->handleRequest($request);
+
+        dump($eventChoosen);
+
+        dump($request);
+        dump($eventCancellationForm->isSubmitted());
+        if($eventCancellationForm->isSubmitted()) {
+            dump($eventCancellationForm->isValid());
+        }
+            if ($eventCancellationForm->isSubmitted() && $eventCancellationForm->isValid()) {
+
+                // Si l'utilisateur est bien l'organisateur et que le statut de la sortie est bien ouvert
+                $statusCancelled = $statusRepository->findOneBy(["name" => Constantes::CANCELLED]);
 
                 // Changement du statut de la sortie en annulée
-                $eventChoosen->setStatus(Constantes::CANCELLED);
+                $eventChoosen->setStatus($statusCancelled);
 
+                // Récupération du motif de l'annulation
+                $cancellationReason = $eventCancellationForm->get('cancellation_reason')->getData();
 
-                $manager->persist($eventChoosen);
-                $manager->flush();
+                $eventChoosen->setCancellationReason($cancellationReason);
+
+                /**
+                $description = $eventChoosen->getDescription();
+                 $description = $description . "\n" . $cancellationReason;
+                 *
+                 */
+
+                // On passe le motif d'annulation dans l'évènement
+                $eventChoosen->setDescription($cancellationReason);
+
+                $entityManager->persist($eventChoosen);
+                $entityManager->flush();
 
                 $this->addFlash('success', "Votre sortie est bien annulée!");
-                $this->redirectToRoute('main');
-            }
+                return $this->redirectToRoute('main');
 
+            }
             return $this->render("event/cancel.html.twig", [
-                "foundEvent" => $eventChoosen, 'eventForm' => $eventForm->createView(),
+                "foundEvent" => $eventChoosen,
+                'eventCancellationForm' => $eventCancellationForm->createView(),
             ]);
         }
-    }
 
     /**
-     * @Route("/evenement/modifier{id}", name="event_modified")
+     * @Route("/evenement/modifier/{id}", name="event_modified")
      */
     public function modify ($id, EventRepository $eventRepository,
                              EntityManagerInterface $manager): Response
@@ -338,7 +370,7 @@ class EventController extends AbstractController
     }
 
     /**
-     * @Route("/evenement/publier{id}", name="event_published")
+     * @Route("/evenement/publier/{id}", name="event_published")
      */
     public function publish ($id, EventRepository $eventRepository,
                             EntityManagerInterface $manager): Response

@@ -10,9 +10,7 @@
     </div>
 
 <main class="form-cancel">
-    <form>
         <fieldset disabled>
-
         <label for="event_name">Nom de la sortie</label>
         <input type="text" class="form-control" id="event_name" placeholder="{{ foundEvent.name }}">
         <label for="event_date">Date de la sortie</label>
@@ -22,21 +20,13 @@
         <label for="event_date">Lieu</label>
         <input type="text" class="form-control" id="event_place" placeholder="{{ foundEvent.place.name }}">
         </fieldset>
-
-        <div class="col-lg-4">
-            <label for="event_cancellation-reason">Motif d'annulation</label>
-            <input type="text" class="form-control" id="event_cancellation-reason">
+        {{ form_start(eventCancellationForm) }}
+        {{ form_row(eventCancellationForm.cancellation_reason) }}
+        <div class="p-3 pb-md-4 mx-auto text-center">
+            <button type="submit">Confirmer</button>
+            {{ form_end(eventCancellationForm) }}
+            <a href="{{ path('main') }}"><button class="btn-success btn mt-2" id="cancel">Annuler</button></a>
         </div>
-
-        {{ form_row ((eventForm.cancellationReason )) }}
-        <div class="col-lg-4">
-            <a href="{{ path('main') }}"><button class="btn-success btn mt-2">Enregistrer</button></a>
-        </div>
-        <div class="col-lg-4">
-            <a href="{{ path('main') }}"><button class="btn-success btn mt-2">Annuler</button></a>
-        </div>
-
-    </form>
 </main>
 
 {% endblock %}

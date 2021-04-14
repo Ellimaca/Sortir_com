@@ -47,9 +47,6 @@ class EventType extends AbstractType
             ->add('description', TextareaType::class, [
                 'label' => 'Description et infos'
             ])
-            ->add('cancellationReason', TextType::class, [
-                'label' => 'Motif d\'annulation'
-            ])
             ->add('save', SubmitType::class, ['label' => 'Enregistrer'])
             ->add('submit', SubmitType::class, ['label'=> 'publier la sortie'])
             ->add('campus', EntityType::class, [
