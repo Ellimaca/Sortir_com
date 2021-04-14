@@ -66,14 +66,6 @@ class FunctionsStatus
         /** @var string $status */
         $status = $event->getStatus()->getName();
 
-//        var_dump(new DateTime());
-//        var_dump($deadline);
-//        var_dump($dateStart);
-//        var_dump($dateEnd);
-//        var_dump($status);
-//
-//        var_dump($status == Constantes::OPENED);
-//        var_dump($deadline <= new DateTime('now'));
 
         if($status == Constantes::OPENED){
             if($deadline <= new DateTime('now')){
@@ -84,6 +76,8 @@ class FunctionsStatus
         if($status == Constantes::CLOSED) {
             if($dateStart <= new DateTime('now')){
                 $event->setStatus(self::getStatusByName(Constantes::ONGOING, $statusList));
+            }elseif ($deadline > new DateTime('now')){
+                $event->setStatus(self::getStatusByName(Constantes::OPENED,$statusList));
             }
         }
 
