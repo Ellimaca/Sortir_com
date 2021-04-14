@@ -121,6 +121,21 @@ class SecurityController extends AbstractController
         return $isVerifiedConstraints;
     }
 
+    /**
+     * Fonction affichage du profil d'un participant à un évènement
+     * @Route("/profil/consulter/{id}", name="profil_view")
+     */
+    public function displayProfile($id, UserRepository $userRepository)
+    {
+        $userChoosen = $userRepository->find($id);
+
+        if (!$userChoosen){
+            throw $this->createNotFoundException("Participant inconnu");
+        }
+
+        return $this->render('participant/view.html.twig', [ 'userChoosen' => $userChoosen
+        ]);
+    }
 
 }
 

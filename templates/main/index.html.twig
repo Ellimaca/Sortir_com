@@ -13,10 +13,12 @@
             {# <span> {{ app.user.firstName }}</span> #}
         </div>
     </section>
-    <section id="FiltreRecherche" class="container">
-        <ol class="breadcrumb mb-4">
-            <li class="breadcrumb-item active ">Filtrer les sorties</li>
-        </ol>
+<div class="card mb-6">
+    <div class="card-header bg-primary text-white">
+        <i class="fas fa-table mr-5"></i>
+        Filtrer les sorties
+    </div>
+    <section id="FiltreRecherche " class="container mt-2">
         {{ form_start(searchForm) }}
             <div class="row align-items-start">
 
@@ -27,28 +29,29 @@
                         {{ form_errors(searchForm.campus)}}
                     </div>
                     <div >
-                        <label for="{{ field_name(searchForm.searchBar) }}">Le nom de la sortie contient :</label>
+                        <label class="mt-2" for="{{ field_name(searchForm.searchBar) }}">Le nom de la sortie contient :</label>
                         <input type="search"
+                               class="form-control"
                                id="{{ field_name(searchForm.searchBar) }}"
                                name="{{ field_name(searchForm.searchBar) }}"
                                value="{{ field_value(searchForm.searchBar) }}"
                         >
                     </div>
-                    <div class = "group">
-                        <span class = "group">
+                    <div class = "group mt-2">
+                        <span class ="group">
                             <label for="{{ field_name(searchForm.dateStart) }}">Entre le </label>
                             <input type="date"
                                    id="{{ field_name(searchForm.dateStart) }}"
                                    name="{{ field_name(searchForm.dateStart) }}"
                                    value="{{ field_value(searchForm.dateStart) }}"
+                                   class="form-control"
                             >
-                        </span>
-                        <span class = "group">
                             <label for="{{ field_name(searchForm.dateEnd) }}"> et le </label>
                             <input type="date"
                                    id="{{ field_name(searchForm.dateEnd) }}"
                                    name="{{ field_name(searchForm.dateEnd) }}"
                                    value="{{ field_value(searchForm.dateEnd) }}"
+                                   class="form-control"
                             >
                         </span>
                     </div>
@@ -70,23 +73,19 @@
                 </article>
                 <article class="col-2">
                     <a href="{{ path('event_creation') }}">
-                        <button type="submit" class="btn-success btn mt-2">Rechercher</button>
+                        <button type="submit" class="btn-primary btn mt-4">Rechercher</button>
                     </a>
                 </article>
 
             </div>
         {{ form_end(searchForm) }}
     </section>
-<div class="card mb-5">
-    <div class="card-header bg-primary text-white">
-        <i class="fas fa-table mr-1"></i>
-        Les sorties
-    </div>
+
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-bordered" id="dataTable" width="100" cellspacing="0">
                 <thead>
-                <tr class="text-center">
+                <tr class="text-center text-white bg-primary">
                     <th>Nom de la sortie</th>
                     <th>Date de la sortie</th>
                     <th>Clôture</th>
@@ -101,9 +100,9 @@
                 <tfoot>
                 {% for eventLine in eventLines %}
                     {% if eventLine.event.organiser.pseudo is same as app.user.pseudo %}
-                            <tr class="text-center text-white bg-light">
+                            <tr class="text-center text-danger bg-light">
                     {% else %}
-                            <tr class="text-center">
+                            <tr class="text-center bg-light">
                     {% endif %}
 
 
