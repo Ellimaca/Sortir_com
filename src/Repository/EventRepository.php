@@ -6,7 +6,6 @@ use App\Entity\Event;
 use App\Utils\Constantes;
 use App\Utils\SearchEventCriterias;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\Persistence\ManagerRegistry;
 
 
@@ -18,15 +17,20 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class EventRepository extends ServiceEntityRepository
 {
-    private $status_not_published;
+    private $statusRepository;
+
 
     public function __construct(ManagerRegistry $registry,StatusRepository $statusRepository)
     {
         parent::__construct($registry, Event::class);
-        $this->status_not_published = $statusRepository->findOneBy(["name"=>Constantes::CREATED]);
+        $this->statusRepository = $statusRepository;
+
     }
 
     public function findBySearchFormCriteria(SearchEventCriterias $criterias){
+        $statusCreated = $this->statusRepository->findOneBy(["name"=>Constantes::CREATED]);
+        $statusArchived = $this->statusRepository->findOneBy(["name"=>Constantes::ARCHIVED]);
+
         $queryBuilder = $this->createQueryBuilder('events');
 
         $queryBuilder->leftJoin('events.participants','u');
@@ -68,12 +72,12 @@ class EventRepository extends ServiceEntityRepository
                 ->andWhere('events.organiser = :user')
                 ->setParameter('user',$criterias->getUser()->getId());
         }else{
-            $statusId = $this->status_not_published->getId();
+            //Ne pas afficher les evenements non publiés
+            $statusId = $statusCreated->getId();
             $queryBuilder
                 ->andWhere('events.status != :status')
                 ->setParameter('status',$statusId);
         }
-
 
         //test sur le critère d'evenement où l'utilisateur est inscrit
         if($criterias->getIsAttendedByMe() == true){
@@ -94,6 +98,12 @@ class EventRepository extends ServiceEntityRepository
             $queryBuilder
                 ->andWhere('events.dateTimeEnd <= CURRENT_TIME()');
         }
+
+        //Non prise en compte des evenements archivés
+        $statusId = $statusArchived->getId();
+        $queryBuilder
+            ->andWhere('events.status != :status')
+            ->setParameter('status',$statusId);
 
         $query= $queryBuilder->getQuery();
 
