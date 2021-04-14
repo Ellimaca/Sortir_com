@@ -6,12 +6,14 @@ use App\Entity\Event;
 use App\Entity\User;
 use App\Form\EventType;
 use App\Repository\EventRepository;
+use App\Repository\PlaceRepository;
 use App\Repository\StatusRepository;
 use App\Utils\Constantes;
 use App\Utils\FunctionsStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use http\Env\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Utils\DateTimeHandler;
@@ -269,5 +271,28 @@ class EventController extends AbstractController
     {
         return $this->render("", [
         ]);
+    }
+
+    /**
+     * @Route ("/evenement/creer/ajax", name="ajax")
+     */
+    public function updatePlace(\Symfony\Component\HttpFoundation\Request $request,
+                                PlaceRepository $placeRepository,
+                                EntityManagerInterface $manager)
+    {
+
+        //me ramène le contenu de ma requête, qui est mon JSON à l'intérieur
+        $data = json_decode($request-> getContent());
+
+        //je peux donc ensuite accèder aux attributs de mon objet
+        $cityId = $data->eventCity;
+
+        $city = $placeRepository->find($cityId);
+
+        //je récupère ma série qui est bdd, avec l'id
+        $places = $placeRepository->findBy(['city'=>$city]);
+
+        return new JsonResponse(['places' => $places]);
+
     }
 }
