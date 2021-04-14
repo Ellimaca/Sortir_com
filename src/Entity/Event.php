@@ -103,7 +103,6 @@ class Event
     private $duration;
 
     /**
-     * @Assert\NotBlank(message="Veuillez renseigner une durée pour votre sortie")
      * @ORM\Column(type="text", nullable=true)
      */
     private $cancellation_reason;
