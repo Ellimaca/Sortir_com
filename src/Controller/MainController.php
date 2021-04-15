@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Event;
 use App\Entity\User;
 use App\Form\SearchEventsType;
 use App\Repository\EventRepository;
+use App\Utils\Constantes;
 use App\Utils\EventLine;
 use App\Utils\FunctionsStatus;
 use App\Utils\SearchEventCriterias;
@@ -36,7 +38,7 @@ class MainController extends AbstractController
         $searchEventCriterias->setUser($user);
         $searchEventCriterias->setCampus($user->getCampus());
 
-        $searchForm = $this->createForm(SearchEventsType::class,$searchEventCriterias);
+        $searchForm = $this->createForm(SearchEventsType::class, $searchEventCriterias);
 
         $searchForm->handleRequest($request);
 
@@ -50,23 +52,40 @@ class MainController extends AbstractController
         $eventLines = [];
 
         //Hydratation du tableau
-        foreach ($eventsList as $event){
-            if ($event->getOrganiser() != $user and $event->getStatus() {
+        foreach ($eventsList as $event) {
 
-            $eventLine = new EventLine();
-            $eventLine->setEvent($event);
-            $eventLine->setNbRegistered(count($event->getParticipants()));
-            if ($event->getParticipants()->contains($user)){
-                $eventLine->setIsRegistered(true);
-            }else{
-                $eventLine->setIsRegistered(false);
+            // Vérification pour les sorties créées
+            if (!($event->getOrganiser() !== $user and
+                $event->getStatus()->getName() == Constantes::CREATED)) {
+
+                $eventLine = $this->createEventLine($event);
+                $eventLines[] = $eventLine;
             }
-            $eventLine->updateLinks($user);
-            $eventLines[] = $eventLine;
+
         }
-      return $this->render('main/index.html.twig', [
+
+        return $this->render('main/index.html.twig', [
             'searchForm' => $searchForm->createView(),
             'eventLines' => $eventLines,
         ]);
+
+    }
+
+    private function createEventLine(Event $event): EventLine
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $eventLine = new EventLine();
+        $eventLine->setEvent($event);
+        $eventLine->setNbRegistered(count($event->getParticipants()));
+        if ($event->getParticipants()->contains($user)) {
+            $eventLine->setIsRegistered(true);
+        } else {
+            $eventLine->setIsRegistered(false);
+        }
+        $eventLine->updateLinks($user);
+
+        return $eventLine;
     }
 }
