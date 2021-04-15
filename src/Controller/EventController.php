@@ -93,39 +93,39 @@ class EventController extends AbstractController
 
         $eventForm->handleRequest($request);
 
-        $placeExist = $this->havePlace($eventForm);
+        if ($eventForm->isSubmitted()) {
+            $placeExist = $this->havePlace($eventForm);
+            if ($eventForm->isValid()) {
 
-        if ($eventForm->isSubmitted() && $eventForm->isValid() && $placeExist) {
+                // Calcul de la date de fin de l'évènement
+                /** @var DateTime $startDate */
+                $startDate = $event->getDateTimeStart();
+                $intervalDuration = abs($event->getDuration());
+                $dateTimeEnd = DateTimeHandler::dateAddMinutes($startDate, $intervalDuration);
+                $event->setDateTimeEnd($dateTimeEnd);
 
-            // Calcul de la date de fin de l'évènement
-            /** @var DateTime $startDate */
-            $startDate = $event->getDateTimeStart();
-            $intervalDuration = abs($event->getDuration());
-            $dateTimeEnd = DateTimeHandler::dateAddMinutes($startDate, $intervalDuration);
-            $event->setDateTimeEnd($dateTimeEnd);
-
-            $place = $eventForm->get('place')->getData();
-            $event->setPlace($place);
+                $place = $eventForm->get('place')->getData();
+                $event->setPlace($place);
 
 
-            // La sortie est "crée" si l'utilisateur clique sur "enregistrer"
-            if ($eventForm->get('save')->isClicked()) {
-                $status = $statusRepository->findOneBy(["name" => Constantes::CREATED]);
-                $event->setStatus($status);
-            } else {
+                // La sortie est "crée" si l'utilisateur clique sur "enregistrer"
+                if ($eventForm->get('save')->isClicked()) {
+                    $status = $statusRepository->findOneBy(["name" => Constantes::CREATED]);
+                    $event->setStatus($status);
+                } else {
+                    $entityManager->persist($event);
+                    $entityManager->flush();
+                    $this->addFlash('success', 'Votre évènement a bien été ajouté !');
+                    return $this->redirectToRoute("event_published", ['id' => $event->getId()]);
+                }
+
                 $entityManager->persist($event);
                 $entityManager->flush();
                 $this->addFlash('success', 'Votre évènement a bien été ajouté !');
-                return $this->redirectToRoute("event_published", ['id' => $event->getId()]);
+
+                return $this->redirectToRoute('main');
             }
-
-            $entityManager->persist($event);
-            $entityManager->flush();
-            $this->addFlash('success', 'Votre évènement a bien été ajouté !');
-
-            return $this->redirectToRoute('main');
         }
-
 
         return $this->render("event/create.html.twig", [
             'eventForm' => $eventForm->createView(),
@@ -396,30 +396,33 @@ class EventController extends AbstractController
 
             $eventForm->handleRequest($request);
 
-            $placeExist =  $this->havePlace($eventForm);
+            //Test de soumission du formulaire
+            if ($eventForm->isSubmitted()) {
 
-            if ($eventForm->isSubmitted() && $eventForm->isValid() && $placeExist) {
+                //Test de la condition de l'endroit
+                $this->havePlace($eventForm);
 
-                if ($this->checkEvent($eventToModify)) {
+                //Test de validation du formulaire
+                if ($eventForm->isValid()) {
+                    if ($this->checkEvent($eventToModify)) {
 
-                    /** @var DateTime $eventDateStart */
-                    $eventDuration = $eventToModify->getDuration();
-                    $eventDateStart = $eventToModify->getDateTimeStart();
+                        /** @var DateTime $eventDateStart */
+                        $eventDuration = $eventToModify->getDuration();
+                        $eventDateStart = $eventToModify->getDateTimeStart();
 
-                    //Transformer la durée en nombre positif si besoin
-                    $eventToModify->setDuration(abs($eventToModify->getDuration()));
-                    $dateTimeEnd = DateTimeHandler::dateAddMinutes($eventDateStart, $eventDuration);
-                    $eventToModify->setDateTimeEnd($dateTimeEnd);
-                    $functionsStatus->UpdateEventStatus($eventToModify);
+                        //Transformer la durée en nombre positif si besoin
+                        $eventToModify->setDuration(abs($eventToModify->getDuration()));
+                        $dateTimeEnd = DateTimeHandler::dateAddMinutes($eventDateStart, $eventDuration);
+                        $eventToModify->setDateTimeEnd($dateTimeEnd);
+                        $functionsStatus->UpdateEventStatus($eventToModify);
 
-                    $manager->persist($eventToModify);
-                    $manager->flush();
+                        $manager->persist($eventToModify);
+                        $manager->flush();
 
-                    $this->addFlash('success', 'Sortie bien modifiée!');
-                    return $this->redirectToRoute('main');
-
+                        $this->addFlash('success', 'Sortie bien modifiée!');
+                        return $this->redirectToRoute('main');
+                    }
                 }
-
             }
         }
 
@@ -562,9 +565,10 @@ class EventController extends AbstractController
 
     }
 
-    private function havePlace(FormInterface $form){
+    private function havePlace(FormInterface $form)
+    {
         $placeID = $form->get('place')->getViewData();
-        if($placeID != ""){
+        if ($placeID != "") {
             return true;
         }
         $form->get('place')->addError(new FormError(self::WARNING_EVENT_WRONG_PLACE));
