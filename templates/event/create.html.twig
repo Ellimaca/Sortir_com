@@ -16,11 +16,11 @@
         {% if (modif is defined and event.place is not null ) %}
             <input type="hidden" name="oldPlaceId" id="oldPlaceId" value="{{ event.place.id }}">
             <input type="hidden" name="oldCityId" id="oldCityId" value="{{ event.place.city.id }}">
-            <h6 class="display-6 fw-normal">Modifier une sortie</h6>
+            <h6 class="display-6 fw-normal border-bottom">Modifier une sortie</h6>
         {% else %}
             <input type="hidden" name="oldPlaceId" id="oldPlaceId" value="0">
             <input type="hidden" name="oldPlaceId" id="oldPlaceId" value="0">
-            <h6 class="display-6 fw-normal">Créer une sortie</h6>
+            <h6 class="display-6 fw-normal border-bottom mb-2">Créer une sortie</h6>
         {% endif %}
     </div>
 
@@ -61,26 +61,17 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-lg">
-                    {{ form_row(eventForm.save) }}
-                </div>
-                <div class="col-lg">
-                    {{ form_row(eventForm.submit) }}
+            <div class="d-flex flex-wrap justify-content-center mt-5">
+                    <div>{{ form_row(eventForm.save) }}</div>
+                    <div>{{ form_row(eventForm.submit) }}</div>
+                    {% if (modif is defined) %}
+                    <div><a href="{{ path('event_cancelled', {id:event.id}) }}">
+                            <button class="btn text-white" id="btnCancel">Supprimer la sortie</button>
+                        </a></div>
+                    {% endif %}
+                    <div><a href="{{ path('main') }}"></a><button class="btn text-white" id="btnBack">Annuler</button></div>
                     {{ form_end(eventForm) }}
-                </div>
-                {% if (modif is defined) %}
-                    <div class="col-lg">
-                        <a href="{{ path('event_cancelled', {id:event.id}) }}">
-                            <button class="btn-success btn mt-2">Supprimer la sortie</button>
-                        </a>
-                    </div>
-                {% endif %}
-                <div class="col-lg">
-                    <a href="{{ path('main') }}">
-                        <button class="btn-success btn mt-2">Annuler</button>
-                    </a>
-                </div>
+
             </div>
         </div>
     </div>

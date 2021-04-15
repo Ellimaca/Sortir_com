@@ -44,8 +44,17 @@ input {
 label {
     font-weight: bold;
 }
+#btnBack{
+    margin-left: 10px;
+}
 
-
+#event_submit {
+    margin-left: 10px;
+}
+#btnCancel{
+    background-color: darkred;
+    margin-left: 10px;
+}
 #btnConnexion {
     background-color: white;
     color: #144a7f;
