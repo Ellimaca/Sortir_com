@@ -239,7 +239,7 @@ class AppFixtures extends Fixture
         $manager->persist($staticUser2);
 
         //Création de l'utilisateur 3
-        $dataUser = ["desactive","desactive","desactive",$campus2,"desactive@test.com",true,"+33 6 44 61 13 44","test",["ROLE_USER"],false];
+        $dataUser = ["desactive","desactive","desactive",$campus1,"desactive@test.com",true,"+33 6 44 61 13 44","test",["ROLE_USER"],false];
         $staticUser3 = $this->createUser($dataUser);
         $manager->persist($staticUser3);
 
@@ -274,7 +274,7 @@ class AppFixtures extends Fixture
         //dataPlace(name,street,longitude,lattitude,City)
 
         //Création du lieu 1
-        $dataPlace = ['Etang du ter','rue de la Poste',47.226,-1.741,$city];
+        $dataPlace = ['Etang du ter','14 rue de la Poste',47.226,-1.741,$city];
         $place1 = $this->createPlace($dataPlace);
         $manager->persist($place1);
 
@@ -491,7 +491,7 @@ class AppFixtures extends Fixture
 
         $dataEvent = ['Partie de bowling les yeux bandés',
             'Nous vous attendons pour passer un amusant moment et faire quelques strikes entre ami-e-s.',
-            $campus1,$staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusCreated,$place4,0];
+            $campus1,$staticUser2,6,$duration,$dateStart,$registrationDeadline,$statusCreated,$place4,0];
         $staticEvent10 = $this->createEvent($dataEvent,$allUsers);
         $manager->persist($staticEvent10);
 
@@ -506,7 +506,7 @@ class AppFixtures extends Fixture
             'Découvrez les joies d\'une balade en canoé kayak et vivez un moment
             inoubliable en contact direct avec la faune et la flore locale.
         Entre sport et détente, l\'activité sera parfaite pour satisfaire tout le
-        monde ! ', $campus1, $staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
+        monde ! ', $campus1, $staticUser2,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
         $staticEvent11 = $this->createEvent($dataEvent,$allUsers);
         $manager->persist($staticEvent11);
 
@@ -546,7 +546,7 @@ class AppFixtures extends Fixture
 
         $dataEvent = ['Festival international du Cochon d\'inde',
             'Défilé de mode et gastronomie sont au programme, les animaux passent leur journée a être pomponnés, chouchoutés',
-            $campus1,$staticUser5,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
+            $campus1,$staticUser2,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
         $staticEvent14 = $this->createEvent($dataEvent,$allUsers);
         $manager->persist($staticEvent14);
 
@@ -561,10 +561,36 @@ class AppFixtures extends Fixture
             'Tous les élèves pourront assister aux matchs et encourager l’équipe de leur maison. Certains élèves pourront s’inscrire en journée
              afin de jouer et représenter leur maison lors du tournoi. La compétition entre les quatre maisons s’achèvera avec ce tournoi puis la 
              Coupe de quidditch et la Coupe de Poudloire seront décernées au Château.',
-            $campus1,$staticUser6,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
+            $campus1,$staticUser2,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
         $staticEvent15 = $this->createEvent($dataEvent,$allUsers);
         $manager->persist($staticEvent15);
 
+        /** Static Event 16
+         *
+         */
+        $dateStart = new DateTime('now');
+        $duration = 90;
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
+
+        $dataEvent = ['Tournoi de Ping-Pong',
+            'Venez nombreux affronter Taharqa, le champion du monde du Ping-Pong sans raquette',
+            $campus1,$staticUser2,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
+        $staticEvent15 = $this->createEvent($dataEvent,$allUsers);
+        $manager->persist($staticEvent15);
+
+        /** Static Event 17
+         *
+         */
+
+        $dateStart = new DateTime('- 1 week');
+        $duration = 90;
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
+
+        $dataEvent = ['Test 6',
+            'statut : Passé (à vérifier) ; date de début : passé de moins d 1 mois ; deadline : passé ; fin activite : passé nb Participants inscrits : incomplet ;organiser : Test',
+            $campus1,$staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
+        $staticEvent6 = $this->createEvent($dataEvent,$allUsers);
+        $manager->persist($staticEvent6);
 
 
 

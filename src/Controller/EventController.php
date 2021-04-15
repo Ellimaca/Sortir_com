@@ -315,26 +315,32 @@ class EventController extends AbstractController
 
         $eventCancellationForm->handleRequest($request);
 
-        if ($eventCancellationForm->isSubmitted() && $eventCancellationForm->isValid()) {
+        if ($eventCancellationForm->isSubmitted()) {
 
-            // Si l'utilisateur est bien l'organisateur et que le statut de la sortie est bien ouvert
-            $statusCancelled = $statusRepository->findOneBy(["name" => Constantes::CANCELLED]);
+            $eventChoosen->setRegistrationDeadline(new DateTime('now'));
 
-            // Changement du statut de la sortie en annulée
-            $eventChoosen->setStatus($statusCancelled);
+            if ($eventCancellationForm->isValid()) {
 
-            // Récupération du motif de l'annulation
-            $cancellationReason = $eventCancellationForm->get('cancellation_reason')->getData();
+                // Si l'utilisateur est bien l'organisateur et que le statut de la sortie est bien ouvert
+                $statusCancelled = $statusRepository->findOneBy(["name" => Constantes::CANCELLED]);
 
-            $eventChoosen->setCancellationReason($cancellationReason);
+                // Changement du statut de la sortie en annulée
+                $eventChoosen->setStatus($statusCancelled);
 
-            $entityManager->persist($eventChoosen);
-            $entityManager->flush();
+                // Récupération du motif de l'annulation
+                $cancellationReason = $eventCancellationForm->get('cancellation_reason')->getData();
 
-            $this->addFlash('success', "Votre sortie est bien annulée!");
-            return $this->redirectToRoute('main');
+                $eventChoosen->setCancellationReason($cancellationReason);
 
+                $entityManager->persist($eventChoosen);
+                $entityManager->flush();
+
+                $this->addFlash('success', "Votre sortie est bien annulée!");
+                return $this->redirectToRoute('main');
+
+            }
         }
+
         return $this->render("event/cancel.html.twig", [
             "foundEvent" => $eventChoosen,
             'eventCancellationForm' => $eventCancellationForm->createView(),
@@ -421,7 +427,13 @@ class EventController extends AbstractController
                         $manager->flush();
 
                         $this->addFlash('success', 'Sortie bien modifiée!');
-                        return $this->redirectToRoute('main');
+
+                        // La sortie est "crée" si l'utilisateur clique sur "enregistrer"
+                        if ($eventForm->get('save')->isClicked()) {
+                            return $this->redirectToRoute('main');
+                        }
+
+                        return $this->redirectToRoute("event_published", ['id' => $eventToModify->getId()]);
                     }
                 }
             }

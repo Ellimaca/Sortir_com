@@ -9,25 +9,21 @@
         <h6 class="display-6 fw-normal">Annuler une sortie</h6>
     </div>
 
-<main class="form-cancel">
+    <main class="form-cancel">
+
         <fieldset disabled>
-        <label for="event_name">Nom de la sortie</label>
-        <input type="text" class="form-control" id="event_name" placeholder="{{ foundEvent.name }}">
-        <label for="event_date">Date de la sortie</label>
-        <input type="text" class="form-control" id="event_datestart" placeholder="{{ foundEvent.dateTimeStart|date('d-m-Y') }}">
-        <label for="event_date">Campus</label>
-        <input type="text" class="form-control" id="event_campus" placeholder="{{ foundEvent.campus.name }}">
-        <label for="event_date">Lieu</label>
-        <input type="text" class="form-control" id="event_place" placeholder="{{ foundEvent.place.name }}">
+            <label for="event_name">Nom de la sortie</label>
+            <input type="text" class="form-control" id="event_name" placeholder="{{ foundEvent.name }}">
+            <label for="event_date">Date de la sortie</label>
+            <input type="text" class="form-control" id="event_datestart" placeholder="{{ foundEvent.dateTimeStart|date('d-m-Y') }}">
+            <label for="event_date">Campus</label>
+            <input type="text" class="form-control" id="event_campus" placeholder="{{ foundEvent.campus.name }}">
+            <label for="event_date">Lieu</label>
+            <input type="text" class="form-control" id="event_place" placeholder="{{ foundEvent.place.name }}">
         </fieldset>
-        {{ form_start(eventCancellationForm) }}
-        {{ form_row(eventCancellationForm.cancellation_reason) }}
-        <div class="p-3 pb-md-4 mx-auto text-center">
-            <button type="submit"  class="btn btn-danger">Confirmer</button>
-            {{ form_end(eventCancellationForm) }}
-            <a href="{{ path('main') }}"><button class="btn text-white" id="cancel">Annuler</button></a>
-        </div>
-</main>
+        {{ form(eventCancellationForm) }}
+
+        <a href="{{ path('main') }}"><button class="btn text-white" id="cancel">Annuler</button></a>
+    </main>
 
 {% endblock %}
-

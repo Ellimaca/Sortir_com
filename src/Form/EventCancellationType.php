@@ -18,6 +18,7 @@ class EventCancellationType extends AbstractType
                 'label' => 'Motif de l\'annulation',
                 'required' => true
             ])
+            ->add('submit', SubmitType::class, ['label' => 'Confirmer l\'annulation'])
             ;
     }
 
@@ -25,9 +26,6 @@ class EventCancellationType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Event::class,
-            'attr' => [
-                'novalidate' => 'novalidate'
-            ]
         ]);
     }
 }
