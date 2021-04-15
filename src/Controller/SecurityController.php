@@ -90,29 +90,35 @@ class SecurityController extends AbstractController
         //Vérification du formulaire
         if ($form->isSubmitted()) {
 
-            //Vérification du pseudo
-            $this->verifyRegex($profilUser->getPseudo(),
-                self::REGEX_PSEUDO,
-                $form, 'pseudo',
-                self::WARNING_PSEUDO_CHAR_NOT_AUTHORIZED);
+            $form->isValid();
 
-            //Vérification du FirstName
-            $this->verifyRegex($profilUser->getFirstName(),
-                self::REGEX_NAME,
-                $form, 'firstName',
-                self::WARNING_NAME_CHAR_NOT_AUTHORIZED);
+            if ($this->checkNotNullFields($profilUser)){
 
-            //Vérification du LastName
-            $this->verifyRegex($profilUser->getLastName(),
-                self::REGEX_NAME,
-                $form, 'lastName',
-                self::WARNING_NAME_CHAR_NOT_AUTHORIZED);
+                //Vérification du pseudo
+                $this->verifyRegex($profilUser->getPseudo(),
+                    self::REGEX_PSEUDO,
+                    $form, 'pseudo',
+                    self::WARNING_PSEUDO_CHAR_NOT_AUTHORIZED);
+
+                //Vérification du FirstName
+                $this->verifyRegex($profilUser->getFirstName(),
+                    self::REGEX_NAME,
+                    $form, 'firstName',
+                    self::WARNING_NAME_CHAR_NOT_AUTHORIZED);
+
+                //Vérification du LastName
+                $this->verifyRegex($profilUser->getLastName(),
+                    self::REGEX_NAME,
+                    $form, 'lastName',
+                    self::WARNING_NAME_CHAR_NOT_AUTHORIZED);
 
 //            //Vérification du telephone
 //            $this->verifyRegex($profilUser->getPhoneNumber(),
 //                self::REGEX_PHONE_NUMBER,
 //                $form, 'phoneNumber',
 //                self::WARNING_PHONE_NUMBER_CHAR_NOT_AUTHORIZED);
+
+            }
 
             if ($form->isValid()) {
 
@@ -208,11 +214,37 @@ class SecurityController extends AbstractController
         } else {
             if ($form != null) {
                 $form->get($field)->addError(new FormError($errorMessage));
-                var_dump($field);
             }
         }
 
         return $isVerifiedConstraints;
+    }
+
+    public function checkNotNullFields(User $profilUser):bool{
+        $isOk = true;
+
+        if($profilUser->getEmail() == null){
+            $isOk = false;
+        }
+
+        if($profilUser->getFirstName() == null){
+            $isOk = false;
+        }
+
+        if($profilUser->getLastName() == null){
+            $isOk = false;
+        }
+
+        if($profilUser->getPhoneNumber() == null){
+            $isOk = false;
+        }
+
+        if($profilUser->getPseudo() == null){
+            $isOk = false;
+        }
+
+        return $isOk;
+
     }
 
     /**
