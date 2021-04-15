@@ -262,6 +262,15 @@ class AppFixtures extends Fixture
         $place1 = $this->createPlace($dataPlace);
         $manager->persist($place1);
 
+        //Création du lieu 2
+        $dataPlace = ['Laser Game Evolution','3 Rue des Piliers de la Chauvinière',47.230941581841684, -1.6363151153447792,$city];
+        $place2 = $this->createPlace($dataPlace);
+        $manager->persist($place2);
+
+        //Création du lieu 3
+        $dataPlace = ['Bowling Rennes','2 Rue du Bosphore, 35200 Rennes',48.08214513596161, -1.6817897995315731,$city2];
+        $place3 = $this->createPlace($dataPlace);
+        $manager->persist($place3);
 
         $userRepository = $manager->getRepository(User::class);
         $allUsers = $userRepository->findAll();
