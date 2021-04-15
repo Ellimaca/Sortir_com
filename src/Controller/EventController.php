@@ -16,6 +16,7 @@ use App\Utils\FunctionsStatus;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,6 +29,8 @@ class EventController extends AbstractController
     const WARNING_EVENT_NOT_AUTHORIZED = "Vous n'êtes pas autorisé à réaliser cette action";
     const WARNING_EVENT_WRONG_STATUS = "Action impossible, statut de la sortie incohérent";
     const SUCCESS_EVENT_PUBLISHED = "La sortie a été publiée avec succès";
+    const WARNING_EVENT_WRONG_PLACE = "Le lieu doit être renseigné.";
+
 
     /**
      * Permet de visualiser les informations liées à un évenement
@@ -36,7 +39,8 @@ class EventController extends AbstractController
      * @param EventRepository $eventRepository
      * @return Response
      */
-    public function view(int $id, EventRepository $eventRepository): Response
+    public function view(int $id,
+                         EventRepository $eventRepository): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -88,7 +92,9 @@ class EventController extends AbstractController
 
         $eventForm->handleRequest($request);
 
-        if ($eventForm->isSubmitted() && $eventForm->isValid()) {
+        $placeExist = $this->havePlace($eventForm);
+
+        if ($eventForm->isSubmitted() && $eventForm->isValid() && $placeExist) {
 
             // Calcul de la date de fin de l'évènement
             /** @var DateTime $startDate */
@@ -360,7 +366,7 @@ class EventController extends AbstractController
 
         //Récupération de l'evenement à modifier
         $eventToModify = $eventRepository->find($id);
-//dd($eventToModify);
+
         //Mise à jour le statut de l'évenement
         $functionsStatus->UpdateEventStatus($eventToModify);
 
@@ -389,7 +395,9 @@ class EventController extends AbstractController
 
             $eventForm->handleRequest($request);
 
-            if ($eventForm->isSubmitted() && $eventForm->isValid()) {
+            $placeExist =  $this->havePlace($eventForm);
+
+            if ($eventForm->isSubmitted() && $eventForm->isValid() && $placeExist) {
 
                 if ($this->checkEvent($eventToModify)) {
 
@@ -552,4 +560,15 @@ class EventController extends AbstractController
         ]);
 
     }
+
+    private function havePlace(FormInterface $form){
+        $placeID = $form->get('place')->getViewData();
+        if($placeID != ""){
+            return true;
+        }
+        $this->addFlash("warning", self::WARNING_EVENT_WRONG_PLACE);
+        return false;
+    }
 }
+
+

@@ -42,19 +42,19 @@ function updatePlaceField() {
         document.getElementById('event[place]').innerHTML = html;
 
         //Selection de l'endroit initial de la sortie
-        let old_place_id = document.getElementById('oldPlaceId');
-        let old_city_id = document.getElementById('oldCityId');
+        let oldPlaceId = document.getElementById('oldPlaceId');
+        let oldCityId = document.getElementById('oldCityId');
 
-        console.log(old_place_id.value);
-        console.log(old_city_id.value);
+        console.log("oldplaceValue :" + oldPlaceId.value);
+        console.log("oldcityValue :" + oldCityId.value);
 
-        if(old_city_id.value !== 0){
+        if(oldCityId.value != 0){
             let selectPlace = document.getElementById('event[place]');
-            selectPlace.value = old_place_id.value;
-            old_place_id.value = 0;
-            old_city_id.value = 0;
+            selectPlace.value = oldPlaceId.value;
+            console.log("Selected Value :" +selectPlace.value);
+            oldPlaceId.value = 0;
+            oldCityId.value = 0;
         }
-
 
         //Mise à jour des informations de l'endroit
         displayInformations();

@@ -69,28 +69,6 @@ class EventType extends AbstractType
             ])
         ;
 
-
-/*        $formModifier = function (FormInterface $form, City $city = null) {
-            $places = null === $city ? [] : $city->getPlaces();
-        };
-
-        $builder->addEventListener(
-            FormEvents::PRE_SET_DATA,
-            function (FormEvent $event) use ($formModifier) {
-            $data = $event->getData();
-
-            $formModifier($event->getForm(), $data->getPlace());
-
-             }
-        );
-        $builder->get('city')->addEventListener(
-            FormEvents::POST_SUBMIT,
-            function (FormEvent $event) use ($formModifier) {
-
-                $city = $event->getForm()->getData();
-                $formModifier($event->getForm()->getParent(), $city);
-            }
-        );*/
     }
 
     public function configureOptions(OptionsResolver $resolver)
