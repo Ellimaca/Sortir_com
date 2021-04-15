@@ -3,26 +3,26 @@
 {% block body %}
 
 
-    <div class="container">
-        <h2 class="text-center mb-5">Mon profil</h2>
-        <div class="row">
-
-            {% if app.user.profilePicture %}
-
-            {% endif %}
-
+<div class="container">
+    <h2 class="text-center mb-5">Mon profil</h2>
+    <div class="row">
         <div class="col">
-                {{ form(modifForm) }}
-                        <a href="{{ path('main') }}">
-                            <button class="btn-success btn mt-2">Annuler</button>
-                        </a>
+        {% if app.user.profilePicture %}
+            <img src="./profile/img/{{ app.user.profilePicture.fileName }}" width="400" height="400">
+        {% endif %}
+        </div>
+        <div class="col">
+            {{ form(modifForm) }}
+            <a href="{{ path('main') }}">
+                <button class="btn-success btn mt-2">Annuler</button>
+            </a>
         </div>
     </div>
 
 
-{% endblock %}
+    {% endblock %}
 
-{% block title %}
+    {% block title %}
 
-{% endblock %}
+    {% endblock %}
 
