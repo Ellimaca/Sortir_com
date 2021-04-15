@@ -107,23 +107,20 @@ class EventController extends AbstractController
                 $place = $eventForm->get('place')->getData();
                 $event->setPlace($place);
 
-
-                // La sortie est "crée" si l'utilisateur clique sur "enregistrer"
-                if ($eventForm->get('save')->isClicked()) {
-                    $status = $statusRepository->findOneBy(["name" => Constantes::CREATED]);
-                    $event->setStatus($status);
-                } else {
-                    $entityManager->persist($event);
-                    $entityManager->flush();
-                    $this->addFlash('success', 'Votre évènement a bien été ajouté !');
-                    return $this->redirectToRoute("event_published", ['id' => $event->getId()]);
-                }
+                $status = $statusRepository->findOneBy(["name" => Constantes::CREATED]);
+                $event->setStatus($status);
 
                 $entityManager->persist($event);
                 $entityManager->flush();
-                $this->addFlash('success', 'Votre évènement a bien été ajouté !');
 
-                return $this->redirectToRoute('main');
+                $this->addFlash('success', 'Votre sortie a bien été ajoutée !');
+
+                // La sortie est "crée" si l'utilisateur clique sur "enregistrer"
+                if ($eventForm->get('save')->isClicked()) {
+                    return $this->redirectToRoute('main');
+                }
+
+                return $this->redirectToRoute("event_published", ['id' => $event->getId()]);
             }
         }
 
