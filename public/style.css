@@ -10,7 +10,13 @@
 
 #thead {
     background-color: #144a7f;
-    text : white;
+}
+
+#latitudePlace {
+
+}
+#streetPlace {
+    background-color: grey;
 }
 
 #tfoot {
