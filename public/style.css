@@ -12,11 +12,16 @@
     background-color: #144a7f;
 }
 
-#latitudePlace {
 
-}
 #streetPlace {
     background-color: grey;
+}
+
+#dataTable {
+    float:none;
+    text-align: center;
+    text-align: -moz-center;
+    display: inline-block;
 }
 
 #tfoot {
@@ -33,13 +38,14 @@ body.container {
     background-color: #7AAEE6;
     color: #144a7f;
 }
-
 input {
     margin-bottom: 12px;
 }
 label {
     font-weight: bold;
 }
+
+
 #btnConnexion {
     background-color: white;
     color: #144a7f;
