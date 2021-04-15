@@ -16,7 +16,7 @@ class EventCancellationType extends AbstractType
         $builder
             ->add('cancellation_reason', TextareaType::class, [
                 'label' => 'Motif de l\'annulation',
-                'required' => true,
+                'required' => true
             ])
             ;
     }

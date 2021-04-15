@@ -1,9 +1,25 @@
 /* --------------------------------------- NAVIGATION --------------------------------------- */
 
-#navigation {
+/*#navigation {
     background-color: white !important;
+}*/
+
+#navbarCSS {
+    background-color: #144a7f;
 }
 
+#thead {
+    background-color: #144a7f;
+    text : white;
+}
+
+#tfoot {
+    background-color: #144a7f;
+}
+
+body.container {
+    padding-top : 60px;
+}
 .btn {
     background-color: #144a7f;
 }

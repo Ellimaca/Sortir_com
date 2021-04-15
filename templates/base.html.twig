@@ -10,33 +10,66 @@
         <script type="text/javascript" src="{{ asset('js/app.js') }}"></script>
         <link rel="stylesheet" href="{{ asset('style.css') }}">
 
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-
-                <div class="text-center p-4 alert-{{ label }}">
-                    <h4>{{ message }}</h4>
-                </div>
-
-            {% endfor %}
-        {% endfor %}
         <title>{% block title %}Bienvenue!{% endblock %}</title>
     </head>
     <body>
-            <header id="navigation" class="d-flex flex-wrap align-items-center justify-content-center
-            justify-content-md-between py-2 mb-3 mr-1 border-bottom bg-light navbar-light bg-light">
-                <a href="{{ path('main') }}" class="d-flex align-items-center col-md-3 mb-3 mb-md-0 ml-3 text-dark text-decoration-none">
-                    <img src="{{ asset('img/logoEni.png') }}" width="40" height="40">
-                </a>
-                <ul class="nav col-12 col-md-auto mb-2 mt-2 justify-content-center mb-md-0">
+    <nav class="navbar navbar-expand-md navbar-dark" id="navbarCSS">
+        <a class="navbar-brand" href="{{ path('main') }}" >
+            <img src="{{ asset('img/logoEni.png') }}" class="d-inline-block align-top" alt="" width="60" height="60">
+        </a>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                {% if app.user %}
+                    <li class="nav-item active">
+                        <a class="nav-link px-2"><i class="fas fa-home"></i> Accueil</a>
+                    </li>
+                    <li>
+                        <a class="nav-link px-2 link-dark"><i class="fas fa-user"></i> Mon profil</a></li>
+                    <li class="nav-item">
+                    <li>
+                        <a class="nav-link px-2 link-dark"><i class="fas fa-sign-out-alt"></i> Deconnexion</a></li>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top" id="navbarCSS">
+            <a class="navbar-brand" href="{{ path('main') }}" >
+                <img src="{{ asset('img/logoEni.png') }}" class="d-inline-block align-top" alt="" width="60" height="60">
+            </a>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
                     {% if app.user %}
-                        <li><a href="{{ path('main') }}" class="nav-link px-2 link-dark"><i class="fas fa-home"></i> Accueil</a></li>
-                        <li><a href="{{ path('security_profil') }}" class="nav-link px-2 link-dark"><i class="fas fa-user"></i> Mon profil</a></li>
-                        <li><a href="{{ path('app_logout') }}" class="nav-link px-2 link-dark"><i class="fas fa-sign-out-alt"></i> Deconnexion</a></li>
+                    <li class="nav-item active">
+                        <a href="{{ path('main') }}" class="nav-link px-2"><i class="fas fa-home"></i> Accueil</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('security_profil') }}" class="nav-link px-2 link-dark"><i class="fas fa-user"></i> Mon profil</a></li>
+                    <li class="nav-item">
+                    <li>
+                        <a href="{{ path('app_logout') }}" class="nav-link px-2 link-dark"><i class="fas fa-sign-out-alt"></i> Deconnexion</a></li>
+                    </li>
                     {% endif %}
                 </ul>
-            </header>
-            <div class="container">
-            {% block body %}{% endblock %}
+            </div>
+        </nav>
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+
+            <div class="text-center p-4 alert-{{ label }}">
+                <h4>{{ message }}</h4>
+            </div>
+
+        {% endfor %}
+    {% endfor %}
+
+    </header>
+
+
+        <div class="container">
+            {% block body %}
+            {% endblock %}
                 </div>
     </body>
 </html>
