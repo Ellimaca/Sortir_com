@@ -13,7 +13,7 @@
 
     <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
 
-        {% if (modif is defined) %}
+        {% if (modif is defined and event.place is not null ) %}
             <input type="hidden" name="oldPlaceId" id="oldPlaceId" value="{{ event.place.id }}">
             <input type="hidden" name="oldCityId" id="oldCityId" value="{{ event.place.city.id }}">
             <h6 class="display-6 fw-normal">Modifier une sortie</h6>
