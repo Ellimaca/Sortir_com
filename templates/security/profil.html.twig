@@ -9,6 +9,9 @@
         <div class="col">
         {% if app.user.profilePicture %}
             <img src="./profile/img/{{ app.user.profilePicture.fileName }}" width="400" height="400">
+
+        {% else %}
+            <img src="{{ asset('profile/img/user.png') }}" width="400" height="400">
         {% endif %}
         </div>
         <div class="col">
