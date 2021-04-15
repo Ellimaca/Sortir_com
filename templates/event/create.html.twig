@@ -69,9 +69,10 @@
                     <div><a href="{{ path('event_cancelled', {id:event.id}) }}">
                             <button class="btn text-white" id="btnCancel">Supprimer la sortie</button></a></div>
                     {% endif %}
-                    <div><a href="{{ path('main') }}"></a><button class="btn text-white" id="btnBack">Annuler</button></div>
+                   <div class="ml-3" id="cancel"><a href="{{ path('main') }}"><button class="btn text-white">Annuler</button></a></div>
             </div>
         </div>
+        {{ form_end(eventForm) }}
     </div>
     <script>
         updatePlaceField();

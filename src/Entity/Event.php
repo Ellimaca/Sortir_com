@@ -46,6 +46,7 @@ class Event
 
     /**
      * @Assert\LessThan(propertyPath="dateTimeStart", message="Veuillez saisir une date de fin d'inscription avant la date et l'heure de début de votre sortie")
+     * @Assert\GreaterThan("now", message="La date de limite d'inscription ne peut pas être inférieure à la date d'aujourd'hui")
      * @Assert\NotBlank(message="Veuillez renseigner une date limite d'inscription")
      * @ORM\Column(type="datetime")
      */

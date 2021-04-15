@@ -288,7 +288,7 @@ class EventController extends AbstractController
         $eventChoosen = $eventRepository->find($id);
 
         if (!$eventChoosen) {
-            throw $this->createNotFoundException("Cet évenement n'existe pas");
+            throw $this->createNotFoundException("Cette sortie n'existe pas");
         }
 
         //Récupération de l'organisateur de la sortie
@@ -364,6 +364,10 @@ class EventController extends AbstractController
 
         //Récupération de l'evenement à modifier
         $eventToModify = $eventRepository->find($id);
+
+        if (!$eventToModify) {
+            throw $this->createNotFoundException("Cette sortie n'existe pas");
+        }
 
         //Mise à jour le statut de l'évenement
         $functionsStatus->UpdateEventStatus($eventToModify);

@@ -51,6 +51,8 @@ class MainController extends AbstractController
 
         //Hydratation du tableau
         foreach ($eventsList as $event){
+            if ($event->getOrganiser() != $user and $event->getStatus() {
+
             $eventLine = new EventLine();
             $eventLine->setEvent($event);
             $eventLine->setNbRegistered(count($event->getParticipants()));

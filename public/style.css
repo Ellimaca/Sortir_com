@@ -12,6 +12,9 @@
     background-color: #144a7f;
 }
 
+#cancel {
+    margin-left: 10px !important;
+}
 
 #streetPlace {
     background-color: grey;
@@ -51,15 +54,18 @@ label {
 #event_submit {
     margin-left: 10px;
 }
+
 #btnCancel{
     background-color: darkred;
     margin-left: 10px;
 }
+
 #btnConnexion {
     background-color: white;
     color: #144a7f;
     border: 0.2px solid #144a7f;
 }
+
 #btnConnexion:hover {
     background-color: #7AAEE6;
     color: #FFFFFF;
