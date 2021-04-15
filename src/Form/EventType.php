@@ -61,6 +61,7 @@ class EventType extends AbstractType
                 'class' => City::class,
                 'choice_label' => 'name',
                 'mapped' => false,
+                'placeholder' => 'Définir une ville'
             ])
             ->add('place', EntityType::class, [
                 'class' => Place::class,
