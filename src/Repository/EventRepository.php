@@ -19,16 +19,13 @@ class EventRepository extends ServiceEntityRepository
 {
     private $statusRepository;
 
-
     public function __construct(ManagerRegistry $registry,StatusRepository $statusRepository)
     {
         parent::__construct($registry, Event::class);
         $this->statusRepository = $statusRepository;
-
     }
 
     public function findBySearchFormCriteria(SearchEventCriterias $criterias){
-        $statusCreated = $this->statusRepository->findOneBy(["name"=>Constantes::CREATED]);
         $statusArchived = $this->statusRepository->findOneBy(["name"=>Constantes::ARCHIVED]);
 
         $queryBuilder = $this->createQueryBuilder('events');
@@ -71,12 +68,6 @@ class EventRepository extends ServiceEntityRepository
             $queryBuilder
                 ->andWhere('events.organiser = :user')
                 ->setParameter('user',$criterias->getUser()->getId());
-        }else{
-            //Ne pas afficher les evenements non publiés
-            $statusId = $statusCreated->getId();
-            $queryBuilder
-                ->andWhere('events.status != :status')
-                ->setParameter('status',$statusId);
         }
 
         //test sur le critère d'evenement où l'utilisateur est inscrit
@@ -91,6 +82,7 @@ class EventRepository extends ServiceEntityRepository
             $queryBuilder
                 ->andWhere('u.id != :user')
                 ->setParameter('user',$criterias->getUser());
+
         }
 
         //test sur le critère d'evenement où l'utilisateur n'est pas inscrit
@@ -107,7 +99,6 @@ class EventRepository extends ServiceEntityRepository
 
         $query= $queryBuilder->getQuery();
 
-        //dd($query);
 
         return $query->getResult();
     }
