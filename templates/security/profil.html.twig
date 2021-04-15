@@ -7,6 +7,10 @@
         <h2 class="text-center mb-5">Mon profil</h2>
         <div class="row">
 
+            {% if app.user.profilePicture %}
+
+            {% endif %}
+
         <div class="col">
                 {{ form(modifForm) }}
                         <a href="{{ path('main') }}">

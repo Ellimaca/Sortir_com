@@ -2,17 +2,21 @@
 
 namespace App\Controller;
 
+use App\Entity\ProfilePicture;
 use App\Entity\User;
+use App\Form\ProfilePictureType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\String\ByteString;
 
 class SecurityController extends AbstractController
 {
@@ -68,6 +72,17 @@ class SecurityController extends AbstractController
 
         $form->handleRequest($request);
 
+        /** @var UploadedFile $downloadedPicture */
+        $downloadedPicture = $form->get('file')->getData();
+        $newNamePicture = ByteString::fromRandom(30) . '.' . $downloadedPicture->guessExtension();
+
+        try {
+            $downloadedPicture->move(__DIR__ . '/../../public/profile/img', $newNamePicture);
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+        }
+
+
         //Vérification du formulaire
         if ($form->isSubmitted() && $form->isValid()) {
             //Récupération des données dans le champ "Nouveau mot de passe"
@@ -95,6 +110,21 @@ class SecurityController extends AbstractController
             }
 
         }
+
+        //Création du formulaire photo
+
+        //Création d'une photo de profil
+       /*
+
+            $profilePicture->setUser($profilUser);
+            $profilePicture->setFileName($newNamePicture);
+
+            $manager->persist($profilePicture);
+            $manager->flush();
+
+            $this->addFlash('success', 'Merci pour la/les photo(s)! ');
+
+        */
 
         return $this->render('security/profil.html.twig', [
             'modifForm' => $form->createView(),
