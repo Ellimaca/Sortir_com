@@ -28,10 +28,15 @@ function updatePlaceField() {
         }).then(function (data) {
 
         places = data.places
-        html = "";
+        html = "<option value=\"\" selected value=\"disabled\" disabled >Définir un lieu</option>" + "\n";
+        first = true;
 
         for (const [key, value] of Object.entries(places)) {
-            html = html + "<option value='" + `${key}` + "'>" + `${value.name}` + "</option>" + "\n";
+            if (first){
+                html = "<option selected value='" + `${key}` + "'>" + `${value.name}` + "</optionselected>" + "\n";
+            }else{
+                html = html + "<option value='" + `${key}` + "'>" + `${value.name}` + "</option>" + "\n";
+            }
         }
 
         document.getElementById('event[place]').innerHTML = html;
@@ -47,7 +52,7 @@ function displayInformations() {
 
     console.log(place_id.options.length);
 
-    if (place_id.options.length !== 0) {
+    if (place_id.options.length !== 0 && place_id.options.item(0).value !== '') {
         let data = {'placeId': place_id.options[place_id.selectedIndex].value}
 
         fetch('/Sortir_com/public/ajaxPlace', {method: 'POST', body: JSON.stringify(data)})
@@ -65,7 +70,7 @@ function displayInformations() {
             console.log(data)
         })
     } else {
-        console.log('no data')
+        console.log('Place - no data')
     }
 
 }

@@ -27,7 +27,7 @@ class MainController extends AbstractController
                           EventRepository $eventRepository,
                           FunctionsStatus $functionsStatus): Response
     {
-var_dump('passé par main');
+
         /** @var User $user */
         $user = $this->getUser();
 
@@ -40,6 +40,7 @@ var_dump('passé par main');
 
         $searchForm->handleRequest($request);
 
+        //Récupération des données en fonction des critères
         $eventsList = $eventRepository->findBySearchFormCriteria($searchEventCriterias);
 
         //Mis à jour des status
@@ -54,9 +55,9 @@ var_dump('passé par main');
             $eventLine->setEvent($event);
             $eventLine->setNbRegistered(count($event->getParticipants()));
             if ($event->getParticipants()->contains($user)){
-                $eventLine->setIsRegistered('X');
+                $eventLine->setIsRegistered(true);
             }else{
-                $eventLine->setIsRegistered('');
+                $eventLine->setIsRegistered(false);
             }
             $eventLine->updateLinks($user);
             $eventLines[] = $eventLine;

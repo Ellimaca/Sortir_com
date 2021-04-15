@@ -39,13 +39,22 @@ class EventController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        $foundEvent = $eventRepository->findOneBy(['id' => $id]);
+        $foundEvent = $eventRepository->find([$id]);
+        $foundEventStatusName = $foundEvent->getStatus()->getName();
 
-        if (!$foundEvent || ($foundEvent->getStatus()->getName() == Constantes::CREATED and $foundEvent->getOrganiser() !== $user || $foundEvent->getStatus()->getName() == Constantes::ARCHIVED)) {
+        if (!$foundEvent ||
+            ($foundEventStatusName == Constantes::CREATED and
+                $foundEvent->getOrganiser() !== $user ||
+                $foundEventStatusName == Constantes::ARCHIVED
+            )
+        ) {
             throw $this->createNotFoundException("Cet évenement n'existe pas");
         } else {
             $foundParticipants = $foundEvent->getParticipants();
-            return $this->render('event/view.html.twig', ['foundEvent' => $foundEvent, 'foundParticipants' => $foundParticipants]);
+            return $this->render('event/view.html.twig', [
+                'foundEvent' => $foundEvent,
+                'foundParticipants' => $foundParticipants
+            ]);
         }
     }
 
@@ -57,7 +66,7 @@ class EventController extends AbstractController
      * @param StatusRepository $statusRepository
      * @return RedirectResponse|Response
      */
-    public function create (Request $request, EntityManagerInterface $entityManager, StatusRepository $statusRepository)
+    public function create(Request $request, EntityManagerInterface $entityManager, StatusRepository $statusRepository)
     {
 
         // Creation d'un nouvel event
@@ -78,7 +87,7 @@ class EventController extends AbstractController
 
         $eventForm->handleRequest($request);
 
-        if($eventForm->isSubmitted() && $eventForm->isValid()) {
+        if ($eventForm->isSubmitted() && $eventForm->isValid()) {
 
             // Calcul de la date de fin de l'évènement
             /** @var DateTime $startDate */
@@ -90,20 +99,22 @@ class EventController extends AbstractController
             $place = $eventForm->get('place')->getData();
             $event->setPlace($place);
 
-            // La sortie est "ouverte" si l'utilisateur clique sur "publier la sortie"
-            $status = $statusRepository->findOneBy(["name" => Constantes::OPENED]);
-            $event->setStatus($status);
 
             // La sortie est "crée" si l'utilisateur clique sur "enregistrer"
             if ($eventForm->get('save')->isClicked()) {
                 $status = $statusRepository->findOneBy(["name" => Constantes::CREATED]);
                 $event->setStatus($status);
+            } else {
+                $entityManager->persist($event);
+                $entityManager->flush();
+                $this->addFlash('success', 'Votre évènement a bien été ajouté !');
+                return $this->redirectToRoute("event_published", ['id' => $event->getId()]);
             }
 
             $entityManager->persist($event);
             $entityManager->flush();
-
             $this->addFlash('success', 'Votre évènement a bien été ajouté !');
+
             return $this->redirectToRoute('main');
         }
 
@@ -169,23 +180,18 @@ class EventController extends AbstractController
                 return $this->redirectToRoute('main');
             //Si le statut de la sortie est "Ouverte"...
             case Constantes::OPENED :
-            //Si l'utilisateur est l'organisateur de la sortie...
-                if($eventChoosen->getOrganiser() === $user) {
-                    
+                //Si l'utilisateur est l'organisateur de la sortie...
+                if ($eventChoosen->getOrganiser() === $user) {
+
                     $this->addFlash('warning', 'Vous avez crée la sortie, vous ne pouvez pas vous inscrire!');
 
-                }
-                //Si l'utilisateur est déjà inscrit à la sortie...
-                elseif($foundParticipants->contains($user)) {
+                } //Si l'utilisateur est déjà inscrit à la sortie...
+                elseif ($foundParticipants->contains($user)) {
                     $this->addFlash('warning', 'Vous êtes déjà inscrit à cette sortie!');
-                }
-
-                //... On vérifie que le nombre max de participants n'est pas atteint
+                } //... On vérifie que le nombre max de participants n'est pas atteint
                 elseif ($eventChoosen->getParticipants()->count() >= $eventChoosen->getMaxNumberParticipants()) {
                     $this->addFlash('warning', 'Le nombre maximum de participants a été atteint!');
-                }
-
-                else {
+                } else {
                     //Si toutes les conditions sont remplies, on ajoute notre user à la sortie
                     $eventChoosen->addParticipant($user);
 
@@ -212,8 +218,8 @@ class EventController extends AbstractController
      * @param FunctionsStatus $functionsStatus
      * @return Response
      */
-    public function abandon ($id, EventRepository $eventRepository,
-                          EntityManagerInterface $manager, FunctionsStatus $functionsStatus): Response
+    public function abandon($id, EventRepository $eventRepository,
+                            EntityManagerInterface $manager, FunctionsStatus $functionsStatus): Response
     {
         // Récupération de l'utilisateur connecté
         /** @var User $user */
@@ -234,22 +240,19 @@ class EventController extends AbstractController
         // Si l'utilisateur est bien dans les participants et que le statut de la sortie est "ouvert
         if (($foundParticipants->contains($user) and ($eventStatusName === Constantes::OPENED or $eventStatusName === Constantes::CLOSED))) {
 
-                    $eventChoosen->removeParticipant($user);
+            $eventChoosen->removeParticipant($user);
 
-                    $manager->persist($eventChoosen);
-                    $manager->flush();
+            $manager->persist($eventChoosen);
+            $manager->flush();
 
-                    $this->addFlash('success', "Vous êtes bien désinscrit de la sortie!");
+            $this->addFlash('success', "Vous êtes bien désinscrit de la sortie!");
 
-                    $this->redirectToRoute('main');
-        }
-
-        // Si le statut de l'event est "en cours"
+            $this->redirectToRoute('main');
+        } // Si le statut de l'event est "en cours"
         elseif ((($foundParticipants->contains($user) && $eventStatusName == Constantes::ONGOING))) {
-                    $this->addFlash('warning', 'La sortie est en cours, vous ne pouvez pas vous désinscrire  !');
+            $this->addFlash('warning', 'La sortie est en cours, vous ne pouvez pas vous désinscrire  !');
 
-        }
-        else {
+        } else {
             throw $this->createNotFoundException("Erreur de route");
         }
 
@@ -269,8 +272,8 @@ class EventController extends AbstractController
      * @param StatusRepository $statusRepository
      * @return Response
      */
-    public function cancel ($id,Request $request, EventRepository $eventRepository,
-                            EntityManagerInterface $entityManager, FunctionsStatus $functionsStatus, StatusRepository $statusRepository): Response
+    public function cancel($id, Request $request, EventRepository $eventRepository,
+                           EntityManagerInterface $entityManager, FunctionsStatus $functionsStatus, StatusRepository $statusRepository): Response
     {
         // Récupération de l'utilisateur connecté
         /** @var User $user */
@@ -338,12 +341,12 @@ class EventController extends AbstractController
      * @param EntityManagerInterface $manager
      * @return Response
      */
-    public function modify ($id,
-                            EventRepository $eventRepository,
-                            Request $request,
-                            FunctionsStatus $functionsStatus,
-                            EntityManagerInterface $manager
-                            ): Response
+    public function modify($id,
+                           EventRepository $eventRepository,
+                           Request $request,
+                           FunctionsStatus $functionsStatus,
+                           EntityManagerInterface $manager
+    ): Response
     {
 
         //Récupération de mon user
@@ -361,7 +364,7 @@ class EventController extends AbstractController
         $eventForm = null;
 
         //Vérification si mon user est bien l'organisateur de l'évènement
-        if($eventToModify->getOrganiser() != $user) {
+        if ($eventToModify->getOrganiser() != $user) {
             $this->addFlash('warning', "Vous devez être l'organisateur pour pouvoir modifier une sortie");
             return $this->redirectToRoute('main');
 
@@ -370,24 +373,27 @@ class EventController extends AbstractController
             $eventStatusName == Constantes::CREATED or
             $eventStatusName == Constantes::CLOSED)) {
             $this->addFlash("warning", "Impossible de modifier cette sortie!");
+
         } else {
 
             $eventToModifyCity = $eventToModify->getPlace()->getCity();
 
             $eventForm = $this->createForm(EventType::class, $eventToModify);
-            $eventForm->handleRequest($request);
             $eventForm->get('city')->setData($eventToModifyCity);
-            if($eventForm->isSubmitted() && $eventForm->isValid()) {
 
-                if($this->checkEvent($eventToModify)) {
+            $eventForm->handleRequest($request);
 
-                   /** @var DateTime $eventDateStart */
+            if ($eventForm->isSubmitted() && $eventForm->isValid()) {
+
+                if ($this->checkEvent($eventToModify)) {
+
+                    /** @var DateTime $eventDateStart */
                     $eventDuration = $eventToModify->getDuration();
                     $eventDateStart = $eventToModify->getDateTimeStart();
 
                     //Transformer la durée en nombre positif si besoin
                     $eventToModify->setDuration(abs($eventToModify->getDuration()));
-                    $dateTimeEnd  = DateTimeHandler::dateAddMinutes($eventDateStart,$eventDuration);
+                    $dateTimeEnd = DateTimeHandler::dateAddMinutes($eventDateStart, $eventDuration);
                     $eventToModify->setDateTimeEnd($dateTimeEnd);
                     $functionsStatus->UpdateEventStatus($eventToModify);
 
@@ -416,25 +422,25 @@ class EventController extends AbstractController
         $numberOfParticipants = $eventToCheck->getParticipants()->count();
 
         //Vérifier que le nombre max de participants ne soit pas inférieur aux nombre d'inscrits.
-        if($eventToCheck->getMaxNumberParticipants() < $numberOfParticipants) {
+        if ($eventToCheck->getMaxNumberParticipants() < $numberOfParticipants) {
             $this->addFlash("warning", "Impossible de réduire le nombre de participants!");
             $isChecked = false;
         }
 
         //Vérifier que la date de sortie ne soit pas passée
-        if($eventToCheck->getDateTimeStart() < new DateTime('now')) {
+        if ($eventToCheck->getDateTimeStart() < new DateTime('now')) {
             $this->addFlash("warning", "Impossible de créer une sortie avec une date passée!");
             $isChecked = false;
         }
 
         //Vérifier que la date limite d'inscription est supérieur à la date du jour
-        if($eventToCheck->getRegistrationDeadline() <= new DateTime('now')) {
+        if ($eventToCheck->getRegistrationDeadline() <= new DateTime('now')) {
             $this->addFlash("warning", "Impossible de clôturer la sortie à une date passée");
             $isChecked = false;
         }
 
         //Vérifier que la date limite d'inscription soit inférieure à la date du début de la sortie
-        if($eventToCheck->getRegistrationDeadline() >= $eventToCheck->getDateTimeStart()) {
+        if ($eventToCheck->getRegistrationDeadline() >= $eventToCheck->getDateTimeStart()) {
             $this->addFlash("warning", "Impossible de clôturer la sortie à une date passée");
             $isChecked = false;
         }
@@ -449,10 +455,10 @@ class EventController extends AbstractController
      * @param StatusRepository $statusRepository
      * @return Response
      */
-    public function publish ($id,
-                             EntityManagerInterface $manager,
-                             EventRepository $eventRepository,
-                             StatusRepository $statusRepository): Response
+    public function publish($id,
+                            EntityManagerInterface $manager,
+                            EventRepository $eventRepository,
+                            StatusRepository $statusRepository): Response
     {
         /** @var Event $event */
         $event = $eventRepository->find($id);
@@ -460,23 +466,23 @@ class EventController extends AbstractController
         $eventStatus = $event->getStatus();
 
         // Test si l'utilisateur est l'organisateur
-        if($event->getOrganiser() === $this->getUser()){
+        if ($event->getOrganiser() === $this->getUser()) {
             // Test si la sortie a le statue créé
-            if($eventStatus->getName() == Constantes::CREATED){
+            if ($eventStatus->getName() == Constantes::CREATED) {
 
 
                 //Modification du statut et persistance
-                $eventStatus = $statusRepository->findOneBy(['name' =>Constantes::OPENED]);
+                $eventStatus = $statusRepository->findOneBy(['name' => Constantes::OPENED]);
                 $event->setStatus($eventStatus);
                 $manager->persist($event);
                 $manager->flush();
 
                 $this->addFlash("success", self::SUCCESS_EVENT_PUBLISHED);
-            }else{
+            } else {
                 $this->addFlash("warning", self::WARNING_EVENT_WRONG_STATUS);
             }
-        }else{
-            $this->addFlash("warning",self::WARNING_EVENT_NOT_AUTHORIZED);
+        } else {
+            $this->addFlash("warning", self::WARNING_EVENT_NOT_AUTHORIZED);
         }
         return $this->redirectToRoute('main');
     }
@@ -492,7 +498,7 @@ class EventController extends AbstractController
     {
 
         //me ramène le contenu de ma requête, qui est mon JSON à l'intérieur
-        $data = json_decode($request-> getContent());
+        $data = json_decode($request->getContent());
 
         //je peux donc ensuite accèder aux attributs de mon objet
         $cityId = $data->eventCity;
@@ -500,12 +506,12 @@ class EventController extends AbstractController
         $city = $placeRepository->find($cityId);
 
         //je récupère ma série qui est bdd, avec l'id
-        $places = $placeRepository->findBy(['city'=>$city]);
+        $places = $placeRepository->findBy(['city' => $city]);
 
         $placesObject = [];
 
-        foreach ($places as $place){
-            $placesObject[$place->getId()]['name']  = $place->getName();
+        foreach ($places as $place) {
+            $placesObject[$place->getId()]['name'] = $place->getName();
         }
 
         return new JsonResponse([
@@ -519,11 +525,11 @@ class EventController extends AbstractController
      * @param PlaceRepository $placeRepository
      * @return Response
      */
-    public function updatePlaceInformation (Request $request,
-                                            PlaceRepository $placeRepository): Response
+    public function updatePlaceInformation(Request $request,
+                                           PlaceRepository $placeRepository): Response
     {
         //me ramène le contenu de ma requête, qui est mon JSON à l'intérieur
-        $data = json_decode($request-> getContent());
+        $data = json_decode($request->getContent());
 
         $placeId = $data->placeId;
 

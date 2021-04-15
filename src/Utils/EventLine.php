@@ -9,10 +9,40 @@ use App\Entity\User;
 
 class EventLine
 {
+    private const EVENT_SHOW = ['afficher', 'event_view'];
+    private const EVENT_MODIFY = ['modifier', 'event_modified'];
+    private const EVENT_CANCEL = ['annuler', 'event_cancelled'];
+    private const EVENT_ABANDON =["se désinscrire", 'event_abandonned'];
+    private const EVENT_REGISTER =["s'inscrire", 'event_registration'];
+    private const EVENT_PUBLISH =['publier', 'event_published'];
+
     private ?Event $event;
     private ?int $nbRegistered;
-    private ?string $isRegistered;
+    private ?bool $isRegistered;
     private array $links = [];
+    private ?bool $full;
+
+    /**
+     * @return bool|null
+     */
+    public function getFull(): ?bool
+    {
+        if(count($this->event->getParticipants()) >= $this->event->getMaxNumberParticipants()){
+            $this->setFull(true);
+        }else{
+            $this->setFull(false);
+        }
+
+        return $this->full;
+    }
+
+    /**
+     * @param bool|null $full
+     */
+    public function setFull(?bool $full): void
+    {
+        $this->full = $full;
+    }
 
     /**
      * @return Event|null
@@ -47,17 +77,17 @@ class EventLine
     }
 
     /**
-     * @return string|null
+     * @return bool|null
      */
-    public function getIsRegistered(): ?string
+    public function getIsRegistered(): ?bool
     {
         return $this->isRegistered;
     }
 
     /**
-     * @param string|null $isRegistered
+     * @param bool|null $isRegistered
      */
-    public function setIsRegistered(?string $isRegistered): void
+    public function setIsRegistered(?bool $isRegistered): void
     {
         $this->isRegistered = $isRegistered;
     }
@@ -84,41 +114,41 @@ class EventLine
 
         switch ($this->event->getStatus()->getName()) {
             case Constantes::CREATED:
-                $this->links[] = Constantes::EVENT_MODIFY;
-                $this->links[] = Constantes::EVENT_PUBLISH;
+                $this->links[] = self::EVENT_MODIFY;
+                $this->links[] = self::EVENT_PUBLISH;
                 break;
             case Constantes::OPENED:
-                $this->links[] = Constantes::EVENT_SHOW;
+                $this->links[] = self::EVENT_SHOW;
 
                 if ($this->event->getOrganiser() === $user) {
-                    $this->links[] = Constantes::EVENT_MODIFY;
-                    $this->links[] = Constantes::EVENT_CANCEL;
+                    $this->links[] = self::EVENT_MODIFY;
+                    $this->links[] = self::EVENT_CANCEL;
                 } elseif ($this->nbRegistered < $this->event->getMaxNumberParticipants() &&
                     !$this->event->getParticipants()->contains($user)) {
-                    $this->links[] = Constantes::EVENT_REGISTER;
+                    $this->links[] = self::EVENT_REGISTER;
                 }
 
                 if ($this->event->getParticipants()->contains($user)) {
-                    $this->links[] = Constantes::EVENT_ABANDON;
+                    $this->links[] = self::EVENT_ABANDON;
                 }
                 break;
             case Constantes::CLOSED:
-                $this->links[] = Constantes::EVENT_SHOW;
+                $this->links[] = self::EVENT_SHOW;
 
                 if ($this->event->getOrganiser() === $user) {
-                    $this->links[] = Constantes::EVENT_MODIFY;
-                    $this->links[] = Constantes::EVENT_CANCEL;
+                    $this->links[] = self::EVENT_MODIFY;
+                    $this->links[] = self::EVENT_CANCEL;
                 }
 
                 if ($this->event->getParticipants()->contains($user)) {
-                    $this->links[] = Constantes::EVENT_ABANDON;
+                    $this->links[] = self::EVENT_ABANDON;
                 }
                 break;
             case Constantes::ONGOING:
             case Constantes::FINISHED:
             case Constantes::CANCELLED:
             case Constantes::ARCHIVED:
-                $this->links[] = Constantes::EVENT_SHOW;
+                $this->links[] = self::EVENT_SHOW;
                 break;
         }
 
