@@ -299,6 +299,24 @@ class AppFixtures extends Fixture
         $staticEvent1 = $this->createEvent($dataEvent,$allUsers);
         $manager->persist($staticEvent1);
 
+        /** Static Event 1 bis
+         *      statut : créée
+         *      date de début: futur
+         *      deadline : futur
+         *      fin activite : futur
+         *      nb Participants inscrits : incomplet
+         *      organiser : Test
+         */
+        $dateStart = new DateTime("+5 days");
+        $duration = 240;
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
+
+        $dataEvent = ['Test 1 bis (lieu différent)',
+            'statut : créée; date de début: futur ; deadline : futur ; fin activite : futur ; nb Participants inscrits : incomplet ; organiser : Test  ',
+            $campus1,$staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusCreated,$place2,0];
+        $staticEvent1 = $this->createEvent($dataEvent,$allUsers);
+        $manager->persist($staticEvent1);
+
         /** Static Event 2
          *      statut : ouvert
          *      date de début : futur
