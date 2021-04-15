@@ -76,7 +76,7 @@ class AppFixtures extends Fixture
         $allCity = $cityRepository->findAll();
 
         // Génèration de données aléatoires pour l'entité Place
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 80; $i++) {
             $place = new Place();
             $place->setName($faker->sentence(3, true));
             $place->setStreet($faker->streetAddress);
@@ -243,6 +243,22 @@ class AppFixtures extends Fixture
         $staticUser3 = $this->createUser($dataUser);
         $manager->persist($staticUser3);
 
+        //Création de l'utilisateur 4
+        $dataUser = ["Harry Potter","Harry","Potter",$campus2,"harry@test.com",true,"+33 6 32 61 13 40","test",["ROLE_USER"],false];
+        $staticUser4 = $this->createUser($dataUser);
+        $manager->persist($staticUser4);
+
+        //Création de l'utilisateur 5
+        $dataUser = ["Hermione","Hermione","Potter",$campus2,"hermione@test.com",true,"+33 6 37 61 24 40","test",["ROLE_USER"],false];
+        $staticUser5 = $this->createUser($dataUser);
+        $manager->persist($staticUser5);
+
+        //Création de l'utilisateur 6
+        $dataUser = ["RonWeAsLEy","Ron","Weasley",$campus2,"ron@test.com",true,"+33 7 37 62 24 43","test",["ROLE_USER"],false];
+        $staticUser6 = $this->createUser($dataUser);
+        $manager->persist($staticUser6);
+
+
         //dataCity(name,postcode)
 
         //Création de la ville 1
@@ -268,9 +284,24 @@ class AppFixtures extends Fixture
         $manager->persist($place2);
 
         //Création du lieu 3
-        $dataPlace = ['Bowling Rennes','2 Rue du Bosphore, 35200 Rennes',48.08214513596161, -1.6817897995315731,$city2];
+        $dataPlace = ['Bowling Rennes','2 Rue du Bosphore',48.08214513596161, -1.6817897995315731,$city2];
         $place3 = $this->createPlace($dataPlace);
         $manager->persist($place3);
+
+        //Création du lieu 4
+        $dataPlace = ['Bowling Center Atlantis', '1 Rue de la Syonnière',45.08214513596161, -12.6817897995315731,$city];
+        $place4 = $this->createPlace($dataPlace);
+        $manager->persist($place4);
+
+        //Création du lieu 5
+        $dataPlace = ['UGC Ciné Cité Atlantis', 'Place Jean-Bart',54.08214513596161, -18.6817897995315731,$city];
+        $place5 = $this->createPlace($dataPlace);
+        $manager->persist($place5);
+
+        //Création du lieu 6
+        $dataPlace = ['ENI - Campus Nantes Faraday', '3 Rue Michael Faraday',65.08214513596161, -86.6817897995315731,$city];
+        $place6 = $this->createPlace($dataPlace);
+        $manager->persist($place6);
 
         $userRepository = $manager->getRepository(User::class);
         $allUsers = $userRepository->findAll();
@@ -430,6 +461,7 @@ class AppFixtures extends Fixture
             'statut : Annulé (à vérifier) ; date de début : futur ; deadline : futur ; fin activite : futur nb Participants inscrits : incomplet ;organiser : Test',
             $campus1,$staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusCancelled,$place1,4];
         $staticEvent7 = $this->createEvent($dataEvent,$allUsers);
+        $staticEvent7->setCancellationReason("Je préfère annuler");
         $manager->persist($staticEvent7);
 
         /** Static Event 8
@@ -450,6 +482,100 @@ class AppFixtures extends Fixture
             $campus1,$staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
         $staticEvent8 = $this->createEvent($dataEvent,$allUsers);
         $manager->persist($staticEvent8);
+
+        /** Static Event 10
+         */
+        $dateStart = new DateTime("+5 days");
+        $duration = 240;
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
+
+        $dataEvent = ['Partie de bowling les yeux bandés',
+            'Nous vous attendons pour passer un amusant moment et faire quelques strikes entre ami-e-s.',
+            $campus1,$staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusCreated,$place4,0];
+        $staticEvent10 = $this->createEvent($dataEvent,$allUsers);
+        $manager->persist($staticEvent10);
+
+        /** Static Event 11
+         *
+         */
+        $dateStart = new DateTime("+3 days");
+        $duration = 90;
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
+
+        $dataEvent = ['Randonnée Canoé-Kayak ',
+            'Découvrez les joies d\'une balade en canoé kayak et vivez un moment
+            inoubliable en contact direct avec la faune et la flore locale.
+        Entre sport et détente, l\'activité sera parfaite pour satisfaire tout le
+        monde ! ', $campus1, $staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
+        $staticEvent11 = $this->createEvent($dataEvent,$allUsers);
+        $manager->persist($staticEvent11);
+
+        /** Static Event 12
+         *
+         */
+        $dateStart = new DateTime("+3 days");
+        $duration = 90;
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
+
+        $dataEvent = ['Apprendre Symfony en s\'amusant',
+            'Taharqa, Benjamin et Camille vous propose de venir jouer à Symfony avec eux !',
+            $campus1,$staticUser2,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place6,6];
+        $staticEvent12 = $this->createEvent($dataEvent,$allUsers);
+        $manager->persist($staticEvent12);
+
+
+        /** Static Event 13
+         *
+         */
+        $dateStart = new DateTime("+1 days");
+        $duration = 90;
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
+
+        $dataEvent = ['Concert d\'André Rieu en 3D au cinéma',
+            'André Rieu partage l\'émotion de ses concerts les plus phénoménaux dans des conditions inégalables et sur mesure pour le cinéma',
+            $campus1,$staticUser4,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place6,3];
+        $staticEvent13 = $this->createEvent($dataEvent,$allUsers);
+        $manager->persist($staticEvent13);
+
+        /** Static Event 14
+         *
+         */
+        $dateStart = new DateTime('now');
+        $duration = 90;
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
+
+        $dataEvent = ['Festival international du Cochon d\'inde',
+            'Défilé de mode et gastronomie sont au programme, les animaux passent leur journée a être pomponnés, chouchoutés',
+            $campus1,$staticUser5,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
+        $staticEvent14 = $this->createEvent($dataEvent,$allUsers);
+        $manager->persist($staticEvent14);
+
+        /** Static Event 15
+         *
+         */
+        $dateStart = new DateTime('now');
+        $duration = 90;
+        $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
+
+        $dataEvent = ['Grand tournoi de Quidditch',
+            'Tous les élèves pourront assister aux matchs et encourager l’équipe de leur maison. Certains élèves pourront s’inscrire en journée
+             afin de jouer et représenter leur maison lors du tournoi. La compétition entre les quatre maisons s’achèvera avec ce tournoi puis la 
+             Coupe de quidditch et la Coupe de Poudloire seront décernées au Château.',
+            $campus1,$staticUser6,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
+        $staticEvent15 = $this->createEvent($dataEvent,$allUsers);
+        $manager->persist($staticEvent15);
+
+
+
+
+
+
+
+
+
+
+
+
 
         $manager->flush();
 
