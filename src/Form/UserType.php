@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Campus;
+use App\Entity\ProfilePicture;
 use App\Entity\User;
 use Doctrine\DBAL\Types\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -51,10 +52,12 @@ class UserType extends AbstractType
                 'choice_label' => 'name',
                 'choice_value'  => ChoiceList::value($this, 'name')
             ])
+
+            ->add('profilePicture', ProfilePictureType::class, [
+
+            ])
+
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer'])
-
-
-
 
         ;
     }
