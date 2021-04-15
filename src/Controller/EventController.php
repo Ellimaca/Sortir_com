@@ -45,7 +45,7 @@ class EventController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        $foundEvent = $eventRepository->find([$id]);
+        $foundEvent = $eventRepository->find($id);
         $foundEventStatusName = $foundEvent->getStatus()->getName();
 
         if (!$foundEvent ||
