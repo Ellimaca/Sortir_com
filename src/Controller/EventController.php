@@ -7,6 +7,7 @@ use App\Entity\Status;
 use App\Entity\User;
 use App\Form\EventCancellationType;
 use App\Form\EventType;
+use App\Repository\CityRepository;
 use App\Repository\EventRepository;
 use App\Repository\PlaceRepository;
 use App\Repository\StatusRepository;
@@ -359,7 +360,7 @@ class EventController extends AbstractController
 
         //Récupération de l'evenement à modifier
         $eventToModify = $eventRepository->find($id);
-
+//dd($eventToModify);
         //Mise à jour le statut de l'évenement
         $functionsStatus->UpdateEventStatus($eventToModify);
 
@@ -495,11 +496,11 @@ class EventController extends AbstractController
     /**
      * @Route ("/ajaxCity", name="ajaxCity")
      * @param Request $request
-     * @param PlaceRepository $placeRepository
+     * @param CityRepository $cityRepository
      * @return JsonResponse
      */
     public function updatePlace(Request $request,
-                                PlaceRepository $placeRepository): JsonResponse
+                                CityRepository $cityRepository): JsonResponse
     {
 
         //me ramène le contenu de ma requête, qui est mon JSON à l'intérieur
@@ -508,10 +509,10 @@ class EventController extends AbstractController
         //je peux donc ensuite accèder aux attributs de mon objet
         $cityId = $data->eventCity;
 
-        $city = $placeRepository->find($cityId);
+        $city = $cityRepository->find($cityId);
 
         //je récupère ma série qui est bdd, avec l'id
-        $places = $placeRepository->findBy(['city' => $city]);
+        $places = $city->getPlaces();
 
         $placesObject = [];
 

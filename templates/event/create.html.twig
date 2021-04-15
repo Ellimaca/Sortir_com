@@ -14,10 +14,13 @@
     <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
 
         {% if (modif is defined) %}
-
-        <h6 class="display-6 fw-normal">Modifier une sortie</h6>
+            <input type="hidden" name="oldPlaceId" id="oldPlaceId" value="{{ event.place.id }}">
+            <input type="hidden" name="oldCityId" id="oldCityId" value="{{ event.place.city.id }}">
+            <h6 class="display-6 fw-normal">Modifier une sortie</h6>
         {% else %}
-        <h6 class="display-6 fw-normal">Créer une sortie</h6>
+            <input type="hidden" name="oldPlaceId" id="oldPlaceId" value="0">
+            <input type="hidden" name="oldPlaceId" id="oldPlaceId" value="0">
+            <h6 class="display-6 fw-normal">Créer une sortie</h6>
         {% endif %}
     </div>
 
