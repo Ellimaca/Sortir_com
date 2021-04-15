@@ -383,7 +383,7 @@ class AppFixtures extends Fixture
         $dataEvent = ['Test 3',
                       'statut : ouvert ; date de début : futur ; deadline : futur ; fin activite : futur ; nb Participants inscrits : complet;
                       organiser : Batman',
-            $campus1,$staticUser2,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,6];
+            $campus1,$staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,6];
         $staticEvent3 = $this->createEvent($dataEvent,$allUsers);
         $manager->persist($staticEvent3);
 
@@ -533,7 +533,7 @@ class AppFixtures extends Fixture
 
         $dataEvent = ['Concert d\'André Rieu en 3D au cinéma',
             'André Rieu partage l\'émotion de ses concerts les plus phénoménaux dans des conditions inégalables et sur mesure pour le cinéma',
-            $campus1,$staticUser4,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place6,3];
+            $campus1,$staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place6,3];
         $staticEvent13 = $this->createEvent($dataEvent,$allUsers);
         $manager->persist($staticEvent13);
 
@@ -574,7 +574,7 @@ class AppFixtures extends Fixture
 
         $dataEvent = ['Tournoi de Ping-Pong',
             'Venez nombreux affronter Taharqa, le champion du monde du Ping-Pong sans raquette',
-            $campus1,$staticUser2,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
+            $campus1,$staticUser2,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place4,4];
         $staticEvent15 = $this->createEvent($dataEvent,$allUsers);
         $manager->persist($staticEvent15);
 
@@ -586,9 +586,9 @@ class AppFixtures extends Fixture
         $duration = 90;
         $registrationDeadline = DateTimeHandler::dateSubMinutes($dateStart,$deadlineDuration);
 
-        $dataEvent = ['Test 6',
-            'statut : Passé (à vérifier) ; date de début : passé de moins d 1 mois ; deadline : passé ; fin activite : passé nb Participants inscrits : incomplet ;organiser : Test',
-            $campus1,$staticUser1,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,4];
+        $dataEvent = ['Tour de Batmobile',
+            'Je vous propose une sortie en Batmobile dans les rues de Nantes',
+            $campus1,$staticUser2,6,$duration,$dateStart,$registrationDeadline,$statusOpened,$place1,2];
         $staticEvent6 = $this->createEvent($dataEvent,$allUsers);
         $manager->persist($staticEvent6);
 

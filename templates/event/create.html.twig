@@ -63,7 +63,9 @@
 
             <div class="d-flex flex-wrap justify-content-center mt-5">
                     <div>{{ form_row(eventForm.save) }}</div>
+                    {% if ((modif is defined) or (event.status.name is same as constant('App\\Utils\\Constantes::CREATED'))) %}
                     <div>{{ form_row(eventForm.submit) }}</div>
+                    {%  endif %}
                     {{ form_end(eventForm) }}
                     {% if (modif is defined) %}
                     <div><a href="{{ path('event_cancelled', {id:event.id}) }}">
