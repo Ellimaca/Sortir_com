@@ -16,6 +16,7 @@ use App\Utils\FunctionsStatus;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -566,7 +567,7 @@ class EventController extends AbstractController
         if($placeID != ""){
             return true;
         }
-        $this->addFlash("warning", self::WARNING_EVENT_WRONG_PLACE);
+        $form->get('place')->addError(new FormError(self::WARNING_EVENT_WRONG_PLACE));
         return false;
     }
 }
