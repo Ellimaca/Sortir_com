@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
         <link rel="icon" href="{{ asset('img/logoEni.png') }}">
         <script type="text/javascript" src="{{ asset('js/app.js') }}"></script>
+        <link rel="stylesheet" href="{{ asset('style.css') }}">
 
         {% for label, messages in app.flashes %}
             {% for message in messages %}
@@ -21,22 +22,21 @@
         <title>{% block title %}Bienvenue!{% endblock %}</title>
     </head>
     <body>
-    <div class="container">
             <header id="navigation" class="d-flex flex-wrap align-items-center justify-content-center
-            justify-content-md-between py-2 mb-3 mr-1 border-bottom">
-                <a href="{{ path('main') }}" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
+            justify-content-md-between py-2 mb-3 mr-1 border-bottom bg-light navbar-light bg-light">
+                <a href="{{ path('main') }}" class="d-flex align-items-center col-md-3 mb-3 mb-md-0 ml-3 text-dark text-decoration-none">
                     <img src="{{ asset('img/logoEni.png') }}" width="40" height="40">
                 </a>
                 <ul class="nav col-12 col-md-auto mb-2 mt-2 justify-content-center mb-md-0">
                     {% if app.user %}
-                        <li><a href="{{ path('main') }}" class="nav-link px-2 link-dark">Accueil</a></li>
-                        <li><a href="{{ path('security_profil') }}" class="nav-link px-2 link-dark">Mon profil</a></li>
-                        <li><a href="{{ path('app_logout') }}" class="nav-link px-2 link-dark">Se déconnecter</a></li>
+                        <li><a href="{{ path('main') }}" class="nav-link px-2 link-dark"><i class="fas fa-home"></i> Accueil</a></li>
+                        <li><a href="{{ path('security_profil') }}" class="nav-link px-2 link-dark"><i class="fas fa-user"></i> Mon profil</a></li>
+                        <li><a href="{{ path('app_logout') }}" class="nav-link px-2 link-dark"><i class="fas fa-sign-out-alt"></i> Deconnexion</a></li>
                     {% endif %}
                 </ul>
             </header>
-
+            <div class="container">
             {% block body %}{% endblock %}
-    </div>
+                </div>
     </body>
 </html>

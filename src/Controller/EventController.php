@@ -282,6 +282,10 @@ class EventController extends AbstractController
         //Récupèration l'évenement choisi par mon utilisateur via l'id récupérée dans l'URL
         $eventChoosen = $eventRepository->find($id);
 
+        if (!$eventChoosen) {
+            throw $this->createNotFoundException("Cet évenement n'existe pas");
+        }
+
         //Récupération de l'organisateur de la sortie
         $eventOrganiser = $eventChoosen->getOrganiser();
 
@@ -330,6 +334,7 @@ class EventController extends AbstractController
             "foundEvent" => $eventChoosen,
             'eventCancellationForm' => $eventCancellationForm->createView(),
         ]);
+
     }
 
     /**
