@@ -4,34 +4,36 @@
 
 
 {% block body %}
-<div class="row">
-    <div class="col-xl-3 col-md-6">
-        <div class="card bg-success text-white mb-4 mt-5">
-            <div class="card-body">Bonjour {{ app.user.firstName }} ! Nous sommes le : <span> {{ "now"|date("d/m/Y") }} </div>
-            <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" href="{{ path('event_creation')}}">Créer une sortie</a>
-                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4 mt-5">
+                <div class="card-body">Bonjour {{ app.user.firstName }} ! Nous sommes le :
+                    <span> {{ "now"|date("d/m/Y") }}</div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="{{ path('event_creation') }}">Créer une sortie</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="card mb-6">
-    <div class="card-header bg-light text-dark">
-        <i class="fas fa-table mr-5"></i>
-        Filtrer les sorties
-    </div>
-    <section id="FiltreRecherche " class="container mt-1">
-        {{ form_start(searchForm) }}
+    <div class="card mb-6">
+        <div class="card-header bg-light text-dark">
+            <i class="fas fa-table mr-5"></i>
+            Filtrer les sorties
+        </div>
+        <section id="FiltreRecherche " class="container mt-1">
+            {{ form_start(searchForm) }}
             <div class="row align-items-start">
 
                 <article class="col-6">
-                    <div class = "group">
-                        <span>{{ form_label(searchForm.campus)}}</span>
-                        <span>{{ form_widget(searchForm.campus)}}</span>
-                        {{ form_errors(searchForm.campus)}}
+                    <div class="group">
+                        <span>{{ form_label(searchForm.campus) }}</span>
+                        <span>{{ form_widget(searchForm.campus) }}</span>
+                        {{ form_errors(searchForm.campus) }}
                     </div>
-                    <div >
-                        <label class="mt-1" for="{{ field_name(searchForm.searchBar) }}">Le nom de la sortie contient :</label>
+                    <div>
+                        <label class="mt-1" for="{{ field_name(searchForm.searchBar) }}">Le nom de la sortie contient
+                            :</label>
                         <input type="search"
                                class="form-control"
                                id="{{ field_name(searchForm.searchBar) }}"
@@ -39,8 +41,8 @@
                                value="{{ field_value(searchForm.searchBar) }}"
                         >
                     </div>
-                    <div class = "group mt-2">
-                        <span class ="group">
+                    <div class="group mt-2">
+                        <span class="group">
                             <label for="{{ field_name(searchForm.dateStart) }}">Entre le </label>
                             <input type="date"
                                    id="{{ field_name(searchForm.dateStart) }}"
@@ -61,10 +63,10 @@
 
                 <article class="col-4 mt-2">
                     <div>
-                        {{ form_row(searchForm.isOrganisedByMe)}}
+                        {{ form_row(searchForm.isOrganisedByMe) }}
                     </div>
                     <div>
-                        {{ form_row(searchForm.isAttendedByMe)}}
+                        {{ form_row(searchForm.isAttendedByMe) }}
                     </div>
                     <div>
                         {{ form_row(searchForm.isNotAttendedByMe) }}
@@ -74,83 +76,84 @@
                     </div>
                     <article class="col-6">
                         <button type="submit" class="btn-primary btn mt-4">Rechercher</button>
-                        {{ form_end(searchForm) }}
-                    </article>
-                        <a href="{{ path('event_creation') }}"><button class="btn-success btn mt-4">Créer une sortie</button></a>
-                 </article>
-            </div>
-    </section>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" cellspacing="10">
-                <thead>
-                <tr class="text-center text-white bg-primary">
-                    <th>Nom de la sortie</th>
-                    <th>Date de la sortie</th>
-                    <th>Clôture</th>
-                    <th>Inscrits/places</th>
-                    <th>Etat</th>
-                    <th>Inscrit</th>
-                    <th>Organisateur</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tfoot>
-                <tr class="text-center text-white bg-primary">
-                    <th>Nom de la sortie</th>
-                    <th>Date de la sortie</th>
-                    <th>Clôture</th>
-                    <th>Inscrits/places</th>
-                    <th>Etat</th>
-                    <th>Inscrit</th>
-                    <th>Organisateur</th>
-                    <th>Actions</th>
-                </tr>
-                </tfoot>
-                {% for eventLine in eventLines %}
-                    {% if eventLine.event.organiser.pseudo is same as app.user.pseudo %}
-                            <tr class="text-center text-success bg-light">
-                    {% else %}
-                            <tr class="text-center bg-light">
-                    {% endif %}
-                    <th>{{ eventLine.event.name }}</th>
-                    <th>{{ eventLine.event.dateTimeStart | date('d-m-Y H:i:s') }}</th>
-                    <th>{{ eventLine.event.registrationDeadline | date('d-m-Y H:i:s') }}</th>
-                    {% if eventLine.full %}
-                        <th><i class="fas fa-users"></i> Complet</th>
-                    {% else %}
-                        <th>{{ eventLine.nbRegistered }}/{{ eventLine.event.maxNumberParticipants }}</th>
-                    {% endif %}#}
-                    {% if eventLine.event.status.name == "Annulée" %}
-                        <th class="text-danger">{{ eventLine.event.status.name }}</th>
-                    {% else %}
-                        <th>{{ eventLine.event.status.name }}</th>
-                    {% endif %}
 
-                    <th>
-                        {%  if eventLine.isRegistered %}
-                        <span class="icon mr-1 text-success"><i class="fas fa-user-check"></i></span>
+                    </article>
+                </article>
+            </div>
+            {{ form_end(searchForm) }}
+            <a href="{{ path('event_creation') }}"><button class="btn-success btn mt-4">Créer une sortie</button></a>
+        </section>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" cellspacing="10">
+                    <thead>
+                    <tr class="text-center text-white bg-primary">
+                        <th>Nom de la sortie</th>
+                        <th>Date de la sortie</th>
+                        <th>Clôture</th>
+                        <th>Inscrits/places</th>
+                        <th>Etat</th>
+                        <th>Inscrit</th>
+                        <th>Organisateur</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr class="text-center text-white bg-primary">
+                        <th>Nom de la sortie</th>
+                        <th>Date de la sortie</th>
+                        <th>Clôture</th>
+                        <th>Inscrits/places</th>
+                        <th>Etat</th>
+                        <th>Inscrit</th>
+                        <th>Organisateur</th>
+                        <th>Actions</th>
+                    </tr>
+                    </tfoot>
+                    {% for eventLine in eventLines %}
+                        {% if eventLine.event.organiser.pseudo is same as app.user.pseudo %}
+                            <tr class="text-center text-success bg-light">
+                        {% else %}
+                            <tr class="text-center bg-light">
                         {% endif %}
-                    </th>
-                    <th> {% if eventLine.event.organiser.pseudo is same as app.user.pseudo %}
-                        <i class="fas fa-user-shield"></i> {{ eventLine.event.organiser.pseudo }}</th>
-                         {% else %}
-                             {{ eventLine.event.organiser.pseudo }}
-                    {% endif %}
-                    <th>   {% set nbLinks = eventLine.links|length - 1 %}
-                        {% for i in 0..nbLinks %}
-                            {% if ( i > 0 ) %}
-                                <span> - </span>
+                        <th>{{ eventLine.event.name }}</th>
+                        <th>{{ eventLine.event.dateTimeStart | date('d-m-Y H:i:s') }}</th>
+                        <th>{{ eventLine.event.registrationDeadline | date('d-m-Y H:i:s') }}</th>
+                        {% if eventLine.full %}
+                            <th><i class="fas fa-users"></i> Complet</th>
+                        {% else %}
+                            <th>{{ eventLine.nbRegistered }}/{{ eventLine.event.maxNumberParticipants }}</th>
+                        {% endif %}
+                        {% if eventLine.event.status.name == "Annulée" %}
+                            <th class="text-danger">{{ eventLine.event.status.name }}</th>
+                        {% else %}
+                            <th>{{ eventLine.event.status.name }}</th>
+                        {% endif %}
+
+                        <th>
+                            {% if eventLine.isRegistered %}
+                                <span class="icon mr-1 text-success"><i class="fas fa-user-check"></i></span>
                             {% endif %}
-                            <a href="{{ path(eventLine.links[i][1],{'id':eventLine.event.id}) }}"> {{ eventLine.links[i][0] }}</a>
-                        {% endfor %}</th>
-                </tr>
-                {% endfor %}
-                </tfoot>
-                </tbody>
-            </table>
+                        </th>
+                        <th> {% if eventLine.event.organiser.pseudo is same as app.user.pseudo %}
+                            <i class="fas fa-user-shield"></i> {{ eventLine.event.organiser.pseudo }}</th>
+                    {% else %}
+                        {{ eventLine.event.organiser.pseudo }}
+                        {% endif %}
+                        <th>   {% set nbLinks = eventLine.links|length - 1 %}
+                            {% for i in 0..nbLinks %}
+                                {% if ( i > 0 ) %}
+                                    <span> - </span>
+                                {% endif %}
+                                <a href="{{ path(eventLine.links[i][1],{'id':eventLine.event.id}) }}"> {{ eventLine.links[i][0] }}</a>
+                            {% endfor %}</th>
+                        </tr>
+                    {% endfor %}
+                    </tfoot>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}
 
