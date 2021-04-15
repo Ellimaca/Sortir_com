@@ -67,64 +67,65 @@ class SecurityController extends AbstractController
         //Récupération de mon utilisateur
         $profilUser = $userRepository->find($this->getUser());
 
+        //Création d'une photo de profil
+        $profilePicture = new ProfilePicture();
+
         //Création du formulaire que j'associe avec mon utilisateur
         $form = $this->createForm(UserType::class, $profilUser);
 
         $form->handleRequest($request);
 
-        /** @var UploadedFile $downloadedPicture */
-        $downloadedPicture = $form->get('file')->getData();
-        $newNamePicture = ByteString::fromRandom(30) . '.' . $downloadedPicture->guessExtension();
-
-        try {
-            $downloadedPicture->move(__DIR__ . '/../../public/profile/img', $newNamePicture);
-        } catch (\Exception $e) {
-            dd($e->getMessage());
-        }
-
 
         //Vérification du formulaire
         if ($form->isSubmitted() && $form->isValid()) {
+
+            //On récupère les données de la photo
+            /** @var UploadedFile $downloadedPicture */
+            $downloadedPicture = $form->get('my_file')->getData();
+
+            //Si la photo a bien été téléchargée...
+            if ($downloadedPicture) {
+                $newNamePicture = ByteString::fromRandom(30) . '.' . $downloadedPicture->guessExtension();
+
+                try {
+                    $downloadedPicture->move(__DIR__ . '/../../public/profile/img', $newNamePicture);
+                } catch (\Exception $e) {
+                    dd($e->getMessage());
+                }
+
+                //On ajoute la photo au profil du user
+                $profilePicture->setUser($profilUser);
+                $profilePicture->setFileName($newNamePicture);
+
+                $manager->persist($profilePicture);
+                $manager->flush();
+            }
+
             //Récupération des données dans le champ "Nouveau mot de passe"
             $newPassword = $form['newPassword']->getData();
 
             //si l'utilisateur ne change pas son mot de passe alors il garde le même
-            if($newPassword == null){
+            if ($newPassword == null) {
                 $profilUser->setPassword($this->getUser()->getPassword());
                 $manager->persist($profilUser);
                 $manager->flush();
 
                 $this->addFlash('success', 'Profil modifié ! ');
 
-                //si l'utilisateur change son mot de passe...
-            } else {
-                //Vérification avec l'appel de la fonction si les contraintes sont respectées.
-                if($this->verifyConstraintsNewPassword($newPassword)){
-                    $passwordEncoded = $passwordEncoder->encodePassword($profilUser, $newPassword);
-                    $profilUser->setPassword($passwordEncoded);
-                    $manager->persist($profilUser);
-                    $manager->flush();
-                    $this->addFlash('success', 'Profil modifié ! ');
-                }
-
             }
-
+                //si l'utilisateur change son mot de passe...
+            else {
+                    //Vérification avec l'appel de la fonction si les contraintes sont respectées.
+                    if ($this->verifyConstraintsNewPassword($newPassword)) {
+                        $passwordEncoded = $passwordEncoder->encodePassword($profilUser, $newPassword);
+                        $profilUser->setPassword($passwordEncoded);
+                        $manager->persist($profilUser);
+                        $manager->flush();
+                        $this->addFlash('success', 'Profil modifié ! ');
+                    }
+                }
         }
 
-        //Création du formulaire photo
-
-        //Création d'une photo de profil
-       /*
-
-            $profilePicture->setUser($profilUser);
-            $profilePicture->setFileName($newNamePicture);
-
-            $manager->persist($profilePicture);
-            $manager->flush();
-
-            $this->addFlash('success', 'Merci pour la/les photo(s)! ');
-
-        */
 
         return $this->render('security/profil.html.twig', [
             'modifForm' => $form->createView(),
