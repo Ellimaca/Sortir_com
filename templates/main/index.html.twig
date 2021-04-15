@@ -1,12 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello MainController!{% endblock %}
-
+{% block title %}Page d'accueil{% endblock %}
 
 {% block body %}
     <div class="row">
         <div class="col-xl-3 col-md-6">
-            <div class="card bg-success text-white mb-4 mt-5">
+            <div class="card bg-success text-white mb-4 mt-4">
                 <div class="card-body">Bonjour {{ app.user.firstName }} ! Nous sommes le :
                     <span> {{ "now"|date("d/m/Y") }}</div>
                 <div class="card-footer d-flex align-items-center justify-content-between">
@@ -61,7 +60,7 @@
                     </div>
                 </article>
 
-                <article class="col-4 mt-2">
+                <article class="col-4 mt-4">
                     <div>
                         {{ form_row(searchForm.isOrganisedByMe) }}
                     </div>
@@ -76,18 +75,16 @@
                     </div>
                     <article class="col-6">
                         <button type="submit" class="btn-primary btn mt-4">Rechercher</button>
-
                     </article>
                 </article>
             </div>
             {{ form_end(searchForm) }}
-            <a href="{{ path('event_creation') }}"><button class="btn-success btn mt-4">Créer une sortie</button></a>
         </section>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" cellspacing="10">
+                <table class="table table-bordered mt-2" id="dataTable">
                     <thead>
-                    <tr class="text-center text-white bg-primary">
+                    <tr class="text-center text-white" id="thead">
                         <th>Nom de la sortie</th>
                         <th>Date de la sortie</th>
                         <th>Clôture</th>
@@ -99,7 +96,7 @@
                     </tr>
                     </thead>
                     <tfoot>
-                    <tr class="text-center text-white bg-primary">
+                    <tr class="text-center text-white" id="tfoot">
                         <th>Nom de la sortie</th>
                         <th>Date de la sortie</th>
                         <th>Clôture</th>
@@ -149,9 +146,10 @@
                             {% endfor %}</th>
                         </tr>
                     {% endfor %}
-                    </tfoot>
-                    </tbody>
+
+
                 </table>
+                <a href="{{ path('event_creation') }}"><button class="btn-success btn">Créer une sortie</button></a>
             </div>
         </div>
     </div>
