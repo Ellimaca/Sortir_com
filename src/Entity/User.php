@@ -119,7 +119,6 @@ class User implements UserInterface
     private ?string $pseudo;
 
     /**
-     * @Assert\Image()
      * @ORM\OneToOne(targetEntity=ProfilePicture::class, inversedBy="user", cascade={"persist", "remove"})
      */
     private ?ProfilePicture $profilePicture;
