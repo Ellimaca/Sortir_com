@@ -155,7 +155,9 @@ class AppFixtures extends Fixture
 
             if ($statusIsCancelled) {
                 $event->setStatus($statusArray[self::CANCELLED]);
+                $event->setCancellationReason($faker->realText(50));
             }
+
             elseif ($startDate > $today) {
                 $event->setStatus($statusArray[self::OPENED]);
             }
@@ -169,7 +171,7 @@ class AppFixtures extends Fixture
             }
 
             //Description
-            $event->setDescription($faker->paragraphs($faker->numberBetween(0, 3), true));
+            $event->setDescription($faker->realText(200));
 
             //Campus
             $event->setCampus($faker->randomElement($allCampus));
