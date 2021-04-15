@@ -48,6 +48,9 @@ class MainController extends AbstractController
         //Mis à jour des status
         $functionsStatus->UpdateEventsStatus($eventsList);
 
+        //Récupération des données en fonction des critères
+        $eventsList = $eventRepository->findBySearchFormCriteria($searchEventCriterias);
+
         //Création du tableau d'objet EventLine
         $eventLines = [];
 
@@ -68,6 +71,25 @@ class MainController extends AbstractController
             'searchForm' => $searchForm->createView(),
             'eventLines' => $eventLines,
         ]);
+
+    }
+
+    /**
+     * @Route("/test", name="test")
+     * @param Request $request
+     * @param EventRepository $eventRepository
+     * @param FunctionsStatus $functionsStatus
+     * @return Response
+     */
+    public function test(Request $request,
+                          EventRepository $eventRepository,
+                          FunctionsStatus $functionsStatus): Response
+    {
+
+        $event = $eventRepository->find(1916);
+
+
+    $functionsStatus->UpdateEventStatus($event);
 
     }
 
