@@ -76,7 +76,7 @@ class FunctionsStatus
         if($status == Constantes::CLOSED) {
             if($dateStart <= new DateTime('now')){
                 $event->setStatus(self::getStatusByName(Constantes::ONGOING, $statusList));
-            }elseif ($deadline < new DateTime('now')){
+            }elseif ($deadline > new DateTime('now')){
                 $event->setStatus(self::getStatusByName(Constantes::OPENED,$statusList));
             }
         }
