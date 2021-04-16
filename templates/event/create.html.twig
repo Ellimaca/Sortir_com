@@ -8,7 +8,7 @@
 {% block body %}
 
     <script>
-        window.onload = init ;
+        window.onload = init;
     </script>
 
     <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
@@ -34,7 +34,9 @@
                     <div>{{ form_row((eventForm.name)) }}</div>
                     <div>{{ form_row((eventForm.dateTimeStart)) }}</div>
                     <div>{{ form_row((eventForm.registrationDeadline)) }}</div>
-                    <div class="text-danger fw-bold">COVID 19 - Les rassemblements de plus de 6 personnes sont interdits</div>
+                    <div class="text-danger fw-bold">COVID 19 - Les rassemblements de plus de 6 personnes sont
+                        interdits
+                    </div>
                     <div>{{ form_row((eventForm.maxNumberParticipants)) }}</div>
                     <div>{{ form_row((eventForm.duration)) }}</div>
                     <div>{{ form_row((eventForm.description)) }}</div>
@@ -46,8 +48,9 @@
                     <div>{{ form_row((eventForm.city)) }}</div> {# <select id="event_city" #}
 
                     <div class="group">
-                        <label for="{{ field_name(eventForm.place) }}">{{ form_label(eventForm.place)}} </label>
-                        <select required=required name="{{ field_name(eventForm.place) }}"  id="{{ field_name(eventForm.place) }}" class="form-control">
+                        <label for="{{ field_name(eventForm.place) }}">{{ form_label(eventForm.place) }} </label>
+                        <select required=required name="{{ field_name(eventForm.place) }}"
+                                id="{{ field_name(eventForm.place) }}" class="form-control">
                         </select>
                     </div>
                     <fieldset disabled class="mt-2">
@@ -62,16 +65,30 @@
             </div>
 
             <div class="d-flex flex-wrap justify-content-center mt-5">
-                    <div>{{ form_row(eventForm.save) }}</div>
-                    {% if ((modif is defined) or (event.status.name is same as constant('App\\Utils\\Constantes::CREATED'))) %}
+                <div>{{ form_row(eventForm.save) }}</div>
+
+                {% if ((modif is not defined) or (event.status.name is same as constant('App\\Utils\\Constantes::CREATED'))) %}
                     <div>{{ form_row(eventForm.submit) }}</div>
-                    {%  endif %}
-                    {{ form_end(eventForm) }}
-                    {% if (modif is defined) %}
-                    <div><a href="{{ path('event_cancelled', {id:event.id}) }}">
-                            <button class="btn text-white" id="btnCancel">Supprimer la sortie</button></a></div>
-                    {% endif %}
-                   <div class="ml-3" id="cancel"><a href="{{ path('main') }}"><button class="btn text-white">Annuler</button></a></div>
+                {% else %}
+                    <div class="group">
+                        <label for="{{ field_name(eventForm.submit) }}">{{ form_label(eventForm.submit) }} </label>
+                        <input type="hidden" required=required name="{{ field_name(eventForm.submit) }}"
+                                id="{{ field_name(eventForm.submit) }}" class="form-control">
+                    </div>
+                {% endif %}
+
+                {{ form_end(eventForm) }}
+
+                {% if (modif is defined) %}
+                    <div>
+                        <a href="{{ path('event_cancelled', {id:event.id}) }}">
+                            <button class="btn text-white" id="btnCancel">Supprimer la sortie</button>
+                        </a>
+                    </div>
+                {% endif %}
+                <div class="ml-3" id="cancel"><a href="{{ path('main') }}">
+                        <button class="btn text-white">Annuler</button>
+                    </a></div>
             </div>
         </div>
         {{ form_end(eventForm) }}
