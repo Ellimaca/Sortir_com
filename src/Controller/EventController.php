@@ -252,7 +252,7 @@ class EventController extends AbstractController
 
             $this->addFlash('success', "Vous êtes bien désinscrit de la sortie!");
 
-            $this->redirectToRoute('main');
+            return $this->redirectToRoute('main');
         } // Si le statut de l'event est "en cours"
         elseif ((($foundParticipants->contains($user) && $eventStatusName == Constantes::ONGOING))) {
             $this->addFlash('warning', 'La sortie est en cours, vous ne pouvez pas vous désinscrire  !');
