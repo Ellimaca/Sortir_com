@@ -55,7 +55,7 @@ class Event
 
     /**
      * @Assert\NotBlank(message="Veuillez renseigner un nombre maximum de participants")
-     * @Assert\GreaterThan(2, message="Le minimum de participants est de 2")
+     * @Assert\GreaterThan(0, message="Le minimum de participants est de 1")
      * @Assert\LessThan(7, message=" Le nombre maximum de 6 participants doit être respecté")
      *
      * @ORM\Column(type="integer")
