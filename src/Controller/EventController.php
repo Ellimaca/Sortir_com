@@ -410,6 +410,7 @@ class EventController extends AbstractController
 
                 //Test de validation du formulaire
                 if ($eventForm->isValid()) {
+
                     if ($this->checkEvent($eventToModify)) {
 
                         /** @var DateTime $eventDateStart */
@@ -453,7 +454,7 @@ class EventController extends AbstractController
 
         //Vérifier que le nombre max de participants ne soit pas inférieur aux nombre d'inscrits.
         if ($eventToCheck->getMaxNumberParticipants() < $numberOfParticipants) {
-            $this->addFlash("warning", "Impossible de réduire le nombre de participants!");
+            $this->addFlash("warning", "Impossible de réduire le nombre de participants en dessous du nombre d'inscrits!");
             $isChecked = false;
         }
 
