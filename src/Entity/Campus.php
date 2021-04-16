@@ -27,12 +27,12 @@ class Campus
     /**
      * @ORM\OneToMany(targetEntity=Event::class, mappedBy="campus")
      */
-    private ArrayCollection $events;
+    private $events;
 
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="campus")
      */
-    private ArrayCollection $users;
+    private $users;
 
     public function __construct()
     {

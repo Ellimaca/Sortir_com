@@ -32,7 +32,7 @@ class City
     /**
      * @ORM\OneToMany(targetEntity=Place::class, mappedBy="city")
      */
-    private ArrayCollection $places;
+    private $places;
 
     public function __construct()
     {

@@ -51,7 +51,7 @@ class Place
     /**
      * @ORM\OneToMany(targetEntity=Event::class, mappedBy="place")
      */
-    private ArrayCollection $events;
+    private $events;
 
     public function __construct()
     {

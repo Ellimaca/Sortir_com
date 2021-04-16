@@ -89,7 +89,7 @@ class Event
     /**
      * @ORM\ManyToMany(targetEntity=User::class, inversedBy="events")
      */
-    private ArrayCollection $participants;
+    private $participants;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="organisedEvents")

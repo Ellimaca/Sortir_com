@@ -27,7 +27,7 @@ class Status
     /**
      * @ORM\OneToMany(targetEntity=Event::class, mappedBy="status")
      */
-    private ArrayCollection $events;
+    private $events;
 
     public function __construct()
     {
