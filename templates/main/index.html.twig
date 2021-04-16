@@ -121,7 +121,7 @@
                         {% else %}
                             <th>{{ eventLine.nbRegistered }}/{{ eventLine.event.maxNumberParticipants }}</th>
                         {% endif %}
-                        {% if eventLine.event.status.name == "Annulée" %}
+                        {% if eventLine.event.status.name == constant('App\\Utils\\Constantes::CANCELLED') %}
                             <th class="text-danger">{{ eventLine.event.status.name }}</th>
                         {% else %}
                             <th>{{ eventLine.event.status.name }}</th>

@@ -15,15 +15,35 @@
             <label for="event_name">Nom de la sortie</label>
             <input type="text" class="form-control" id="event_name" placeholder="{{ foundEvent.name }}">
             <label for="event_datestart">Date de la sortie</label>
-            <input type="text" class="form-control" id="event_datestart" placeholder="{{ foundEvent.dateTimeStart|date('d-m-Y') }}">
+            <input type="text" class="form-control" id="event_datestart"
+                   placeholder="{{ foundEvent.dateTimeStart|date('d-m-Y') }}">
             <label for="event_campus">Campus</label>
             <input type="text" class="form-control" id="event_campus" placeholder="{{ foundEvent.campus.name }}">
             <label for="event_place">Lieu</label>
             <input type="text" class="form-control" id="event_place" placeholder="{{ foundEvent.place.name }}">
-        </fieldset>
-        {{ form(eventCancellationForm) }}
 
-        <a href="{{ path('main') }}"><button class="btn text-white" id="cancel">Annuler</button></a>
+        </fieldset>
+
+
+
+            {{ form_start(eventCancellationForm) }}
+
+            <div>
+                {{ form_row(eventCancellationForm.cancellation_reason) }}
+            </div>
+        <div class="p-3 pb-md-4 mx-auto text-center">
+            <div>
+                {{ form_row(eventCancellationForm.submit) }}
+            </div>
+
+            {{ form_end(eventCancellationForm) }}
+        </div>
+            <div class="p-3 pb-md-4 mx-auto text-center">
+                <a href="{{ path('main') }}">
+                    <button class="btn text-white" id="cancel">Annuler</button>
+                </a>
+            </div>
+
     </main>
 
 {% endblock %}
