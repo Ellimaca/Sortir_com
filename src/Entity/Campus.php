@@ -17,22 +17,22 @@ class Campus
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="string", length=50)
      */
-    private $name;
+    private ?string $name;
 
     /**
      * @ORM\OneToMany(targetEntity=Event::class, mappedBy="campus")
      */
-    private $events;
+    private ArrayCollection $events;
 
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="campus")
      */
-    private $users;
+    private ArrayCollection $users;
 
     public function __construct()
     {

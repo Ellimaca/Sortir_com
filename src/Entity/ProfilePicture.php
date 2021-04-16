@@ -15,17 +15,17 @@ class ProfilePicture
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $fileName;
+    private ?string $fileName;
 
     /**
      * @ORM\OneToOne(targetEntity=User::class, mappedBy="profilePicture", cascade={"persist", "remove"})
      */
-    private $user;
+    private ?User $user;
 
     public function getId(): ?int
     {

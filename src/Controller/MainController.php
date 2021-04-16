@@ -74,25 +74,6 @@ class MainController extends AbstractController
 
     }
 
-    /**
-     * @Route("/test", name="test")
-     * @param Request $request
-     * @param EventRepository $eventRepository
-     * @param FunctionsStatus $functionsStatus
-     * @return Response
-     */
-    public function test(Request $request,
-                          EventRepository $eventRepository,
-                          FunctionsStatus $functionsStatus): Response
-    {
-
-        $event = $eventRepository->find(1916);
-
-
-    $functionsStatus->UpdateEventStatus($event);
-
-    }
-
     private function createEventLine(Event $event): EventLine
     {
         /** @var User $user */

@@ -187,7 +187,6 @@ class SecurityController extends AbstractController
         //Minimum 8 caractères, au moins une lettre et un chiffre:
         if (!preg_match(self::REGEX_PASSWORD, $newPassword)) {
             $this->addFlash('warning', 'Le mot de passe doit contenir 8 caractères minimum, au moins une lettre ET un chiffre');
-            $isVerifiedConstraints = false;
         } else {
             return true;
         }

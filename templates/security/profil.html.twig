@@ -8,11 +8,11 @@
     <div class="row">
         <div class="col">
         {% if app.user.profilePicture %}
-            <img src="./profile/img/{{ app.user.profilePicture.fileName }}" width="400" height="400">
+            <img src="./profile/img/{{ app.user.profilePicture.fileName }}" width="400" height="400" alt="Photo de profile">
 
         {% else %}
             <div id="profilePic">
-                <img src="{{ asset('profile/img/user.png') }}" height="auto">
+                <img src="{{ asset('profile/img/user.png') }}" height="auto" alt="Photo de profile">
             </div>
         {% endif %}
         </div>
@@ -23,7 +23,7 @@
             </a>
         </div>
     </div>
-
+</div>
 
     {% endblock %}
 

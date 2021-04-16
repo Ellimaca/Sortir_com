@@ -14,11 +14,11 @@
         <fieldset disabled>
             <label for="event_name">Nom de la sortie</label>
             <input type="text" class="form-control" id="event_name" placeholder="{{ foundEvent.name }}">
-            <label for="event_date">Date de la sortie</label>
+            <label for="event_datestart">Date de la sortie</label>
             <input type="text" class="form-control" id="event_datestart" placeholder="{{ foundEvent.dateTimeStart|date('d-m-Y') }}">
-            <label for="event_date">Campus</label>
+            <label for="event_campus">Campus</label>
             <input type="text" class="form-control" id="event_campus" placeholder="{{ foundEvent.campus.name }}">
-            <label for="event_date">Lieu</label>
+            <label for="event_place">Lieu</label>
             <input type="text" class="form-control" id="event_place" placeholder="{{ foundEvent.place.name }}">
         </fieldset>
         {{ form(eventCancellationForm) }}

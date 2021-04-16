@@ -15,6 +15,7 @@ class DateTimeHandler
      * @param DateTime $dateTimeStart
      * @param int $minutes
      * @return DateTime
+     * @throws \Exception
      */
     public static function dateAddMinutes(DateTime $dateTimeStart, int $minutes) : DateTime
     {
@@ -31,6 +32,7 @@ class DateTimeHandler
      * @param DateTime $dateTimeStart
      * @param int $minutes
      * @return DateTime
+     * @throws \Exception
      */
     public static function dateSubMinutes(DateTime $dateTimeStart, int $minutes) : DateTime
     {

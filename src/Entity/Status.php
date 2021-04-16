@@ -17,17 +17,17 @@ class Status
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="string", length=20)
      */
-    private $name;
+    private ?string $name;
 
     /**
      * @ORM\OneToMany(targetEntity=Event::class, mappedBy="status")
      */
-    private $events;
+    private ArrayCollection $events;
 
     public function __construct()
     {
@@ -63,7 +63,7 @@ class Status
     {
         if (!$this->events->contains($event)) {
             $this->events[] = $event;
-            $event->setState($this);
+            $event->setStatus($this);
         }
 
         return $this;
@@ -73,8 +73,8 @@ class Status
     {
         if ($this->events->removeElement($event)) {
             // set the owning side to null (unless already changed)
-            if ($event->getState() === $this) {
-                $event->setState(null);
+            if ($event->getStatus() === $this) {
+                $event->setStatus(null);
             }
         }
 

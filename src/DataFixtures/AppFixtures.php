@@ -199,6 +199,7 @@ class AppFixtures extends Fixture
             for ($i = 0; $i < $randomParticipants; $i++) {
                 $event->addParticipant($faker->randomElement($allUsers));
              }
+            $manager->persist($event);
         }
 
         // Création des données statiques en base de données
@@ -207,7 +208,6 @@ class AppFixtures extends Fixture
         // Mise à jour des statuts
         $this->functionStatus->UpdateEventsStatus($allEvents);
 
-        $manager->persist($event);
         $manager->flush();
 
     }

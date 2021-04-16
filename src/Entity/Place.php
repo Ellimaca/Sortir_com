@@ -20,38 +20,38 @@ class Place
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="string", length=50)
      */
-    private $name;
+    private ?string $name;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $street;
+    private ?string $street;
 
     /**
      * @ORM\Column(type="float")
      */
-    private $latitude;
+    private ?float $latitude;
 
     /**
      * @ORM\Column(type="float")
      */
-    private $longitude;
+    private ?float $longitude;
 
     /**
      * @ORM\ManyToOne(targetEntity=City::class, inversedBy="places")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $city;
+    private ?City $city;
 
     /**
      * @ORM\OneToMany(targetEntity=Event::class, mappedBy="place")
      */
-    private $events;
+    private ArrayCollection $events;
 
     public function __construct()
     {
@@ -153,8 +153,8 @@ class Place
         return $this;
     }
 
-    public function __toString()
-{
+    public function __toString(): ?string
+    {
         return $this->name;
 }
 

@@ -97,12 +97,12 @@ class User implements UserInterface
     /**
      * @ORM\ManyToMany(targetEntity=Event::class, mappedBy="participants")
      */
-    private $events;
+    private ArrayCollection $events;
 
     /**
      * @ORM\OneToMany(targetEntity=Event::class, mappedBy="organiser")
      */
-    private $organisedEvents;
+    private ArrayCollection $organisedEvents;
 
     /**
      * @Assert\NotBlank(message="Veuillez choisir un pseudo")

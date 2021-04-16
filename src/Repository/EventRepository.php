@@ -17,7 +17,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class EventRepository extends ServiceEntityRepository
 {
-    private $statusRepository;
+    private StatusRepository $statusRepository;
 
     public function __construct(ManagerRegistry $registry,StatusRepository $statusRepository)
     {

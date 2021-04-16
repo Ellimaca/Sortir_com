@@ -17,22 +17,22 @@ class City
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="string", length=40)
      */
-    private $name;
+    private ?string $name;
 
     /**
      * @ORM\Column(type="string", length=5)
      */
-    private $postCode;
+    private ?string $postCode;
 
     /**
      * @ORM\OneToMany(targetEntity=Place::class, mappedBy="city")
      */
-    private $places;
+    private ArrayCollection $places;
 
     public function __construct()
     {

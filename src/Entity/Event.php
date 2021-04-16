@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\EventRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -18,7 +19,7 @@ class Event
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @Assert\NotBlank(message="Veuillez donner un nom à votre sortie")
@@ -29,7 +30,7 @@ class Event
      *     maxMessage="Le nom de l'évènement pas excéder 50 caractères")
      * @ORM\Column(type="string", length=100)
      */
-    private $name;
+    private ?string $name;
 
     /**
      * @Assert\GreaterThan("today", message="Veuillez saisir une date postérieure à la date actuelle")
@@ -37,12 +38,12 @@ class Event
      * @Assert\NotBlank(message="Veuillez renseigner la date et l'heure de votre sortie")
      * @ORM\Column(type="datetime")
      */
-    private $dateTimeStart;
+    private ?DateTimeInterface $dateTimeStart;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $dateTimeEnd;
+    private ?DateTimeInterface $dateTimeEnd;
 
     /**
      * @Assert\LessThan(propertyPath="dateTimeStart", message="Veuillez saisir une date de fin d'inscription avant la date et l'heure de début de votre sortie")
@@ -50,7 +51,7 @@ class Event
      * @Assert\NotBlank(message="Veuillez renseigner une date limite d'inscription")
      * @ORM\Column(type="datetime")
      */
-    private $registrationDeadline;
+    private ?DateTimeInterface $registrationDeadline;
 
     /**
      * @Assert\NotBlank(message="Veuillez renseigner un nombre maximum de participants")
@@ -59,42 +60,42 @@ class Event
      *
      * @ORM\Column(type="integer")
      */
-    private $maxNumberParticipants;
+    private ?int $maxNumberParticipants;
 
     /**
      * @Assert\NotBlank(message="Veuillez renseigner une description à votre sortie")
      * @ORM\Column(type="text", nullable=true)
      */
-    private $description;
+    private ?string $description;
 
     /**
      * @ORM\ManyToOne(targetEntity=Place::class, inversedBy="events")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $place;
+    private ?Place $place;
 
     /**
      * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="events")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $status;
+    private ?Status $status;
 
     /**
      * @ORM\ManyToOne(targetEntity=Campus::class, inversedBy="events")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $campus;
+    private ?Campus $campus;
 
     /**
      * @ORM\ManyToMany(targetEntity=User::class, inversedBy="events")
      */
-    private $participants;
+    private ArrayCollection $participants;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="organisedEvents")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $organiser;
+    private ?User $organiser;
 
     //TO DO mettre une durée minimum et maximum
     /**
@@ -103,12 +104,12 @@ class Event
      * @Assert\LessThan(1440, message="La sortie ne peut pas excéder 24h")
      * @ORM\Column(type="integer")
      */
-    private $duration;
+    private ?int $duration;
 
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-    private $cancellation_reason;
+    private ?string $cancellation_reason;
 
 
     public function __construct()
@@ -133,36 +134,36 @@ class Event
         return $this;
     }
 
-    public function getDateTimeStart(): ?\DateTimeInterface
+    public function getDateTimeStart(): ?DateTimeInterface
     {
         return $this->dateTimeStart;
     }
 
-    public function setDateTimeStart(?\DateTimeInterface $dateTimeStart): self
+    public function setDateTimeStart(?DateTimeInterface $dateTimeStart): self
     {
         $this->dateTimeStart = $dateTimeStart;
 
         return $this;
     }
 
-    public function getDateTimeEnd(): ?\DateTimeInterface
+    public function getDateTimeEnd(): ?DateTimeInterface
     {
         return $this->dateTimeEnd;
     }
 
-    public function setDateTimeEnd(\DateTimeInterface $dateTimeEnd): self
+    public function setDateTimeEnd(DateTimeInterface $dateTimeEnd): self
     {
         $this->dateTimeEnd = $dateTimeEnd;
 
         return $this;
     }
 
-    public function getRegistrationDeadline(): ?\DateTimeInterface
+    public function getRegistrationDeadline(): ?DateTimeInterface
     {
         return $this->registrationDeadline;
     }
 
-    public function setRegistrationDeadline(?\DateTimeInterface $RegistrationDeadline): self
+    public function setRegistrationDeadline(?DateTimeInterface $RegistrationDeadline): self
     {
         $this->registrationDeadline = $RegistrationDeadline;
 
