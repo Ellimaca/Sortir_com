@@ -94,7 +94,7 @@ class EventController extends AbstractController
         $eventForm->handleRequest($request);
 
         if ($eventForm->isSubmitted()) {
-            $placeExist = $this->havePlace($eventForm);
+            $this->havePlace($eventForm);
             if ($eventForm->isValid()) {
 
                 // Calcul de la date de fin de l'évènement
@@ -296,7 +296,6 @@ class EventController extends AbstractController
 
         //Vérification que l'utilisateur est bien l'organisateur de la sortie
         if ($eventOrganiser !== $user) {
-            //throw $this->createNotFoundException("L'utilisateur n'est pas l'organisateur");//TODO choisir
             throw $this->createNotFoundException(self::WARNING_EVENT_NOT_AUTHORIZED);
         }
 
@@ -578,7 +577,7 @@ class EventController extends AbstractController
 
     }
 
-    private function havePlace(FormInterface $form)
+    private function havePlace(FormInterface $form):bool
     {
         $placeID = $form->get('place')->getViewData();
         if ($placeID != "") {
